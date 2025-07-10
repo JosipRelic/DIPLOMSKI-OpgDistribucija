@@ -1,0 +1,39 @@
+# FRONTEND (Vue 3 + Vite) 
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.vite/
+Frontend/.env
+Frontend/.env.*.local
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/.vscode/
+Frontend/.idea/
+Frontend/*.swp
+
+# BACKEND (FastAPI + Python)
+Backend/__pycache__/
+Backend/.mypy_cache/
+Backend/.pytest_cache/
+Backend/.env
+Backend/venv/
+Backend/env/
+Backend/.venv/
+Backend/*.py[cod]
+Backend/*.log
+Backend/.vscode/
+Backend/.idea/
+Backend/*.swp
+
+# DOCKER 
+*.log
+docker-compose.override.yml
+
+# --- SYSTEM / OS FILES ---
+.DS_Store
+Thumbs.db
+
+# --- IDE / EDITOR CONFIGS ---
+.vscode/
+.idea/
+*.swp
