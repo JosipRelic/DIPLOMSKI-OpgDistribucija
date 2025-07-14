@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <p>ovdje će ići navbar</p>
 </template>
 
 <script setup></script>
