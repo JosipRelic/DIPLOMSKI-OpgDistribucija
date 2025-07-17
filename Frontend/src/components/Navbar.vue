@@ -3,13 +3,13 @@
     <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <div class="flex items-center gap-2">
-          <a class="block text-teal-600 group" href="#">
+          <RouterLink :to="{ name: 'pocetna' }" class="block text-teal-600 group">
             <img
               :src="slikeLogo"
               alt="logo"
               class="w-10 h-auto transition duration-500 group-hover:scale-105"
             />
-          </a>
+          </RouterLink>
           <p class="block text-gray-100">OPG Distribucija</p>
         </div>
 
@@ -17,7 +17,12 @@
           <nav aria-label="Global" class="hidden md:block">
             <ul class="flex items-center gap-2 text-sm">
               <li>
-                <a class="text-gray-100 transition hover:text-gray-500/75" href="#"> E-Tržnica </a>
+                <RouterLink
+                  :to="{ name: 'e-trznica' }"
+                  class="text-gray-100 transition hover:text-gray-500/75"
+                >
+                  E-Tržnica
+                </RouterLink>
               </li>
             </ul>
           </nav>
