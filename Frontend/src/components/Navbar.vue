@@ -3,46 +3,54 @@
     <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <div class="flex items-center gap-2">
-          <RouterLink :to="{ name: 'pocetna' }" class="block text-teal-600 group">
+          <router-link :to="{ name: 'pocetna' }" class="block text-teal-600 group">
             <img
               :src="slikeLogo"
               alt="logo"
               class="w-10 h-auto transition duration-500 group-hover:scale-105"
             />
-          </RouterLink>
+          </router-link>
           <p class="block text-gray-100">OPG Distribucija</p>
         </div>
 
         <div class="md:flex md:items-center md:gap-6">
           <nav aria-label="Global" class="hidden md:block">
-            <ul class="flex items-center gap-2 text-sm">
+            <ul class="flex items-center gap-4 text-sm">
               <li>
-                <RouterLink
+                <router-link
                   :to="{ name: 'e-trznica' }"
                   class="text-gray-100 transition hover:text-gray-500/75"
                 >
                   E-Tržnica
-                </RouterLink>
+                </router-link>
+              </li>
+              <li>
+                <router-link
+                  :to="{ name: 'farmaPlus' }"
+                  class="text-gray-100 transition hover:text-gray-500/75"
+                >
+                  Farma+
+                </router-link>
               </li>
             </ul>
           </nav>
 
           <div class="flex items-center gap-4">
             <div class="sm:flex sm:gap-4">
-              <a
+              <router-link
+                :to="{ name: 'prijava' }"
                 class="rounded-md bg-teal-600 transition hover:bg-teal-900 px-5 py-2.5 text-sm font-medium text-gray-100 hover:text-gray-300 shadow-sm"
-                href="#"
               >
                 Prijava
-              </a>
+              </router-link>
 
               <div class="hidden sm:flex">
-                <a
+                <router-link
                   class="rounded-md bg-gray-100 transition hover:bg-gray-300 px-5 py-2.5 text-sm font-medium text-teal-600 hover:text-teal-900"
-                  href="#"
+                  :to="{ name: 'registracija' }"
                 >
                   Registracija
-                </a>
+                </router-link>
               </div>
             </div>
 

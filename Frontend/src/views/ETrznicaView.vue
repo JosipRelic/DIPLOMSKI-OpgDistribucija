@@ -77,7 +77,7 @@
   </section>
 
   <section>
-    <div class="bg-gray-50 py-10 sm:py-20">
+    <div class="bg-[#f5ebdc] py-10 sm:py-20">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
           <div
@@ -85,7 +85,7 @@
             :key="podatak.id"
             class="mx-auto flex max-w-xs flex-col gap-y-4"
           >
-            <dt class="text-base/7 text-[#223c2f]">{{ podatak.name }}</dt>
+            <dt class="text-base/7 text-gray-900">{{ podatak.name }}</dt>
             <dd
               class="order-first text-3xl font-semibold tracking-tight text-[#223c2f] sm:text-5xl"
             >
