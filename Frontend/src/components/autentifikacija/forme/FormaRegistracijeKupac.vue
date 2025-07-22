@@ -91,6 +91,14 @@
                 </svg>
                 <span class="ml-3"> Registracija </span>
               </button>
+              <p class="mt-6 text-sm text-gray-800 text-center">
+                <router-link
+                  :to="{ name: 'prijava' }"
+                  class="mt-6 text-center text-md border-b border-gray-500 border-dotted"
+                >
+                  Već ste registrirani?
+                </router-link>
+              </p>
             </div>
           </div>
         </div>

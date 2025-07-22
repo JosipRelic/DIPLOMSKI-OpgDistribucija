@@ -6,6 +6,9 @@ import RegistracijaOPGView from "@/views/autentifikacija/RegistracijaOPGView.vue
 import RegistracijaKupacView from "@/views/autentifikacija/RegistracijaKupacView.vue"
 import RegistracijaOdabirKorisnikaView from "@/views/autentifikacija/RegistracijaOdabirKorisnikaView.vue"
 import PrijavaView from "@/views/autentifikacija/PrijavaView.vue"
+import KosaricaView from "@/views/narudzba/KosaricaView.vue"
+import ZaboravljenaLozinkaView from "@/views/autentifikacija/ZaboravljenaLozinkaView.vue"
+import PregledNarudzbeView from "@/views/narudzba/PregledNarudzbeView.vue"
 
 const routes = [
   {
@@ -22,6 +25,16 @@ const routes = [
     name: "farmaPlus",
     path: "/farma-plus",
     component: FarmaPlusView,
+  },
+  {
+    name: "kosarica",
+    path: "/kosarica",
+    component: KosaricaView,
+  },
+  {
+    name: "pregledNarudzbe",
+    path: "/pregled-narudzbe",
+    component: PregledNarudzbeView,
   },
   {
     name: "registracija",
@@ -46,7 +59,11 @@ const routes = [
     path: "/prijava",
     component: PrijavaView,
   },
-
+  {
+    name: "zaboravljenaLozinka",
+    path: "/zaboravljena-lozinka",
+    component: ZaboravljenaLozinkaView,
+  },
   {
     path: "/:catchAll(.*)",
     redirect: { name: "pocetna" },
