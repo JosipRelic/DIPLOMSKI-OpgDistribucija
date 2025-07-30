@@ -16,7 +16,7 @@
 
       <div class="flex items-center">
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -27,7 +27,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -38,7 +38,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -49,7 +49,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -60,7 +60,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -93,7 +93,7 @@
 
       <div class="flex items-center">
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -104,7 +104,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -115,7 +115,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -126,7 +126,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -137,7 +137,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500"
+          class="w-4 h-4 text-orange-200 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -172,7 +172,7 @@
 
       <div class="flex items-center">
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -183,7 +183,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -194,7 +194,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -205,7 +205,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -216,7 +216,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500"
+          class="w-4 h-4 text-orange-300 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -249,7 +249,7 @@
 
       <div class="flex items-center">
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -260,7 +260,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -271,7 +271,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -282,7 +282,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-yellow-300 me-1"
+          class="w-4 h-4 text-orange-600 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -293,7 +293,7 @@
           />
         </svg>
         <svg
-          class="w-4 h-4 text-gray-300 me-1 dark:text-gray-500"
+          class="w-4 h-4 text-orange-300 me-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"

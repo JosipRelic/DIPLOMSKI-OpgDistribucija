@@ -80,7 +80,8 @@
 
             <div class="block md:hidden">
               <button
-                class="rounded-sm bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75"
+                class="rounded-sm bg-orange-50 p-2 ml-1 text-[#223c2f] transition hover:text-gray-600/75"
+                @click="otvoriIzbornikNaManjemEkranu"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -98,6 +99,33 @@
                 </svg>
               </button>
             </div>
+
+            <div
+              v-if="izbornikNaManjemEkranuOtvoren"
+              class="absolute top-16 left-0 w-full bg-[#223c2f] px-4 py-4 space-y-2 shadow-lg z-50 md:hidden"
+            >
+              <router-link
+                :to="{ name: 'registracija' }"
+                class="block text-gray-100 hover:text-gray-300 sm:hidden"
+                @click="izbornikNaManjemEkranuOtvoren = false"
+              >
+                Registracija
+              </router-link>
+              <router-link
+                :to="{ name: 'e-trznica' }"
+                class="block text-gray-100 hover:text-gray-300"
+                @click="izbornikNaManjemEkranuOtvoren = false"
+              >
+                E-Tržnica
+              </router-link>
+              <router-link
+                :to="{ name: 'farmaPlus' }"
+                class="block text-gray-100 hover:text-gray-300"
+                @click="izbornikNaManjemEkranuOtvoren = false"
+              >
+                Farma+
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -106,5 +134,12 @@
 </template>
 
 <script setup>
+import { ref } from "vue"
 import slikeLogo from "@/assets/slike/logo.png"
+
+const izbornikNaManjemEkranuOtvoren = ref(false)
+
+function otvoriIzbornikNaManjemEkranu() {
+  izbornikNaManjemEkranuOtvoren.value = !izbornikNaManjemEkranuOtvoren.value
+}
 </script>
