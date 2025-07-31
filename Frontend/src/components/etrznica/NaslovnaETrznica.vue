@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-center md:gap-8">
       <div>
         <div class="max-w-lg md:max-w-none">
-          <h2 class="text-2xl font-semibold text-gray-900 sm:text-3xl">E-Tržnica</h2>
+          <h2 class="text-2xl font-bold text-gray-900 sm:text-3xl">E-Tržnica</h2>
 
           <p class="mt-4 text-gray-700">
             Naša virtualna tržnica osmišljena je kako biste brzo i jednostavno mogli otkriti širok
