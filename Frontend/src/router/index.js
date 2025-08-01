@@ -9,6 +9,7 @@ import PrijavaView from "@/views/autentifikacija/PrijavaView.vue"
 import KosaricaView from "@/views/narudzba/KosaricaView.vue"
 import ZaboravljenaLozinkaView from "@/views/autentifikacija/ZaboravljenaLozinkaView.vue"
 import PregledNarudzbeView from "@/views/narudzba/PregledNarudzbeView.vue"
+import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     name: "pregledNarudzbe",
     path: "/pregled-narudzbe",
     component: PregledNarudzbeView,
+  },
+  {
+    name: "potvrdaNarudzbe",
+    path: "/potvrda-narudzbe",
+    component: PotvrdaNarudzbeView,
   },
   {
     name: "registracija",
