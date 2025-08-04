@@ -5,7 +5,7 @@
       class="group relative w-1/2 overflow-hidden transition-all duration-500 hover:w-[55%]"
     >
       <img
-        src="https://plus.unsplash.com/premium_photo-1686156705991-a7e289071bda?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTU3fHxmYXJtZXJ8ZW58MHwxfDB8fHww"
+        :src="slikeOdabirKorisnikaKupac"
         alt="Registracija kupca"
         class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
       />
@@ -21,7 +21,7 @@
       class="group relative w-1/2 overflow-hidden transition-all duration-500 hover:w-[55%]"
     >
       <img
-        src="https://images.unsplash.com/photo-1551649001-7a2482d98d05?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fEZhcm1lcnxlbnwwfHwwfHx8MA%3D%3D"
+        :src="slikeOdabirKorisnikaOpg"
         alt="Registracija OPG-a"
         class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
       />
@@ -31,3 +31,8 @@
     </RouterLink>
   </section>
 </template>
+
+<script setup>
+import slikeOdabirKorisnikaKupac from "@/assets/slike/odabir-korisnika-kupac.png"
+import slikeOdabirKorisnikaOpg from "@/assets/slike/odabir-korisnika-opg.png"
+</script>

@@ -14,8 +14,8 @@
         <div class="mt-6 space-y-12 lg:grid lg:grid-cols-2 lg:gap-x-6">
           <div class="group relative">
             <img
-              src="https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFybSUyMGFuaW1hbHxlbnwwfHwwfHx8Mg%3D%3D"
-              alt="#"
+              :src="slikeFarmaPlusZivotinjePocetna"
+              alt="slika životinje"
               class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square transition duration-500 group-hover:scale-102"
             />
             <h3 class="mt-6 text-md text-gray-500">
@@ -31,8 +31,8 @@
           </div>
           <div class="group relative">
             <img
-              src="https://images.unsplash.com/photo-1732112622699-fd32f6e7b19e?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fGhhcnZlc3RpbmclMjBmaWVsZHxlbnwwfHwwfHx8Mg%3D%3D"
-              alt="#"
+              :src="slikeFarmaPlusUslugePocetna"
+              alt="Slika usluge"
               class="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square transition duration-500 group-hover:scale-102"
             />
             <h3 class="mt-6 text-md text-gray-500">
@@ -51,3 +51,8 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import slikeFarmaPlusUslugePocetna from "@/assets/slike/farma-plus-usluge-pocetna.png"
+import slikeFarmaPlusZivotinjePocetna from "@/assets/slike/farma-plus-zivotinje-pocetna.png"
+</script>

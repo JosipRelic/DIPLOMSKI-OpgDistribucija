@@ -4,8 +4,9 @@
   >
     <div class="hidden md:block w-full md:w-1/2">
       <img
-        src="https://images.unsplash.com/photo-1582803824122-f25becf36ad8?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODN8fHNob3BwaW5nJTIwYmFnfGVufDB8fDB8fHwy"
+        :src="slikePotvrdaNarudzbe"
         class="h-full w-full object-cover"
+        alt="slika potvrda narudžbe"
       />
     </div>
 
@@ -65,6 +66,9 @@
           <span>Ukupan iznos bez PDV-a</span><span>4.18 €</span>
         </div>
         <div class="flex justify-between text-sm"><span>PDV (25%)</span><span>1.39 €</span></div>
+        <div class="flex justify-between text-sm">
+          <span>Dostava</span><span>Besplatna (osobno preuzimanje)</span>
+        </div>
         <div class="flex justify-between font-semibold text-lg border-t pt-2">
           <span>Ukupno</span><span>5.57 €</span>
         </div>
@@ -82,6 +86,10 @@
           <p class="font-medium">Način plaćanja</p>
           <p class="inline">Pouzećem</p>
         </div>
+        <div>
+          <p class="font-medium">Način dostave</p>
+          <p class="inline">Osobno preuzimanje</p>
+        </div>
       </div>
 
       <div>
@@ -92,3 +100,6 @@
     </div>
   </div>
 </template>
+<script setup>
+import slikePotvrdaNarudzbe from "@/assets/slike/potvrda-narudzbe.png"
+</script>

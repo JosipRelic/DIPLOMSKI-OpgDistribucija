@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
-</script>
-
 <template>
   <div
     class="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 my-20"
@@ -257,6 +253,27 @@ import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
         </div>
       </div>
 
+      <h3 class="text-xl font-semibold text-gray-700 mb-6 mt-10 border-t pt-6">
+        Odaberite način dostave
+      </h3>
+
+      <div class="space-y-4">
+        <div
+          class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition"
+        >
+          <input id="bordered-radio-1" type="radio" value="" name="bordered-radio" />
+
+          <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900"
+            >Kurirska služba (5€)</label
+          >
+
+          <input checked id="bordered-radio-2" type="radio" value="" name="bordered-radio" />
+          <label for="bordered-radio-2" class="w-full py-4 ms-2 text-sm font-medium text-gray-900"
+            >Osobno preuzimanje (Besplatno)</label
+          >
+        </div>
+      </div>
+
       <div class="mt-10 border-t pt-6">
         <h4 class="text-gray-700 font-semibold mb-2">Za platiti</h4>
         <div class="flex justify-between text-gray-600">
@@ -266,6 +283,10 @@ import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
         <div class="flex justify-between text-gray-600 mt-1">
           <span>PDV (25%)</span>
           <span>1.39 €</span>
+        </div>
+        <div class="flex justify-between text-gray-600 mt-1">
+          <span>Dostava</span>
+          <span>Besplatna (osobno preuzimanje)</span>
         </div>
         <div class="flex justify-between text-lg font-bold text-gray-800 mt-4">
           <span>Ukupan iznos s PDV-om</span>

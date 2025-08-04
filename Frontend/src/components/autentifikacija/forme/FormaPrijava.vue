@@ -84,13 +84,12 @@
       </div>
       <div
         class="flex-1 bg-indigo-100 text-center bg-cover bg-center hidden lg:flex"
-        style="
-          background-image: url(https://images.unsplash.com/photo-1451440063999-77a8b2960d2b?q=80&w=2064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
-        "
+        :style="`background-image: url(${slikeFormaPrijave});`"
       ></div>
     </div>
   </div>
 </template>
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
+import slikeFormaPrijave from "@/assets/slike/forma-prijave.png"
 </script>

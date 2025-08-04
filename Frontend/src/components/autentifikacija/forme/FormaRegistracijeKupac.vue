@@ -105,13 +105,12 @@
       </div>
       <div
         class="flex-1 bg-indigo-100 text-center bg-cover bg-center hidden lg:flex"
-        style="
-          background-image: url(https://images.unsplash.com/photo-1657288089316-c0350003ca49?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGZhcm0lMjBtYXJrZXR8ZW58MHwxfDB8fHww);
-        "
+        :style="`background-image: url(${slikeFormaRegistracijeKupac});`"
       ></div>
     </div>
   </div>
 </template>
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
+import slikeFormaRegistracijeKupac from "@/assets/slike/forma-registracije-kupac.png"
 </script>

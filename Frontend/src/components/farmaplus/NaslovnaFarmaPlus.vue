@@ -33,7 +33,7 @@
           <a class="font-medium text-gray-900" href="#">Skladištenje i prijevoz</a>
         </div>
         <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Održavanjei dodatne usluge</a>
+          <a class="font-medium text-gray-900" href="#">Održavanje i dodatne usluge</a>
         </div>
         <div class="border-t border-gray-200 pt-4">
           <a class="font-medium text-gray-900" href="#">Prodaja/najam stoke i stočarska pomoć</a>
@@ -42,21 +42,31 @@
     </div>
     <div class="grid grid-cols-2 grid-rows-2 gap-4 sm:gap-6 lg:gap-8">
       <img
-        src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8ZmFybWluZ3xlbnwwfHwwfHx8Mg%3D%3D"
+        :src="slikeFarmaPlusKraveNaslovna"
         class="rounded-lg h-60 w-80 object-cover mx-auto"
+        alt="Slika Krave"
       />
       <img
-        src="https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZhcm1pbmd8ZW58MHx8MHx8fDI%3D"
+        :src="slikeFarmaPlusBranjeZitaNaslovna"
         class="rounded-lg h-60 w-80 object-cover mx-auto"
+        alt="Slika branje žita"
       />
       <img
-        src="https://images.unsplash.com/photo-1627920769842-6887c6df05ca?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGZhcm1pbmd8ZW58MHx8MHx8fDI%3D"
+        :src="slikeFarmaPlusSpricanjeKukuruzaNaslovna"
         class="rounded-lg h-60 w-80 object-cover mx-auto"
+        alt="Slika špricanje kukuruza"
       />
       <img
-        src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGZhcm1pbmd8ZW58MHx8MHx8fDI%3D"
+        :src="slikeFarmaPlusOranjeNaslovna"
         class="rounded-lg h-60 w-80 object-cover mx-auto"
+        alt="Slika oranje"
       />
     </div>
   </div>
 </template>
+<script setup>
+import slikeFarmaPlusKraveNaslovna from "@/assets/slike/farma-plus-krave-naslovna.png"
+import slikeFarmaPlusBranjeZitaNaslovna from "@/assets/slike/farma-plus-branjezita-naslovna.png"
+import slikeFarmaPlusSpricanjeKukuruzaNaslovna from "@/assets/slike/farma-plus-spricanjekukuruza-naslovna.png"
+import slikeFarmaPlusOranjeNaslovna from "@/assets/slike/farma-plus-oranje-naslovna.png"
+</script>
