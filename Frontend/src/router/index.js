@@ -10,12 +10,37 @@ import KosaricaView from "@/views/narudzba/KosaricaView.vue"
 import ZaboravljenaLozinkaView from "@/views/autentifikacija/ZaboravljenaLozinkaView.vue"
 import PregledNarudzbeView from "@/views/narudzba/PregledNarudzbeView.vue"
 import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
+import ProfilKupacView from "@/views/profili/kupac/ProfilKupacView.vue"
+import ProfilKupacNadzornaPlocaView from "@/views/profili/kupac/ProfilKupacNadzornaPlocaView.vue"
+import ProfilKupacMojeNarudzbeView from "@/views/profili/kupac/ProfilKupacMojeNarudzbeView.vue"
+import ProfilKupacPostavkeView from "@/views/profili/kupac/ProfilKupacPostavke.vue"
 
 const routes = [
   {
     name: "pocetna",
     path: "/",
     component: PocetnaView,
+  },
+  {
+    path: "/profil/kupac",
+    component: ProfilKupacView,
+    children: [
+      {
+        path: "",
+        name: "profilKupacNadzornaPloca",
+        component: ProfilKupacNadzornaPlocaView,
+      },
+      {
+        path: "moje-narudzbe",
+        name: "profilKupacMojeNarudzbe",
+        component: ProfilKupacMojeNarudzbeView,
+      },
+      {
+        path: "postavke-profila",
+        name: "profilKupacPostavke",
+        component: ProfilKupacPostavkeView,
+      },
+    ],
   },
   {
     name: "e-trznica",
