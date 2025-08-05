@@ -1,9 +1,11 @@
 <template>
   <section>
-    <div class="flex md:min-h-screen">
-      <ProfilKupacIzbornik />
+    <div class="flex flex-col lg:flex-row min-h-screen">
+      <div class="w-full lg:w-80 bg-white">
+        <ProfilKupacIzbornik />
+      </div>
 
-      <main class="md:flex-1 md:block p-6 hidden">
+      <main class="flex-1 w-full p-4">
         <router-view />
       </main>
     </div>

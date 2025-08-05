@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center items-center p-4 w-full">
-    <div class="sm:w-[60%]">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="w-full px-2 sm:w-[90%] md:w-[80%] lg:w-[60%]">
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <div
           class="p-8 bg-white rounded-md shadow-lg flex flex-col lg:items-start lg:border-b-0 items-center justify-center"
         >

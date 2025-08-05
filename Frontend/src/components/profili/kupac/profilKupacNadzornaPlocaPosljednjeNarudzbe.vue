@@ -2,7 +2,7 @@
   <section>
     <div class="flex justify-center items-center p-5">
       <div class="w-full max-w-7xl rounded-lg overflow-x-auto bg-white shadow-md">
-        <div class="p-10 min-w-[1000px]">
+        <div class="p-4 min-w-full">
           <div class="flex justify-between items-center">
             <div>
               <p class="text-2xl font-bold mb-5">Posljednje narudžbe</p>
@@ -13,7 +13,7 @@
           </div>
         </div>
 
-        <table class="w-full text-left min-w-[1000px]">
+        <table class="w-full text-left">
           <thead>
             <tr>
               <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Naziv OPG-a</th>
