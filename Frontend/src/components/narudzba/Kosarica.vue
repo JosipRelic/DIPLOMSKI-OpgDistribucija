@@ -1,9 +1,11 @@
 <template>
   <section>
-    <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <div
+      class="mx-auto my-12 py-12 max-w-screen-md sm:px-6 max-xl:px-10 sm:py-12 lg:px-8 bg-white rounded-2xl shadow-lg"
+    >
       <div class="mx-auto max-w-3xl">
         <header class="text-center">
-          <h1 class="text-xl font-bold text-gray-900 sm:text-3xl">Košarica</h1>
+          <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Košarica</h1>
         </header>
 
         <div class="mt-8">
@@ -42,7 +44,7 @@
                     min="1"
                     value="1"
                     id="Line3Qty"
-                    class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                    class="h-8 w-12 rounded-sm border border-gray-200 shadow-sm bg-white p-0 text-center text-xs text-gray-900 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </form>
 
@@ -98,7 +100,7 @@
                     min="1"
                     value="1"
                     id="Line3Qty"
-                    class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                    class="h-8 w-12 rounded-sm border border-gray-200 shadow-sm bg-white p-0 text-center text-xs text-gray-900 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </form>
 
@@ -155,7 +157,7 @@
                     min="1"
                     value="1"
                     id="Line3Qty"
-                    class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                    class="h-8 w-12 rounded-sm border border-gray-200 shadow-sm bg-white p-0 text-center text-xs text-gray-900 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </form>
 

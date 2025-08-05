@@ -71,7 +71,11 @@
             <router-link
               :to="{ name: 'profilKupacMojeNarudzbe' }"
               class="group flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-[#223c2f] hover:text-white rounded-lg"
-              :class="{ 'bg-[#223c2f] text-white': $route.name === 'profilKupacMojeNarudzbe' }"
+              :class="{
+                'bg-[#223c2f] text-white':
+                  $route.name === 'profilKupacMojeNarudzbe' ||
+                  $route.name === 'profilKupacMojeNarudzbeDetaljiNarudzbe',
+              }"
             >
               <div class="justify-between">
                 <span class="flex items-center">

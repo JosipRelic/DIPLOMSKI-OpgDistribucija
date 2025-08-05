@@ -5,13 +5,8 @@
         <div class="p-4 min-w-full">
           <div class="flex justify-between items-center">
             <div>
-              <p class="text-2xl font-bold mb-2 ps-4">Posljednje narudžbe</p>
+              <p class="text-2xl font-bold mb-2 ps-4">Sve narudžbe</p>
             </div>
-            <router-link :to="{ name: 'profilKupacMojeNarudzbe' }">
-              <button class="bg-orange-500 text-gray-100 px-8 py-3 rounded-md cursor-pointer">
-                Pogledaj sve narudžbe
-              </button>
-            </router-link>
           </div>
         </div>
 
@@ -66,6 +61,7 @@
                 >
               </td>
             </tr>
+
             <tr>
               <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
@@ -226,6 +222,126 @@
               </td>
             </tr>
             <tr>
+              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+                <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
+                  >OPG Marić</a
+                >
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">32.99 €</td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
+                15.07.2025. 12:32:52
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+                <span
+                  class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="-ms-1 me-1.5 size-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+
+                  <p class="text-sm whitespace-nowrap">Isporučeno</p>
+                </span>
+              </td>
+              <td
+                class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
+              >
+                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                  >Detalji</router-link
+                >
+              </td>
+            </tr>
+            <tr>
+              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+                <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
+                  >OPG Marić</a
+                >
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">32.99 €</td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
+                15.07.2025. 12:32:52
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+                <span
+                  class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="-ms-1 me-1.5 size-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+
+                  <p class="text-sm whitespace-nowrap">Isporučeno</p>
+                </span>
+              </td>
+              <td
+                class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
+              >
+                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                  >Detalji</router-link
+                >
+              </td>
+            </tr>
+            <tr>
+              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+                <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
+                  >OPG Marić</a
+                >
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">32.99 €</td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
+                15.07.2025. 12:32:52
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+                <span
+                  class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="-ms-1 me-1.5 size-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+
+                  <p class="text-sm whitespace-nowrap">Isporučeno</p>
+                </span>
+              </td>
+              <td
+                class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
+              >
+                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                  >Detalji</router-link
+                >
+              </td>
+            </tr>
+            <tr>
               <td class="px-8 py-5 w-[25%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
@@ -263,6 +379,27 @@
             </tr>
           </tbody>
         </table>
+        <div class="flex items-center p-5 justify-center min-w-full">
+          <div class="flex border border-gray-200 shadow rounded-md">
+            <button
+              class="text-black border-r border-gray-200 font-semibold px-4 py-2 cursor-pointer"
+            >
+              Prethodna
+            </button>
+            <div class="flex space-x-2">
+              <button class="px-4 py-2 bg-orange-500 text-white">1</button>
+              <button class="px-4 py-2">2</button>
+              <button class="px-4 py-2">3</button>
+              <button class="px-4 py-2 max-sm:hidden">4</button>
+              <button class="px-4 py-2 max-sm:hidden">5</button>
+            </div>
+            <button
+              class="text-black border-l border-gray-200 font-semibold px-4 py-2 cursor-pointer"
+            >
+              Sljedeća
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>

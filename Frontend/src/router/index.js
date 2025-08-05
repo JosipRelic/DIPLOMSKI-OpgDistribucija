@@ -13,7 +13,8 @@ import PotvrdaNarudzbeView from "@/views/narudzba/PotvrdaNarudzbeView.vue"
 import ProfilKupacView from "@/views/profili/kupac/ProfilKupacView.vue"
 import ProfilKupacNadzornaPlocaView from "@/views/profili/kupac/ProfilKupacNadzornaPlocaView.vue"
 import ProfilKupacMojeNarudzbeView from "@/views/profili/kupac/ProfilKupacMojeNarudzbeView.vue"
-import ProfilKupacPostavkeView from "@/views/profili/kupac/ProfilKupacPostavke.vue"
+import ProfilKupacPostavkeView from "@/views/profili/kupac/ProfilKupacPostavkeView.vue"
+import ProfilKupacMojeNarudzbeDetaljiNarudzbeView from "@/views/profili/kupac/ProfilKupacMojeNarudzbeDetaljiNarudzbeView.vue"
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
         path: "moje-narudzbe",
         name: "profilKupacMojeNarudzbe",
         component: ProfilKupacMojeNarudzbeView,
+      },
+      {
+        path: "moje-narudzbe/detalji-narudzbe",
+        name: "profilKupacMojeNarudzbeDetaljiNarudzbe",
+        component: ProfilKupacMojeNarudzbeDetaljiNarudzbeView,
       },
       {
         path: "postavke-profila",

@@ -12,5 +12,5 @@
   </section>
 </template>
 <script setup>
-import ProfilKupacIzbornik from "@/components/profili/kupac/profilKupacIzbornik.vue"
+import ProfilKupacIzbornik from "@/components/profili/kupac/ProfilKupacIzbornik.vue"
 </script>
