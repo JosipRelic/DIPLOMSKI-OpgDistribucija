@@ -15,6 +15,14 @@ import ProfilKupacNadzornaPlocaView from "@/views/profili/kupac/ProfilKupacNadzo
 import ProfilKupacMojeNarudzbeView from "@/views/profili/kupac/ProfilKupacMojeNarudzbeView.vue"
 import ProfilKupacPostavkeView from "@/views/profili/kupac/ProfilKupacPostavkeView.vue"
 import ProfilKupacMojeNarudzbeDetaljiNarudzbeView from "@/views/profili/kupac/ProfilKupacMojeNarudzbeDetaljiNarudzbeView.vue"
+import ProfilOpgView from "@/views/profili/opg/ProfilOpgView.vue"
+import ProfilOpgNadzornaPlocaView from "@/views/profili/opg/ProfilOpgNadzornaPlocaView.vue"
+import ProfilOpgPrimljeneNarudzbeView from "@/views/profili/opg/ProfilOpgPrimljeneNarudzbeView.vue"
+import ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView from "@/views/profili/opg/ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView.vue"
+import ProfilOpgPostavkeView from "@/views/profili/opg/ProfilOpgPostavkeView.vue"
+import ProfilOpgPonudaETrznicaView from "@/views/profili/opg/ProfilOpgPonudaETrznicaView.vue"
+import ProfilOpgPonudaFarmaPlusView from "@/views/profili/opg/ProfilOpgPonudaFarmaPlusView.vue"
+import ProfilOpgDetaljiKupcaView from "@/views/profili/opg/ProfilOpgDetaljiKupcaView.vue"
 
 const routes = [
   {
@@ -45,6 +53,47 @@ const routes = [
         path: "postavke-profila",
         name: "profilKupacPostavke",
         component: ProfilKupacPostavkeView,
+      },
+    ],
+  },
+  {
+    path: "/profil/opg",
+    component: ProfilOpgView,
+    children: [
+      {
+        path: "",
+        name: "profilOpgNadzornaPloca",
+        component: ProfilOpgNadzornaPlocaView,
+      },
+      {
+        path: "primljene-narudzbe",
+        name: "profilOpgPrimljeneNarudzbe",
+        component: ProfilOpgPrimljeneNarudzbeView,
+      },
+      {
+        path: "primljene-narudzbe/detalji-narudzbe",
+        name: "profilOpgPrimljeneNarudzbeDetaljiNarudzbe",
+        component: ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView,
+      },
+      {
+        path: "postavke-profila",
+        name: "profilOpgPostavke",
+        component: ProfilOpgPostavkeView,
+      },
+      {
+        path: "ponuda-etrznica",
+        name: "profilOpgPonudaETrznica",
+        component: ProfilOpgPonudaETrznicaView,
+      },
+      {
+        path: "ponuda-farmaplus",
+        name: "profilOpgPonudaFarmaPlus",
+        component: ProfilOpgPonudaFarmaPlusView,
+      },
+      {
+        path: "detalji-kupca",
+        name: "profilOpgDetaljiKupca",
+        component: ProfilOpgDetaljiKupcaView,
       },
     ],
   },
