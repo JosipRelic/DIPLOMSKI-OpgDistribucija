@@ -1,1 +1,1 @@
-<template>Ponuda E-tržnica</template>
+<template>Dodati listu svih kategorija i proizvoda</template>
