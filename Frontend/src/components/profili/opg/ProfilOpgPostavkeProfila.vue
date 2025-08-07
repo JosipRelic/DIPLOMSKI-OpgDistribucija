@@ -42,7 +42,7 @@
                   type="text"
                   name="ime"
                   id="ime"
-                  value="Ivan"
+                  value="Hrvoje"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
                 />
               </div>
@@ -55,7 +55,37 @@
                   type="text"
                   name="prezime"
                   id="prezime"
-                  value="Horvat"
+                  value="Babić"
+                  class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="nazivOPG" class="block text-sm/6 font-medium text-gray-900"
+                >Naziv OPG-a</label
+              >
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="nazivOPG"
+                  id="NazivOPG"
+                  value="OPG Babić"
+                  class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                />
+              </div>
+            </div>
+
+            <div class="sm:col-span-3">
+              <label for="prezime" class="block text-sm/6 font-medium text-gray-900"
+                >Identifikacijski broj PG-a (MIBPG)</label
+              >
+              <div class="mt-2">
+                <input
+                  type="number"
+                  name="mibpg"
+                  id="mibpg"
+                  value="241234"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
                 />
               </div>

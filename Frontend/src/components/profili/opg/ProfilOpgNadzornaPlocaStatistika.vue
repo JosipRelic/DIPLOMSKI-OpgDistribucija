@@ -9,7 +9,7 @@
             <span class="text-gray-500 font-bold">Ukupno zaprimljenih narudžbi</span>
           </div>
           <router-link
-            :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
+            :to="{ name: 'profilOpgPrimljeneNarudzbe' }"
             class="text-2xl font-bold text-orange-600 hover:text-orange-900"
             >32</router-link
           >

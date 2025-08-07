@@ -18,25 +18,29 @@
         <table class="w-full text-left">
           <thead>
             <tr>
-              <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Naziv OPG-a</th>
-              <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Ukupan iznos</th>
-              <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Datum i vrijeme narudžbe</th>
+              <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Naziv OPG-a</th>
+              <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Broj narudžbe</th>
+              <th class="px-8 py-3 border-b border-gray-300 w-[15%]">Ukupan iznos</th>
+              <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Datum i vrijeme narudžbe</th>
               <th class="px-8 py-3 border-b border-gray-300 w-[10%]">Status</th>
-              <th class="px-8 py-3 border-b border-gray-300 w-[20%]"></th>
+              <th class="px-8 py-3 border-b border-gray-300 w-[10%]"></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">23.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">23.99 €</td>
               <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
                 15.07.2025. 12:32:52
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-red-600 px-2.5 py-0.5 text-red-100"
                 >
@@ -67,16 +71,19 @@
               </td>
             </tr>
             <tr>
-              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">52.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">52.99 €</td>
               <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
                 15.07.2025. 12:32:52
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-amber-500 px-2.5 py-0.5 text-amber-100"
                 >
@@ -105,16 +112,19 @@
               </td>
             </tr>
             <tr>
-              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">12.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">12.99 €</td>
               <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
                 15.07.2025. 12:32:52
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
                 >
@@ -145,16 +155,19 @@
               </td>
             </tr>
             <tr>
-              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">16.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">16.99 €</td>
               <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
                 15.07.2025. 12:32:52
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
                 >
@@ -186,16 +199,19 @@
             </tr>
 
             <tr>
-              <td class="px-8 py-5 border-b border-gray-200 w-[25%]">
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">32.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">32.99 €</td>
               <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[25%]">
                 15.07.2025. 12:32:52
               </td>
-              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
                 >
@@ -226,14 +242,17 @@
               </td>
             </tr>
             <tr>
-              <td class="px-8 py-5 w-[25%]">
+              <td class="px-8 py-5 w-[20%]">
                 <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
                   >OPG Marić</a
                 >
               </td>
-              <td class="px-8 py-5 text-gray-500 w-[25%]">18.99 €</td>
+              <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
+                <p class="text-gray-500">#234521</p>
+              </td>
+              <td class="px-8 py-5 text-gray-500 w-[15%]">18.99 €</td>
               <td class="px-8 py-5 text-gray-500 w-[25%]">15.07.2025. 12:32:52</td>
-              <td class="px-8 py-5 text-gray-500 w-[15%]">
+              <td class="px-8 py-5 text-gray-500 w-[10%]">
                 <span
                   class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700"
                 >

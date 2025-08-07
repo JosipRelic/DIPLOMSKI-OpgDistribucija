@@ -88,6 +88,3 @@
     </div>
   </div>
 </template>
-<script setup>
-import slikePotvrdaNarudzbe from "@/assets/slike/potvrda-narudzbe.png"
-</script>
