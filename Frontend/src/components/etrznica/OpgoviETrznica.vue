@@ -11,27 +11,44 @@
       </p>
     </header>
 
-    <div class="mt-8 block lg:hidden">
-      <button
-        class="flex cursor-pointer items-center gap-2 border-b border-gray-400 pb-1 text-gray-900 transition hover:border-gray-600"
-      >
-        <span class="text-sm font-medium"> Filtriraj i Sortiraj </span>
+    <div class="mt-4 lg:mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="space-y-4">
+        <div>
+          <label for="PretragaProizvoda">
+            <span class="block text-xs font-medium text-gray-700"> Pretraži po nazivu </span>
 
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-4 rtl:rotate-180"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-    </div>
+            <div class="relative">
+              <input
+                type="text"
+                id="PretragaProizvoda"
+                class="mt-0.5 w-full h-10 rounded border-gray-300 pe-10 shadow-sm sm:text-sm bg-white p-3"
+              />
 
-    <div class="mt-4 lg:mt-8 lg:grid lg:grid-cols-4 lg:items-start lg:gap-8">
-      <div class="hidden space-y-4 lg:block">
+              <span class="absolute inset-y-0 right-2 grid w-8 place-content-center">
+                <button
+                  type="button"
+                  aria-label="Submit"
+                  class="rounded-full p-1.5 text-gray-700 transition-colors hover:bg-gray-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+                </button>
+              </span>
+            </div>
+          </label>
+        </div>
         <div>
           <label for="Sortiraj" class="block text-xs font-medium text-gray-700"> Sortiraj </label>
 
@@ -606,43 +623,6 @@
               </div>
             </details>
           </div>
-        </div>
-
-        <div>
-          <label for="PretragaProizvoda">
-            <span class="block text-xs font-medium text-gray-700"> Pretraži po nazivu </span>
-
-            <div class="relative">
-              <input
-                type="text"
-                id="PretragaProizvoda"
-                class="mt-0.5 w-full h-10 rounded border-gray-300 pe-10 shadow-sm sm:text-sm bg-white p-3"
-              />
-
-              <span class="absolute inset-y-0 right-2 grid w-8 place-content-center">
-                <button
-                  type="button"
-                  aria-label="Submit"
-                  class="rounded-full p-1.5 text-gray-700 transition-colors hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-4"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                    />
-                  </svg>
-                </button>
-              </span>
-            </div>
-          </label>
         </div>
       </div>
 

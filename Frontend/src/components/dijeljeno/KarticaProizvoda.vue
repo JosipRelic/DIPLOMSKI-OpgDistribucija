@@ -1,6 +1,6 @@
 <template>
-  <a
-    href="#"
+  <router-link
+    :to="{ name: 'krastavci' }"
     class="group relative block rounded-tr-3xl border border-gray-100 flex flex-col h-full"
   >
     <span
@@ -60,7 +60,7 @@
         Dodaj u košaricu
       </span>
     </div>
-  </a>
+  </router-link>
 
   <a
     href="#"

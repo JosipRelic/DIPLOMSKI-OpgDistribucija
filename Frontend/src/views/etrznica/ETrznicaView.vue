@@ -73,7 +73,7 @@
   </section>
 
   <section>
-    <ProizvodiETrznica />
+    <KategorijeProizvodaETrznica />
   </section>
 
   <section>
@@ -103,7 +103,7 @@
 </template>
 <script setup>
 import NaslovnaEtrznica from "@/components/etrznica/NaslovnaETrznica.vue"
-import ProizvodiETrznica from "@/components/etrznica/ProizvodiETrznica.vue"
+import KategorijeProizvodaETrznica from "@/components/etrznica/KategorijeProizvodaETrznica.vue"
 import OpgoviETrznica from "@/components/etrznica/OpgoviETrznica.vue"
 
 const dummy_podaci = [

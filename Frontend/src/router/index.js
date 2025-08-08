@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import PocetnaView from "@/views/PocetnaView.vue"
-import ETrznicaView from "@/views/ETrznicaView.vue"
+import ETrznicaView from "@/views/etrznica/ETrznicaView.vue"
 import FarmaPlusView from "@/views/FarmaPlusView.vue"
 import RegistracijaOPGView from "@/views/autentifikacija/RegistracijaOPGView.vue"
 import RegistracijaKupacView from "@/views/autentifikacija/RegistracijaKupacView.vue"
@@ -23,6 +23,18 @@ import ProfilOpgPostavkeView from "@/views/profili/opg/ProfilOpgPostavkeView.vue
 import ProfilOpgPonudaETrznicaView from "@/views/profili/opg/ProfilOpgPonudaETrznicaView.vue"
 import ProfilOpgPonudaFarmaPlusView from "@/views/profili/opg/ProfilOpgPonudaFarmaPlusView.vue"
 import ProfilOpgDetaljiKupcaView from "@/views/profili/opg/ProfilOpgDetaljiKupcaView.vue"
+import ETrznicaKategorijaProizvodaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaView.vue"
+import ETrznicaKategorijaProizvodaDomaceVoceView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaDomaceVoceView.vue"
+import ETrznicaKategorijaProizvodaSezonskoPovrceView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaSezonskoPovrceView.vue"
+import ETrznicaKategorijaProizvodaJajaiMlijecniProizvodiView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaJajaiMlijecniProizvodiView.vue"
+import ETrznicaKategorijaProizvodaIzKosniceView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaIzKosniceView.vue"
+import ETrznicaKategorijaProizvodaPicaiRakijeView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaPicaiRakijeView.vue"
+import ETrznicaKategorijaProizvodaUljaizPrirodeView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaUljaizPrirodeView.vue"
+import ETrznicaKategorijaProizvodaCajeviZacinskoBiljeView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaCajeviZacinskoBiljeView.vue"
+import ETrznicaKategorijaProizvodaSuhomesnatoView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaSuhomesnatoView.vue"
+import ETrznicaKategorijaProizvodaPrirodnaKozmetikaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaPrirodnaKozmetikaView.vue"
+import ETrznicaKategorijaProizvodaIzSumeiDvoristaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaIzSumeiDvoristaView.vue"
+import ProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ProizvodDetaljiView.vue"
 
 const routes = [
   {
@@ -36,6 +48,10 @@ const routes = [
     children: [
       {
         path: "",
+        redirect: { name: "profilKupacNadzornaPloca" },
+      },
+      {
+        path: "nadzorna-ploca",
         name: "profilKupacNadzornaPloca",
         component: ProfilKupacNadzornaPlocaView,
       },
@@ -62,6 +78,10 @@ const routes = [
     children: [
       {
         path: "",
+        redirect: { name: "profilOpgNadzornaPloca" },
+      },
+      {
+        path: "nadzorna-ploca",
         name: "profilOpgNadzornaPloca",
         component: ProfilOpgNadzornaPlocaView,
       },
@@ -102,6 +122,72 @@ const routes = [
     path: "/e-trznica",
     component: ETrznicaView,
   },
+  {
+    path: "/e-trznica/kategorija-proizvoda",
+    component: ETrznicaKategorijaProizvodaView,
+    children: [
+      {
+        path: "",
+        redirect: { name: "e-trznica" },
+      },
+      {
+        name: "ETrznicaKategorijaDomaceVoce",
+        path: "domace-voce",
+        component: ETrznicaKategorijaProizvodaDomaceVoceView,
+      },
+      {
+        name: "ETrznicaKategorijaSezonskoPovrce",
+        path: "sezonsko-povrce",
+        component: ETrznicaKategorijaProizvodaSezonskoPovrceView,
+      },
+      {
+        name: "ETrznicaKategorijaJajaiMlijecniProizvodi",
+        path: "jaja-i-mlijecni-proizvodi",
+        component: ETrznicaKategorijaProizvodaJajaiMlijecniProizvodiView,
+      },
+      {
+        name: "ETrznicaKategorijaIzKosnice",
+        path: "iz-kosnice",
+        component: ETrznicaKategorijaProizvodaIzKosniceView,
+      },
+      {
+        name: "ETrznicaKategorijaPicaiRakije",
+        path: "pica-i-rakije",
+        component: ETrznicaKategorijaProizvodaPicaiRakijeView,
+      },
+      {
+        name: "ETrznicaKategorijaUljaizPrirode",
+        path: "ulja-iz-prirode",
+        component: ETrznicaKategorijaProizvodaUljaizPrirodeView,
+      },
+      {
+        name: "ETrznicaKategorijaCajeviZacinskoBilje",
+        path: "cajevi-i-zacinsko-bilje",
+        component: ETrznicaKategorijaProizvodaCajeviZacinskoBiljeView,
+      },
+      {
+        name: "ETrznicaKategorijaSuhomesnato",
+        path: "suhomesnati-proizvodi",
+        component: ETrznicaKategorijaProizvodaSuhomesnatoView,
+      },
+      {
+        name: "ETrznicaKategorijaPrirodnaKozmetika",
+        path: "prirodna-kozmetika",
+        component: ETrznicaKategorijaProizvodaPrirodnaKozmetikaView,
+      },
+      {
+        name: "ETrznicaKategorijaIzSumeiDvorista",
+        path: "iz-sume-i-dvorista",
+        component: ETrznicaKategorijaProizvodaIzSumeiDvoristaView,
+      },
+    ],
+  },
+  {
+    name: "krastavci",
+    path: "/e-trznica/kategorija-proizvoda/sezonsko-povrce/krastavci",
+    component: ProizvodDetaljiView,
+  },
+
   {
     name: "farmaPlus",
     path: "/farma-plus",
