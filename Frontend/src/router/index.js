@@ -105,6 +105,7 @@ const routes = [
         name: "profilOpgPonudaETrznica",
         component: ProfilOpgPonudaETrznicaView,
       },
+
       {
         path: "ponuda-farmaplus",
         name: "profilOpgPonudaFarmaPlus",
@@ -117,6 +118,7 @@ const routes = [
       },
     ],
   },
+
   {
     name: "e-trznica",
     path: "/e-trznica",

@@ -220,6 +220,14 @@
                 />
               </div>
             </div>
+            <div class="sm:col-span-full">
+              <label class="block text-sm font-medium">Opis</label>
+              <textarea
+                rows="5"
+                class="block mt-2 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                placeholder="Opiši svoj OPG..."
+              ></textarea>
+            </div>
           </div>
         </div>
       </div>

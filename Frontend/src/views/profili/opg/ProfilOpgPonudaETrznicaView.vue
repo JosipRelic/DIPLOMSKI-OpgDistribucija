@@ -65,6 +65,7 @@
 
     <div
       class="relative overflow-x-auto m-4 shadow-md rounded-lg bg-white p-4 flex items-center gap-2 cursor-pointer hover:bg-gray-100"
+      @click="otvoriFormuZaDodavanjeProizvoda"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 32 32">
         <g fill="none">
@@ -102,9 +103,155 @@
           </defs>
         </g>
       </svg>
-      <P class="text-gray-600 rounded-full text-base font-medium">Dodaj novi proizvod</P>
+      <p class="text-gray-900 rounded-full text-base font-medium">
+        {{
+          formaZaDodavanjeProizvodaOtvorena
+            ? "Dodaj informacije o proizvodu"
+            : "Dodaj novi proizovod"
+        }}
+      </p>
     </div>
+    <form
+      v-if="formaZaDodavanjeProizvodaOtvorena"
+      class="p-4 rounded-lg shadow-md bg-white space-y-4 m-4"
+    >
+      <div class="flex items-center gap-x-4 justify-center py-2">
+        <div class="relative w-20 h-20 group cursor-pointer">
+          <input
+            ref="odabranaSlikaProizvoda"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="promjenaSlike"
+          />
 
+          <img
+            :src="slikaProizvoda"
+            alt="Slika proizvoda"
+            class="w-full h-full object-cover rounded-lg transition duration-300"
+            @click="odabirSlikeproizvoda"
+          />
+
+          <div
+            class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300"
+            @click="odabirSlikeproizvoda"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M15.232 5.232l3.536 3.536M9 13l6.768-6.768a2 2 0 112.828 2.828L11.828 16H9v-2.828z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <p class="block text-sm font-medium">Dodajte sliku proizvoda</p>
+      </div>
+
+      <div class="flex flex-col items-center mt-2">
+        <button
+          class="w-full max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-2 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+        >
+          <div class="bg-white p-2 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 text-red-600">
+              <path
+                fill="currentColor"
+                d="m20.713 7.128l-.246.566a.506.506 0 0 1-.934 0l-.246-.566a4.36 4.36 0 0 0-2.22-2.25l-.759-.339a.53.53 0 0 1 0-.963l.717-.319A4.37 4.37 0 0 0 19.276.931L19.53.32a.506.506 0 0 1 .942 0l.253.61a4.37 4.37 0 0 0 2.25 2.327l.718.32a.53.53 0 0 1 0 .962l-.76.338a4.36 4.36 0 0 0-2.219 2.251M8.5 6h-2v12h2zM4 10H2v4h2zm9-8h-2v20h2zm4.5 6h-2v10h2zm4.5 2h-2v4h2z"
+              />
+            </svg>
+          </div>
+          <span class="ml-4"> Ispunite glasovno pomoću AI </span>
+        </button>
+        <small class="pt-2 w-full max-w-xs text-xs"
+          >Pritisnite gumb i popunite obrazac glasom npr. "Svježi krastavci s naših polja po cijeni
+          od 2 eura po kg..."</small
+        >
+      </div>
+      <div class="border-b text-center">
+        <div
+          class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2"
+        >
+          ili unesite podatke ručno
+        </div>
+      </div>
+      <div>
+        <label for="kategorijeProizvoda" class="block mb-2 text-sm font-medium text-gray-900"
+          >Odaberi kategoriju proizvoda</label
+        >
+        <select
+          id="countries"
+          class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+        >
+          <option>Domaće voće</option>
+          <option>Sezonsko povrće</option>
+          <option>Jaja i mliječni proizvodi</option>
+          <option>Iz košnice</option>
+          <option>Domaća pića i rakije</option>
+          <option>Ulja iz prirode</option>
+          <option>Čajevi i začinsko bilje</option>
+          <option>Suhomesnati proizvodi</option>
+          <option>Prirodna kozmetika</option>
+          <option>Iz šume i dvorišta</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Proizvod</label>
+        <input
+          type="text"
+          class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+          placeholder="Upiši naziv proizvoda..."
+        />
+      </div>
+      <div>
+        <label for="kategorijeProizvoda" class="block mb-2 text-sm font-medium text-gray-900"
+          >Odaberi mjernu jedinicu proizvoda</label
+        >
+        <select
+          id="countries"
+          class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+        >
+          <option>kom</option>
+          <option>kg</option>
+          <option>g</option>
+          <option>ml</option>
+          <option>l</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Cijena</label>
+        <div class="flex items-center">
+          <input
+            type="number"
+            class="mt-1 w-xs rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+            placeholder="Upiši cijenu proizvoda npr. 3.99"
+          />
+          <p class="ms-2 text-xl">€</p>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Opis</label>
+        <textarea
+          rows="5"
+          class="mt-1 w-full rounded-md bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+          placeholder="Upiši opis proizvoda..."
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="bg-teal-600 text-gray-100 px-4 py-2 rounded-xl hover:bg-teal-900 transition"
+      >
+        Dodaj proizvod
+      </button>
+    </form>
     <table class="w-full text-sm text-left rtl:text-right text-gray-500">
       <thead class="text-xs uppercase bg-gray-200 text-gray-700">
         <tr>
@@ -272,3 +419,31 @@ Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata 
     </table>
   </div>
 </template>
+<script setup>
+import { ref } from "vue"
+const formaZaDodavanjeProizvodaOtvorena = ref(false)
+const otvoriFormuZaDodavanjeProizvoda = () => {
+  formaZaDodavanjeProizvodaOtvorena.value = !formaZaDodavanjeProizvodaOtvorena.value
+}
+
+const slikaProizvoda = ref(
+  "https://images.unsplash.com/photo-1675162113465-a3609eedc50d?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTB8fG5vJTIwaW1hZ2V8ZW58MHx8MHx8fDI%3D",
+)
+
+const odabranaSlikaProizvoda = ref(null)
+
+const odabirSlikeproizvoda = () => {
+  odabranaSlikaProizvoda.value?.click()
+}
+
+const promjenaSlike = (event) => {
+  const slika = event.target.files[0]
+  if (slika) {
+    const ucitavanjeSlike = new FileReader()
+    ucitavanjeSlike.onload = (e) => {
+      slikaProizvoda.value = e.target.result
+    }
+    ucitavanjeSlike.readAsDataURL(slika)
+  }
+}
+</script>
