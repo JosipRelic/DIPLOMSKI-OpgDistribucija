@@ -35,6 +35,7 @@ import ETrznicaKategorijaProizvodaSuhomesnatoView from "@/views/etrznica/kategor
 import ETrznicaKategorijaProizvodaPrirodnaKozmetikaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaPrirodnaKozmetikaView.vue"
 import ETrznicaKategorijaProizvodaIzSumeiDvoristaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaIzSumeiDvoristaView.vue"
 import ProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ProizvodDetaljiView.vue"
+import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vue"
 
 const routes = [
   {
@@ -123,6 +124,11 @@ const routes = [
     name: "e-trznica",
     path: "/e-trznica",
     component: ETrznicaView,
+  },
+  {
+    name: "ETrznicaDetaljiOPGa",
+    path: "/e-trznica/detalji-opga",
+    component: ETrznicaDetaljiOPGaView,
   },
   {
     path: "/e-trznica/kategorija-proizvoda",

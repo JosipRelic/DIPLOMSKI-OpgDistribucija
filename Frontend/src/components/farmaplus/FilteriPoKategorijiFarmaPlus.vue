@@ -133,7 +133,7 @@
         <div
           class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 px-20 py-8 mb-14"
         >
-          <KarticaOPGa />
+          <KarticaUsluge />
 
           <PaginacijaETrznica />
         </div>
@@ -142,6 +142,6 @@
   </div>
 </template>
 <script setup>
-import KarticaOPGa from "@/components/dijeljeno/KarticaOPGa.vue"
+import KarticaUsluge from "../dijeljeno/KarticaUsluge.vue"
 import PaginacijaETrznica from "@/components/etrznica/PaginacijaETrznica.vue"
 </script>

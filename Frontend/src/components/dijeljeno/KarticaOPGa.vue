@@ -1,12 +1,12 @@
 <template>
-  <a href="#" class="block group">
+  <router-link :to="{ name: 'ETrznicaDetaljiOPGa' }" class="block group shadow-xl rounded-bl-xl">
     <img
       alt=""
       src="https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       class="h-56 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-72 transition duration-500 group-hover:scale-105"
     />
 
-    <div class="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+    <div class="mt-4 flex items-center justify-center gap-4 px-4">
       <strong
         class="font-medium text-gray-900 hover:text-gray-500 transition duration-500 group-hover:scale-105"
         >Opg Jurić</strong
@@ -73,17 +73,19 @@
         <p class="ms-1 text-sm font-medium text-gray-500 hover:underline">5.00 (839)</p>
       </div>
     </div>
-    <p class="mt-1 flex justify-center text-pretty text-gray-700">Nikole Mikca 34, 44000 Sisak</p>
-  </a>
+    <p class="mt-2 mb-4 flex justify-center text-center text-pretty text-gray-700">
+      Nikole Mikca 34, 44000 Sisak
+    </p>
+  </router-link>
 
-  <a href="#" class="block group">
+  <router-link :to="{ name: 'ETrznicaDetaljiOPGa' }" class="block group shadow-xl rounded-bl-xl">
     <img
       alt=""
       src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=1742&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       class="h-56 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-72 transition duration-500 group-hover:scale-105"
     />
 
-    <div class="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+    <div class="mt-4 flex items-center justify-center gap-4 px-4">
       <strong
         class="font-medium text-gray-900 hover:text-gray-400 transition duration-500 group-hover:scale-105"
         >Opg Horvat</strong
@@ -150,19 +152,19 @@
         <p class="ms-1 text-sm font-medium text-gray-500 hover:underline">4.95 (520)</p>
       </div>
     </div>
-    <p class="mt-1 flex justify-center text-pretty text-gray-700">
+    <p class="mt-2 mb-4 flex justify-center text-center text-pretty text-gray-700">
       Ljudevita Posavskog 27, 43500 Daruvar
     </p>
-  </a>
+  </router-link>
 
-  <a href="#" class="block group">
+  <router-link :to="{ name: 'ETrznicaDetaljiOPGa' }" class="block group shadow-xl rounded-bl-xl">
     <img
       alt=""
       src="https://images.unsplash.com/photo-1610385272823-add81c4520eb?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       class="h-56 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-72 transition duration-500 group-hover:scale-105"
     />
 
-    <div class="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+    <div class="mt-4 flex items-center justify-center gap-4 px-4">
       <strong
         class="font-medium text-gray-900 hover:text-gray-500 transition duration-500 group-hover:scale-105"
         >Opg Marić</strong
@@ -229,17 +231,19 @@
         <p class="ms-1 text-sm font-medium text-gray-500 hover:underline">4.80 (421)</p>
       </div>
     </div>
-    <p class="mt-1 flex justify-center text-pretty text-gray-700">Zagrebačka 23, 44330 Novska</p>
-  </a>
+    <p class="mt-2 mb-4 flex justify-center text-center text-pretty text-gray-700">
+      Zagrebačka 23, 44330 Novska
+    </p>
+  </router-link>
 
-  <a href="#" class="block group">
+  <router-link :to="{ name: 'ETrznicaDetaljiOPGa' }" class="block group shadow-xl rounded-bl-xl">
     <img
       alt=""
       src="https://images.unsplash.com/photo-1427434846691-47fc561d1179?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
       class="h-56 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-72 transition duration-500 group-hover:scale-105"
     />
 
-    <div class="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+    <div class="mt-4 flex items-center justify-center gap-4 px-4">
       <strong
         class="font-medium text-gray-900 hover:text-gray-500 transition duration-500 group-hover:scale-105"
         >Opg Novak</strong
@@ -306,8 +310,8 @@
         <p class="ms-1 text-sm font-medium text-gray-500 hover:underline">4.70 (230)</p>
       </div>
     </div>
-    <p class="mt-1 flex justify-center text-pretty text-gray-700">
+    <p class="mt-2 mb-4 flex justify-center text-center text-pretty text-gray-700">
       Petra Preradovića 2, 44334 Kutina
     </p>
-  </a>
+  </router-link>
 </template>
