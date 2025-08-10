@@ -29,8 +29,11 @@
           <tbody>
             <tr>
               <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
-                <a class="text-orange-600 hover:text-orange-900 hover:underline" href="#"
-                  >OPG Marić</a
+                <router-link
+                  :to="{ name: 'ETrznicaDetaljiOPGa' }"
+                  class="text-orange-600 hover:text-orange-900 hover:underline"
+                  href="#"
+                  >OPG Marić</router-link
                 >
               </td>
               <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
