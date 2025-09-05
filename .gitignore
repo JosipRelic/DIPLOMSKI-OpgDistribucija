@@ -11,8 +11,10 @@ Frontend/.vscode/
 Frontend/.idea/
 Frontend/*.swp
 
+
 # BACKEND (FastAPI + Python)
-Backend/__pycache__/
+__pycache__/
+*.py[cod]
 Backend/.mypy_cache/
 Backend/.pytest_cache/
 Backend/.env

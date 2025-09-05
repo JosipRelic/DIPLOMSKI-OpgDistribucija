@@ -9,7 +9,7 @@
         </div>
         <div class="mt-12 flex flex-col items-center">
           <h1 class="text-2xl xl:text-3xl font-extrabold">Prijava</h1>
-          <div class="w-full flex-1 mt-8">
+          <form class="w-full flex-1 mt-8" @submit.prevent="posaljiPodatkeZaPrijavu">
             <div class="flex flex-col items-center">
               <button
                 class="w-full max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-3 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
@@ -45,18 +45,22 @@
             <div class="mx-auto max-w-xs">
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                type="email"
-                placeholder="Email"
+                type="text"
+                placeholder="Email ili korisničko ime"
+                v-model="email_ili_korisnicko_ime"
               />
 
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="password"
                 placeholder="Lozinka"
+                v-model="lozinka"
               />
 
               <button
                 class="mt-5 tracking-wide font-semibold bg-teal-600 hover:bg-teal-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                type="submit"
+                :disabled="autentifikacija.loading"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 16 17">
                   <g fill="currentColor" fill-rule="evenodd">
@@ -68,8 +72,11 @@
                     />
                   </g>
                 </svg>
-                <span class="ml-3"> Prijava </span>
+                <span class="ml-3">
+                  {{ autentifikacija.loading ? "Prijavljujem..." : "Prijava" }}
+                </span>
               </button>
+              <p v-if="autentifikacija.error" class="text-red-600">{{ autentifikacija.error }}</p>
               <p class="mt-6 text-sm text-gray-800 text-center">
                 <router-link
                   :to="{ name: 'zaboravljenaLozinka' }"
@@ -79,7 +86,7 @@
                 </router-link>
               </p>
             </div>
-          </div>
+          </form>
         </div>
       </div>
       <div
@@ -92,4 +99,23 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaPrijave from "@/assets/slike/forma-prijave.png"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+
+const email_ili_korisnicko_ime = ref("")
+const lozinka = ref("")
+const autentifikacija = useAutentifikacijskiStore()
+const router = useRouter()
+
+const posaljiPodatkeZaPrijavu = async () => {
+  const ok = await autentifikacija.prijava({
+    email_ili_korisnicko_ime: email_ili_korisnicko_ime.value,
+    lozinka: lozinka.value,
+  })
+
+  if (ok) {
+    router.push({ name: "profilKupacNadzornaPloca" })
+  }
+}
 </script>

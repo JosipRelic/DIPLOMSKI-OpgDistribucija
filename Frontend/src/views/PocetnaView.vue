@@ -101,22 +101,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
-import axios from "axios"
 import slikeCoverPocetna from "@/assets/slike/cover-pocetna.jpg"
 import NaslovnaPocetna from "@/components/pocetna/NaslovnaPocetna.vue"
 import KarticaProizvoda from "@/components/dijeljeno/KarticaProizvoda.vue"
 import KarticaOPGa from "@/components/dijeljeno/KarticaOPGa.vue"
 import FarmaPlusSekcija from "@/components/pocetna/FarmaPlusSekcija.vue"
-
-const test_podaci_iz_baze = ref([])
-
-onMounted(async () => {
-  try {
-    const response = await axios.get("http://localhost:8000/")
-    test_podaci_iz_baze.value = response.data
-  } catch (error) {
-    console.error("Greška pri dohvaćanju podataka: ", error)
-  }
-})
 </script>

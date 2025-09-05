@@ -36,24 +36,33 @@
           </nav>
 
           <div class="flex items-center gap-4">
-            <div class="sm:flex sm:gap-4">
-              <router-link
-                :to="{ name: 'prijava' }"
-                class="rounded-md bg-teal-600 transition hover:bg-teal-900 px-5 py-2.5 text-sm font-medium text-gray-100 hover:text-gray-300 shadow-sm"
-              >
-                Prijava
-              </router-link>
-
-              <div class="hidden sm:flex">
+            <template v-if="!autentifikacija.korisnikAutentificiran">
+              <div class="sm:flex sm:gap-4">
                 <router-link
-                  class="rounded-md bg-gray-100 transition hover:bg-gray-300 px-5 py-2.5 text-sm font-medium text-teal-600 hover:text-teal-900"
-                  :to="{ name: 'registracija' }"
+                  :to="{ name: 'prijava' }"
+                  class="rounded-md bg-teal-600 transition hover:bg-teal-900 px-5 py-2.5 text-sm font-medium text-gray-100 hover:text-gray-300 shadow-sm"
                 >
-                  Registracija
+                  Prijava
                 </router-link>
-              </div>
-            </div>
 
+                <div class="hidden sm:flex">
+                  <router-link
+                    class="rounded-md bg-gray-100 transition hover:bg-gray-300 px-5 py-2.5 text-sm font-medium text-teal-600 hover:text-teal-900"
+                    :to="{ name: 'registracija' }"
+                  >
+                    Registracija
+                  </router-link>
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <button
+                @click="odjavaKorisnika"
+                class="rounded-md bg-red-700 transition hover:bg-red-900 px-5 py-2.5 text-sm font-medium text-gray-100 hover:text-gray-300"
+              >
+                Odjava
+              </button>
+            </template>
             <div class="relative inline-block">
               <router-link :to="{ name: 'kosarica' }">
                 <svg
@@ -104,13 +113,15 @@
               v-if="izbornikNaManjemEkranuOtvoren"
               class="absolute top-16 left-0 w-full bg-[#223c2f] px-4 py-4 space-y-2 shadow-lg z-50 md:hidden"
             >
-              <router-link
-                :to="{ name: 'registracija' }"
-                class="block text-gray-100 hover:text-gray-300 sm:hidden"
-                @click="izbornikNaManjemEkranuOtvoren = false"
-              >
-                Registracija
-              </router-link>
+              <template v-if="!autentifikacija.korisnikAutentificiran">
+                <router-link
+                  :to="{ name: 'registracija' }"
+                  class="block text-gray-100 hover:text-gray-300 sm:hidden"
+                  @click="izbornikNaManjemEkranuOtvoren = false"
+                >
+                  Registracija
+                </router-link>
+              </template>
               <router-link
                 :to="{ name: 'e-trznica' }"
                 class="block text-gray-100 hover:text-gray-300"
@@ -136,10 +147,20 @@
 <script setup>
 import { ref } from "vue"
 import slikeLogo from "@/assets/slike/logo.png"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useRouter } from "vue-router"
 
 const izbornikNaManjemEkranuOtvoren = ref(false)
 
 function otvoriIzbornikNaManjemEkranu() {
   izbornikNaManjemEkranuOtvoren.value = !izbornikNaManjemEkranuOtvoren.value
+}
+
+const autentifikacija = useAutentifikacijskiStore()
+const router = useRouter()
+
+const odjavaKorisnika = () => {
+  autentifikacija.odjava()
+  router.push({ name: "prijava" })
 }
 </script>
