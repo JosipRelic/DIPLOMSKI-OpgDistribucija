@@ -18,6 +18,7 @@ function postaviAutentifikacijskiHeader(token) {
 export const useAutentifikacijskiStore = defineStore("autentifikacija", {
   state: () => ({
     token: localStorage.getItem("token") || null,
+    tip_korisnika: localStorage.getItem("tip_korisnika") || null,
     loading: false,
     error: null,
   }),
@@ -37,7 +38,28 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
       try {
         const { data } = await api.post("/autentifikacija/registracija/kupac", payload)
         this.token = data.access_token
+        this.tip_korisnika = data.tip_korisnika
         localStorage.setItem("token", this.token)
+        localStorage.setItem("tip_korisnika", this.tip_korisnika)
+        postaviAutentifikacijskiHeader(this.token)
+        return true
+      } catch (e) {
+        this.error = e?.response?.data?.detail || e?.message || "Greška pri registraciji"
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async registrirajOpg(payload) {
+      this.loading = true
+      this.error = null
+      try {
+        const { data } = await api.post("/autentifikacija/registracija/opg", payload)
+        this.token = data.access_token
+        this.tip_korisnika = data.tip_korisnika
+        localStorage.setItem("token", this.token)
+        localStorage.setItem("tip_korisnika", this.tip_korisnika)
         postaviAutentifikacijskiHeader(this.token)
         return true
       } catch (e) {
@@ -57,7 +79,9 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
           lozinka,
         })
         this.token = data.access_token
+        this.tip_korisnika = data.tip_korisnika
         localStorage.setItem("token", this.token)
+        localStorage.setItem("tip_korisnika", this.tip_korisnika)
         postaviAutentifikacijskiHeader(this.token)
         return true
       } catch (e) {
@@ -71,8 +95,10 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
 
     odjava() {
       this.token = null
+      this.tip_korisnika = null
       this.error = null
       localStorage.removeItem("token")
+      localStorage.removeItem("tip_korisnika")
       postaviAutentifikacijskiHeader(null)
     },
   },

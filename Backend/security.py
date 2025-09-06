@@ -12,9 +12,11 @@ def hashiranje_lozinke(lozinka: str) -> str:
 def verifikacija_lozinke(lozinka_u_tekstualnom_obliku: str, hashirana_lozinka: str) -> bool:
     return pwd_context.verify(lozinka_u_tekstualnom_obliku, hashirana_lozinka)
 
-def kreiranje_tokena_za_pristup(subjekt: str | int) -> str:
+def kreiranje_tokena_za_pristup(subjekt: str | int, tip_korisnika: str | None = None) -> str:
     trenutno_vrijeme = datetime.now(timezone.utc)
     istice = trenutno_vrijeme + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     trenutno_vrijeme = datetime.now(timezone.utc)
     podaci_za_enkodiranje = {"sub": str(subjekt), "iat": int(trenutno_vrijeme.timestamp()), "exp": int(istice.timestamp())}
+    if tip_korisnika:
+        podaci_za_enkodiranje["role"] = tip_korisnika
     return jwt.encode(podaci_za_enkodiranje, SECRET_KEY, algorithm=ALGORITHM)

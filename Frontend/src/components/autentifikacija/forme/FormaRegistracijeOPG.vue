@@ -9,7 +9,7 @@
         </div>
         <div class="mt-12 flex flex-col items-center">
           <h1 class="text-2xl xl:text-3xl font-extrabold">Registracija OPG-a</h1>
-          <div class="w-full flex-1 mt-8">
+          <form class="w-full flex-1 mt-8" @submit.prevent="posaljiPodatkeZaRegistracijuOpga">
             <div class="flex flex-col items-center">
               <button
                 class="w-full max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-3 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
@@ -47,62 +47,85 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                 type="email"
                 placeholder="Email"
+                v-model="email"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="text"
                 placeholder="Korisničko Ime"
+                v-model="korisnicko_ime"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="password"
                 placeholder="Lozinka"
+                v-model="lozinka"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="password"
                 placeholder="Potvrdite lozinku"
+                v-model="potvrda_lozinke"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="text"
                 placeholder="Naziv OPG-a"
+                v-model="naziv"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="text"
                 placeholder="Ime vlasnika"
+                v-model="ime"
+                required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="text"
                 placeholder="Prezime vlasnika"
+                v-model="prezime"
+                required
               />
 
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                 type="text"
                 placeholder="Identifikacijski broj PG-a (MIBPG)"
+                v-model="identifikacijski_broj_mibpg"
+                required
               />
-              <router-link :to="{ name: 'profilOpgNadzornaPloca' }">
-                <button
-                  class="mt-5 tracking-wide font-semibold bg-teal-600 hover:bg-teal-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+
+              <button
+                type="submit"
+                class="mt-5 tracking-wide font-semibold bg-teal-600 hover:bg-teal-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                :disabled="autentifikacija.loading"
+              >
+                <svg
+                  class="w-6 h-6 -ml-2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <svg
-                    class="w-6 h-6 -ml-2"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                    <circle cx="8.5" cy="7" r="4" />
-                    <path d="M20 8v6M23 11h-6" />
-                  </svg>
-                  <span class="ml-3"> Registracija </span>
-                </button>
-              </router-link>
+                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                  <circle cx="8.5" cy="7" r="4" />
+                  <path d="M20 8v6M23 11h-6" />
+                </svg>
+                <span class="ml-3">
+                  {{ autentifikacija.loading ? "Registriram..." : "Registracija" }}
+                </span>
+              </button>
+              <p v-if="autentifikacija.error" class="mt-3 text-red-600 text-sm text-center">
+                {{ autentifikacija.error }}
+              </p>
+
               <p class="mt-6 text-sm text-gray-800 text-center">
                 <router-link
                   :to="{ name: 'prijava' }"
@@ -112,7 +135,7 @@
                 </router-link>
               </p>
             </div>
-          </div>
+          </form>
         </div>
       </div>
       <div
@@ -125,4 +148,33 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaRegistracijeOpg from "@/assets/slike/forma-registracije-opg.png"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+
+const email = ref("")
+const korisnicko_ime = ref("")
+const lozinka = ref("")
+const potvrda_lozinke = ref("")
+const naziv = ref("")
+const ime = ref("")
+const prezime = ref("")
+const identifikacijski_broj_mibpg = ref("")
+
+const autentifikacija = useAutentifikacijskiStore()
+const router = useRouter()
+
+const posaljiPodatkeZaRegistracijuOpga = async () => {
+  const ok = await autentifikacija.registrirajOpg({
+    email: email.value,
+    korisnicko_ime: korisnicko_ime.value,
+    lozinka: lozinka.value,
+    potvrda_lozinke: potvrda_lozinke.value,
+    naziv: naziv.value,
+    ime: ime.value,
+    prezime: prezime.value,
+    identifikacijski_broj_mibpg: identifikacijski_broj_mibpg.value,
+  })
+  if (ok) router.push({ name: "profilOpgNadzornaPloca" })
+}
 </script>

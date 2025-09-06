@@ -115,7 +115,13 @@ const posaljiPodatkeZaPrijavu = async () => {
   })
 
   if (ok) {
-    router.push({ name: "profilKupacNadzornaPloca" })
+    if (autentifikacija.tip_korisnika === "Kupac") {
+      router.push({ name: "profilKupacNadzornaPloca" })
+    } else if (autentifikacija.tip_korisnika === "Opg") {
+      router.push({ name: "profilOpgNadzornaPloca" })
+    } else {
+      router.push({ name: "pocetna" })
+    }
   }
 }
 </script>
