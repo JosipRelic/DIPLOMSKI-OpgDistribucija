@@ -13,4 +13,14 @@
 </template>
 <script setup>
 import ProfilKupacIzbornik from "@/components/profili/kupac/ProfilKupacIzbornik.vue"
+import { onMounted } from "vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+
+const autentifikacija = useAutentifikacijskiStore()
+onMounted(() => {
+  autentifikacija.init()
+  if (autentifikacija.token && !autentifikacija.korisnicki_profil) {
+    autentifikacija.dohvatiProfil()
+  }
+})
 </script>

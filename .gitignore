@@ -26,6 +26,8 @@ Backend/*.log
 Backend/.vscode/
 Backend/.idea/
 Backend/*.swp
+Backend/static/uploads/*
+!Backend/static/uploads/.gitkeep
 
 # DOCKER 
 *.log

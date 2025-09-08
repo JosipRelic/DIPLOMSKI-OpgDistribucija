@@ -2,7 +2,7 @@
   <div
     class="mx-auto max-w-screen-md my-6 bg-white flex flex-col md:flex-row rounded-2xl shadow-lg overflow-hidden p-12"
   >
-    <form class="w-full">
+    <form @submit.prevent="azurirajPodatkeOpga" class="w-full">
       <div class="space-y-8">
         <div class="border-b border-gray-900/10 pb-6">
           <div class="flex items-center gap-x-4">
@@ -12,19 +12,19 @@
                 type="file"
                 accept="image/*"
                 class="hidden"
-                @change="promjenaSlike"
+                @change.prevent="promjenaSlike"
               />
 
               <img
-                :src="slikaProfilaOpg"
+                :src="slika"
                 alt="Slika profila"
                 class="w-full h-full object-cover rounded-full transition duration-300"
-                @click="odabirSlike"
+                @click.prevent="odabirSlike"
               />
 
               <div
                 class="absolute inset-0 flex items-center justify-center rounded-full bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300"
-                @click="odabirSlike"
+                @click.prevent="odabirSlike"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -88,10 +88,10 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="ime"
                   id="ime"
-                  value="Hrvoje"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.ime"
+                  placeholder="Unesite ime..."
                 />
               </div>
             </div>
@@ -101,10 +101,10 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="prezime"
                   id="prezime"
-                  value="Babić"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.prezime"
+                  placeholder="Unesite prezime..."
                 />
               </div>
             </div>
@@ -116,25 +116,25 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="nazivOPG"
-                  id="NazivOPG"
-                  value="OPG Babić"
+                  id="nazivOPG"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.naziv"
+                  placeholder="Unesite naziv OPGa..."
                 />
               </div>
             </div>
 
             <div class="sm:col-span-3">
-              <label for="prezime" class="block text-sm/6 font-medium text-gray-900"
+              <label for="mibpg" class="block text-sm/6 font-medium text-gray-900"
                 >Identifikacijski broj PG-a (MIBPG)</label
               >
               <div class="mt-2">
                 <input
                   type="number"
-                  name="mibpg"
                   id="mibpg"
-                  value="241234"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.identifikacijski_broj_mibpg"
+                  placeholder="Unesite MIBPG..."
                 />
               </div>
             </div>
@@ -145,11 +145,11 @@
               >
               <div class="mt-2">
                 <input
-                  id="brojTelefona"
-                  name="brojTelefona"
                   type="text"
-                  value="0998765432"
+                  id="brojTelefona"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.broj_telefona"
+                  placeholder="Unesite broj telefona..."
                 />
               </div>
             </div>
@@ -157,13 +157,13 @@
             <div class="sm:col-span-3">
               <label for="drzava" class="block text-sm/6 font-medium text-gray-900">Država</label>
               <div class="mt-2 grid grid-cols-1">
-                <select
+                <input
+                  type="text"
                   id="drzava"
-                  name="drzava"
-                  class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
-                >
-                  <option>Hrvatska</option>
-                </select>
+                  class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.drzava"
+                  placeholder="Unesite državu..."
+                />
               </div>
             </div>
 
@@ -172,10 +172,10 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="adresa"
                   id="adresa"
-                  value="Preradovićeva 99"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.adresa"
+                  placeholder="Unesite adresu..."
                 />
               </div>
             </div>
@@ -186,10 +186,10 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="zupanija"
                   id="zupanija"
-                  value="Sisačko-Moslavačka"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.zupanija"
+                  placeholder="Unesite županiju..."
                 />
               </div>
             </div>
@@ -197,11 +197,11 @@
               <label for="grad" class="block text-sm/6 font-medium text-gray-900">Grad</label>
               <div class="mt-2">
                 <input
-                  type="grad"
-                  name="grad"
+                  type="text"
                   id="grad"
-                  value="Sisak"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.grad"
+                  placeholder="Unesite grad..."
                 />
               </div>
             </div>
@@ -213,19 +213,21 @@
               <div class="mt-2">
                 <input
                   type="text"
-                  name="postanskiBroj"
                   id="postanskiBroj"
-                  value="44000"
                   class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                  v-model.trim="forma.postanski_broj"
+                  placeholder="Unesite poštanski broj..."
                 />
               </div>
             </div>
             <div class="sm:col-span-full">
-              <label class="block text-sm font-medium">Opis</label>
+              <label for="opis" class="block text-sm font-medium">Opis</label>
               <textarea
                 rows="5"
+                id="opis"
                 class="block mt-2 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
-                placeholder="Opiši svoj OPG..."
+                v-model.trim="forma.opis"
+                placeholder="Opišite svoj OPG..."
               ></textarea>
             </div>
           </div>
@@ -245,10 +247,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted, computed, watchEffect, reactive } from "vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 
-const slikaProfilaOpg = ref(
-  "https://images.unsplash.com/photo-1660412230160-9bc219efcb00?w=700&auto=format&fit=crop&q=60",
+const autentifikacija = useAutentifikacijskiStore()
+
+const slika = computed(
+  () =>
+    lokalniPretpregledSlike.value ||
+    autentifikacija.korisnicki_profil?.slika_profila ||
+    "https://placehold.co/80x80?text=SlikaProfila",
 )
 
 const odabranaSlika = ref(null)
@@ -257,14 +265,57 @@ const odabirSlike = () => {
   odabranaSlika.value?.click()
 }
 
-const promjenaSlike = (event) => {
-  const slika = event.target.files[0]
-  if (slika) {
-    const ucitavanjeSlike = new FileReader()
-    ucitavanjeSlike.onload = (e) => {
-      slikaProfilaOpg.value = e.target.result
-    }
-    ucitavanjeSlike.readAsDataURL(slika)
+const lokalniPretpregledSlike = ref(null)
+
+const promjenaSlike = async (event) => {
+  const slika = event.target.files?.[0]
+  if (!slika) {
+    return
   }
+
+  lokalniPretpregledSlike.value = URL.createObjectURL(slika)
+  await autentifikacija.ucitajSlikuProfila(slika)
+}
+
+const forma = reactive({
+  ime: "",
+  prezime: "",
+  broj_telefona: "",
+  drzava: "",
+  zupanija: "",
+  grad: "",
+  postanski_broj: "",
+  adresa: "",
+  naziv: "",
+  opis: "",
+  identifikacijski_broj_mibpg: "",
+  slug: "",
+})
+
+onMounted(async () => {
+  await autentifikacija.dohvatiProfil()
+})
+
+watchEffect(() => {
+  const kp = autentifikacija.korisnicki_profil || {}
+  forma.ime = kp.ime || ""
+  forma.prezime = kp.prezime || ""
+  forma.broj_telefona = kp.broj_telefona || ""
+  forma.drzava = kp.drzava || ""
+  forma.zupanija = kp.zupanija || ""
+  forma.grad = kp.grad || ""
+  forma.postanski_broj = kp.postanski_broj || ""
+  forma.adresa = kp.adresa || ""
+  forma.naziv = kp.naziv || ""
+  forma.opis = kp.opis || ""
+  forma.identifikacijski_broj_mibpg = kp.identifikacijski_broj_mibpg || ""
+  forma.slug = kp.slug || ""
+})
+
+const azurirajPodatkeOpga = async (e) => {
+  e.preventDefault()
+  await autentifikacija.azurirajProfil({
+    ...forma,
+  })
 }
 </script>

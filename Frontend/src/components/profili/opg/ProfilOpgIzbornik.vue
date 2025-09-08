@@ -5,16 +5,12 @@
         class="group flex items-center pr-3 py-2 text-sm text-gray-600 rounded-lg justify-between cursor-pointer"
       >
         <span class="flex items-center">
-          <img
-            class="mr-3 w-10 h-10 object-cover rounded-full"
-            src="https://images.unsplash.com/photo-1660412230160-9bc219efcb00?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bWFsZSUyMHNob3BwZXJ8ZW58MHx8MHx8fDI%3D"
-            alt=""
-          />
+          <img class="mr-3 w-10 h-10 object-cover rounded-full" :src="slika" alt="Slika profila" />
           <p class="flex flex-col">
             <span class="text-sm text-black font-bold">
-              OPG Babić <span class="text-sm text-gray-400">(OPG)</span>
+              {{ naziv }} <span class="text-sm text-gray-400">({{ tip_korisnika }})</span>
             </span>
-            <span class="text-sm">opgbabic@gmail.com</span>
+            <span class="text-sm">{{ email }}</span>
           </p>
         </span>
       </div>
@@ -207,6 +203,7 @@
 
         <ul class="space-y-3 pt-3">
           <li
+            @click.prevent="odjava"
             class="group flex items-center px-3 py-2 text-sm text-red-500 hover:bg-red-500 justify-between hover:text-white rounded-lg cursor-pointer"
           >
             <span class="flex items-center">
@@ -242,3 +239,25 @@
     </div>
   </aside>
 </template>
+
+<script setup>
+import { computed } from "vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useRouter } from "vue-router"
+
+const autentifikacija = useAutentifikacijskiStore()
+const router = useRouter()
+
+const korisnicki_profil = computed(() => autentifikacija.korisnicki_profil)
+const naziv = computed(() => korisnicki_profil.value?.naziv || "-")
+const email = computed(() => korisnicki_profil.value?.email || "")
+const tip_korisnika = computed(() => korisnicki_profil.value?.tip_korisnika || "OPG")
+const slika = computed(
+  () => korisnicki_profil.value?.slika_profila || "https://placehold.co/80x80?text=SlikaProfila",
+)
+
+const odjava = () => {
+  autentifikacija.odjava()
+  router.push({ name: "pocetna" })
+}
+</script>
