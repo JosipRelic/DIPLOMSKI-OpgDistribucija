@@ -152,5 +152,18 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         this.loading = false
       }
     },
+
+    async obrisiProfil() {
+      try {
+        await api.delete("/profil")
+        this.korisnicki_profil = null
+        this.token = null
+        localStorage.removeItem("token")
+        return true
+      } catch (e) {
+        this.error = e.response?.data?.detail || "Greška pri brisanju profila"
+        return false
+      }
+    },
   },
 })

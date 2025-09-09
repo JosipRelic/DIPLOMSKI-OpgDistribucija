@@ -176,3 +176,16 @@ def ucitaj_sliku_profila(
     
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
     return _serialize_me(korisnik) 
+
+@router.delete("", status_code=204)
+def obrisi_profil(
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
+    db: Session = Depends(get_db)
+):
+    korisnik = db.get(Korisnik, id_trenutnog_korisnika)
+    if not korisnik:
+        raise HTTPException(status_code=404, detail="Korisnik ne postoji")
+    
+    db.delete(korisnik)
+    db.commit()
+    return {"detalji": "Profil obrisan."}

@@ -203,7 +203,7 @@ const router = useRouter()
 
 const korisnicki_profil = computed(() => autentifikacija.korisnicki_profil)
 const ime_i_prezime = computed(() =>
-  [korisnicki_profil.value?.ime, korisnicki_profil?.prezime].filter(Boolean).join(" "),
+  [korisnicki_profil.value?.ime, korisnicki_profil.value?.prezime].filter(Boolean).join(" "),
 )
 const email = computed(() => korisnicki_profil.value?.email || "")
 const tip_korisnika = computed(() => korisnicki_profil.value?.tip_korisnika || "")

@@ -194,6 +194,24 @@
         </div>
       </div>
 
+      <div
+        v-if="obavijest"
+        :class="
+          obavijest.tip_obavijesti === 'Uspjeh'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-red-100 text-red-700'
+        "
+        class="p-3 rounded-md mt-4"
+      >
+        {{ obavijest.poruka }}
+        <button
+          @click="obavijest = null"
+          class="ml-4 text-xl leading-none float-end text-gray-600 hover:text-gray-600"
+        >
+          &times;
+        </button>
+      </div>
+
       <div class="mt-6 flex items-center justify-start gap-x-6">
         <button
           type="submit"
@@ -204,12 +222,54 @@
       </div>
     </form>
   </div>
+  <div
+    class="mx-auto max-w-screen-md my-6 bg-red-400 flex flex-col md:flex-row rounded-2xl shadow-lg shadow-red-400 overflow-hidden p-4"
+  >
+    <div class="flex items-center gap-4">
+      <svg
+        class="text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        width="100"
+        height="100"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          fill="currentColor"
+          d="M18 19a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V7H4V4h4.5l1-1h4l1 1H19v3h-1v12M6 7v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V7H6m12-1V5h-4l-1-1h-3L9 5H5v1h13M8 9h1v10H8V9m6 0h1v10h-1V9Z"
+        />
+      </svg>
+
+      <div class="flex-1">
+        <strong class="font-medium text-white"> Brisanje profila </strong>
+
+        <p class="mt-0.5 text-sm text-white">
+          Brisanjem profila trajno se uklanjaju svi vaši podaci. Ova radnja je nepovratna.
+        </p>
+
+        <div class="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            @click.prevent="obrisiProfil"
+            :disabled="autentifikacija.loading"
+            class="rounded border border-gray-300 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-white hover:text-red-500"
+          >
+            Obriši profil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup>
 import { ref, onMounted, computed, watchEffect, reactive } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useRouter } from "vue-router"
 
 const autentifikacija = useAutentifikacijskiStore()
+const router = useRouter()
+
+const obavijest = ref(null)
 
 const slika = computed(
   () =>
@@ -267,8 +327,32 @@ watchEffect(() => {
 
 const azurirajPodatkeKupca = async (e) => {
   e.preventDefault()
-  await autentifikacija.azurirajProfil({
-    ...forma,
-  })
+  try {
+    await autentifikacija.azurirajProfil({
+      ...forma,
+    })
+    obavijest.value = { tip_obavijesti: "Uspjeh", poruka: "Podaci su uspješno ažurirani." }
+    if (obavijest.value) {
+      setTimeout(() => {
+        obavijest.value = null
+      }, 4000)
+    }
+  } catch (err) {
+    obavijest.value = { tip_obavijesti: "Greška", poruka: "Greška pri ažuriranju podataka." }
+    if (obavijest.value) {
+      setTimeout(() => {
+        obavijest.value = null
+      }, 4000)
+    }
+  }
+}
+
+const obrisiProfil = async () => {
+  if (confirm("Jeste li sigurni da želite obrisati profil? Ova radnja je nepovratna.")) {
+    const ok = await autentifikacija.obrisiProfil()
+    if (ok) {
+      router.push({ name: "pocetna" })
+    }
+  }
 }
 </script>
