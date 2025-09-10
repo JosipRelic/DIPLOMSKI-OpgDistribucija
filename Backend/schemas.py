@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
+from decimal import Decimal
 from typing import Literal, Optional
 
 class RegistracijaKupac(BaseModel):
@@ -64,6 +65,43 @@ class AzuriranjeKorisnickogProfila(BaseModel):
     naziv: Optional[str] = Field(default=None)
     opis: Optional[str] = Field(default=None)
     identifikacijski_broj_mibpg: Optional[str] = Field(default=None)
+
+
+class KategorijaProizvoda(BaseModel):
+    id: int
+    naziv: str = Field(min_length=1, max_length=150)
+    slug: str
+
+    model_config = {"from_attributes": True}
+
+
+class Proizvod(BaseModel):
+    naziv: str = Field(min_length=1, max_length=200)
+    opis: Optional[str] = Field(default=None)
+    cijena: Decimal = Field(..., max_digits=12, decimal_places=2)
+    slika_proizvoda: Optional[str] = Field(default=None)
+    proizvod_dostupan: bool = Field(default=True)
+    mjerna_jedinica: str = Field(min_length=1, max_length=50)
+    kategorija_id: int
+
+class KreiranjeProizvoda(Proizvod):
+    opg_id: int
+
+class AzuriranjeProizvoda(BaseModel):
+    naziv: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    opis: Optional[str] = Field(default=None)
+    cijena: Optional[Decimal] = Field(None, max_digits=12, decimal_places=2)
+    slika_proizvoda: Optional[str] = Field(default=None)
+    proizvod_dostupan: Optional[bool] = Field(default=None)
+    mjerna_jedinica: Optional[str] = Field(default=None, min_length=1, max_length=50)
+    kategorija_id: Optional[int] = Field(default=None)
+
+class PrikazProizvoda(Proizvod):
+    id: int
+    slug: str
+    opg_id: int
+    
+    model_config = {"from_attributes": True}
 
 
 class Token(BaseModel):

@@ -3,63 +3,33 @@
     <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white">
       <button
         type="button"
-        class="border border-gray-200 bg-[#223c2f] text-white shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
+        class="border border-gray-200 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
+        :class="
+          !aktivnaKategorijaId
+            ? 'bg-[#223c2f] text-white'
+            : 'text-gray-600 hover:bg-[#223c2f] hover:text-white'
+        "
+        @click="filtrirajPoKategoriji(null)"
       >
-        Domaće voće <span class="text-green-600">(4)</span>
+        Prikaži sve
+        <span :class="ukupnoDostupno > 0 ? 'text-green-600' : 'text-red-400'"
+          >({{ ukupnoDostupno }})</span
+        >
       </button>
       <button
+        v-for="k in ponudaEtrznica.kategorije"
+        :key="k.id"
         type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
+        class="border border-gray-200 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
+        :class="
+          aktivnaKategorijaId === k.id
+            ? 'bg-[#223c2f] text-white'
+            : 'text-gray-600 hover:bg-[#223c2f] hover:text-white'
+        "
+        @click="filtrirajPoKategoriji(k.id)"
       >
-        Sezonsko povrće <span class="text-green-600">(2)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Jaja i mliječni proizvodi <span class="text-red-400">(0)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Iz košnice <span class="text-red-400">(0)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Domaća pića i rakije <span class="text-red-400">(0)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Ulja iz prirode <span class="text-green-600">(4)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Čajevi i začinsko bilje <span class="text-green-600">(2)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Suhomesnati proizvodi <span class="text-red-400">(0)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Prirodna kozmetika <span class="text-red-400">(0)</span>
-      </button>
-      <button
-        type="button"
-        class="border border-gray-200 hover:text-white hover:bg-[#223c2f] text-gray-600 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
-      >
-        Iz šume i dvorišta <span class="text-red-400">(0)</span>
+        {{ k.naziv }}
+        <span :class="k.broj === 0 ? 'text-red-400' : 'text-green-600'">({{ k.broj }})</span>
       </button>
     </div>
 
@@ -114,27 +84,28 @@
     <form
       v-if="formaZaDodavanjeProizvodaOtvorena"
       class="p-4 rounded-lg shadow-md bg-white space-y-4 m-4"
+      @submit.prevent="dodajProizvod"
     >
       <div class="flex items-center gap-x-4 justify-center py-2">
         <div class="relative w-20 h-20 group cursor-pointer">
           <input
-            ref="odabranaSlikaProizvoda"
             type="file"
             accept="image/*"
             class="hidden"
-            @change="promjenaSlike"
+            ref="odabirSlike"
+            @change="odaberiSlikuProizvoda"
           />
 
           <img
-            :src="slikaProizvoda"
+            :src="lokalniPretpregled || 'https://placehold.co/80x80?text=SlikaProizvoda'"
             alt="Slika proizvoda"
             class="w-full h-full object-cover rounded-lg transition duration-300"
-            @click="odabirSlikeproizvoda"
+            @click="odabirSlike?.click()"
           />
 
           <div
             class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 group-hover:opacity-100 transition duration-300"
-            @click="odabirSlikeproizvoda"
+            @click="odabirSlike?.click()"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -183,39 +154,34 @@
         </div>
       </div>
       <div>
-        <label for="kategorijeProizvoda" class="block mb-2 text-sm font-medium text-gray-900"
+        <label class="block mb-2 text-sm font-medium text-gray-900"
           >Odaberi kategoriju proizvoda</label
         >
         <select
-          id="countries"
+          v-model="forma.kategorija_id"
           class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
         >
-          <option>Domaće voće</option>
-          <option>Sezonsko povrće</option>
-          <option>Jaja i mliječni proizvodi</option>
-          <option>Iz košnice</option>
-          <option>Domaća pića i rakije</option>
-          <option>Ulja iz prirode</option>
-          <option>Čajevi i začinsko bilje</option>
-          <option>Suhomesnati proizvodi</option>
-          <option>Prirodna kozmetika</option>
-          <option>Iz šume i dvorišta</option>
+          <option :value="null">Odaberi...</option>
+          <option v-for="k in ponudaEtrznica.kategorije" :key="k.id" :value="k.id">
+            {{ k.naziv }}
+          </option>
         </select>
       </div>
       <div>
         <label class="block text-sm font-medium">Proizvod</label>
         <input
           type="text"
+          v-model.trim="forma.naziv"
           class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
           placeholder="Upiši naziv proizvoda..."
         />
       </div>
       <div>
-        <label for="kategorijeProizvoda" class="block mb-2 text-sm font-medium text-gray-900"
+        <label class="block mb-2 text-sm font-medium text-gray-900"
           >Odaberi mjernu jedinicu proizvoda</label
         >
         <select
-          id="countries"
+          v-model="forma.mjerna_jedinica"
           class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
         >
           <option>kom</option>
@@ -230,16 +196,26 @@
         <div class="flex items-center">
           <input
             type="number"
+            v-model.number="forma.cijena"
+            step="0.01"
+            min="0"
             class="mt-1 w-xs rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
             placeholder="Upiši cijenu proizvoda npr. 3.99"
           />
           <p class="ms-2 text-xl">€</p>
         </div>
       </div>
+
+      <div class="flex items-center gap-2">
+        <input id="dostupno" type="checkbox" v-model="forma.proizvod_dostupan" />
+        <label for="dostupno">Dostupan</label>
+      </div>
+
       <div>
         <label class="block text-sm font-medium">Opis</label>
         <textarea
           rows="5"
+          v-model.trim="forma.opis"
           class="mt-1 w-full rounded-md bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
           placeholder="Upiši opis proizvoda..."
         ></textarea>
@@ -252,7 +228,15 @@
         Dodaj proizvod
       </button>
     </form>
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+
+    <div
+      v-if="ponudaEtrznica.proizvodi.length === 0"
+      class="p-4 rounded-lg shadow-md bg-white space-y-4 m-4 text-center text-2xl text-gray-400"
+    >
+      Nemate proizvoda u ovoj kategoriji...
+    </div>
+
+    <table v-else class="w-full text-sm text-left rtl:text-right text-gray-500">
       <thead class="text-xs uppercase bg-gray-200 text-gray-700">
         <tr>
           <th scope="col" class="px-16 py-3"></th>
@@ -266,184 +250,260 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="bg-white border-b border-gray-200 group hover:bg-[#223c2f]">
+        <tr
+          v-for="p in ponudaEtrznica.proizvodi"
+          :key="p.id"
+          class="bg-white border-b border-gray-200 group hover:bg-[#223c2f]"
+        >
           <td class="p-4">
+            <div v-if="uredivanjeId === p.id" class="relative w-16 h-16 group">
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                :ref="'ucitajSliku' + p.id"
+                @change="promijeniSliku(p, $event)"
+              />
+              <img
+                :src="p.slika_proizvoda || 'https://placehold.co/64x64?text=SlikaProizvoda'"
+                class="w-16 h-16 rounded-lg cursor-pointer"
+                :alt="p.naziv"
+                @click="$refs['ucitajSliku' + p.id][0].click()"
+              />
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 cursor-pointer"
+                @click="$refs['ucitajSliku' + p.id][0].click()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536M9 13l6.768-6.768a2 2 0 112.828 2.828L11.828 16H9v-2.828z"
+                  />
+                </svg>
+              </div>
+            </div>
+
             <img
-              src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              v-else
+              :src="p.slika_proizvoda || 'https://placehold.co/64x64?text=SlikaProizvoda'"
               class="w-16 h-16 rounded-lg"
-              alt="Krastavci"
+              :alt="p.naziv"
             />
           </td>
-          <td class="pe-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">Krastavci</td>
+
+          <td class="pe-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
+            <template v-if="uredivanjeId === p.id">
+              <input
+                v-model.trim="urediFormu.naziv"
+                class="w-40 rounded border border-yellow-500 px-2 py-1"
+              />
+            </template>
+            <template v-else>{{ p.naziv }}</template>
+          </td>
 
           <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
-            <!-- <textarea
-              class="w-full resize-none rounded-lg border-gray-200 text-center focus:outline-[#223c2f] shadow-sm sm:text-sm p-2"
-            >
-Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola, puni prirodne svježine i blagih nota koje pristaju svakom jelu."
-            </textarea> -->
-            Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih
-            obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola,
-            puni prirodne svježine i blagih nota koje pristaju svakom jelu.
+            <template v-if="uredivanjeId === p.id">
+              <textarea
+                v-model.trim="urediFormu.opis"
+                rows="2"
+                class="w-full h-full rounded border border-yellow-500 px-2 py-1"
+              ></textarea>
+            </template>
+            <template v-else>{{ p.opis }}</template>
           </td>
           <td class="px-4 py-4">
-            <input
-              type="checkbox"
-              class="size-5 rounded-lg border-gray-300 shadow-sm ms-6"
-              id="Option1"
-              checked
-              disabled
-            />
+            <template v-if="uredivanjeId === p.id">
+              <input type="checkbox" v-model="urediFormu.proizvod_dostupan" />
+            </template>
+            <template v-else>
+              <input type="checkbox" :checked="p.proizvod_dostupan" disabled />
+            </template>
           </td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">2.99 €</td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">kg</td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-teal-500 hover:underline">Uredi</a>
-          </td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-red-500 hover:underline">Obriši</a>
-          </td>
-        </tr>
-        <tr class="bg-white border-b border-gray-200 group hover:bg-[#223c2f]">
-          <td class="p-4">
-            <img
-              src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              class="w-16 h-16 rounded-lg"
-              alt="Krastavci"
-            />
-          </td>
-          <td class="pe-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">Krastavci</td>
-
           <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
-            <!-- <textarea
-              class="w-full resize-none rounded-lg border-gray-200 text-center focus:outline-[#223c2f] shadow-sm sm:text-sm p-2"
-            >
-Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola, puni prirodne svježine i blagih nota koje pristaju svakom jelu."
-            </textarea> -->
-            Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih
-            obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola,
-            puni prirodne svježine i blagih nota koje pristaju svakom jelu.
+            <template v-if="uredivanjeId === p.id">
+              <input
+                v-model.number="urediFormu.cijena"
+                type="number"
+                step="0.01"
+                class="w-24 rounded border px-2 py1 border-yellow-500"
+              />
+            </template>
+            <template v-else>{{ Number(p.cijena).toFixed(2) }} €</template>
           </td>
-          <td class="px-4 py-4">
-            <input
-              type="checkbox"
-              class="size-5 rounded-lg border-gray-300 shadow-sm ms-6"
-              id="Option1"
-              disabled
-            />
+          <td class="px-6 py-4 font-semibold group-hover:text-gray-100">
+            <template v-if="uredivanjeId === p.id">
+              <select
+                v-model="urediFormu.mjerna_jedinica"
+                class="rounded border group-hover:text.gray-100 px-2 py-1 border-yellow-500"
+              >
+                <option class="text-gray-600">kom</option>
+                <option class="text-gray-600">kg</option>
+                <option class="text-gray-600">g</option>
+                <option class="text-gray-600">ml</option>
+                <option class="text-gray-600">l</option>
+              </select>
+            </template>
+            <template v-else>{{ p.mjerna_jedinica }}</template>
           </td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">2.99 €</td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">kg</td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-teal-500 hover:underline">Uredi</a>
-          </td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-red-500 hover:underline">Obriši</a>
-          </td>
-        </tr>
-        <tr class="bg-white border-b border-gray-200 group hover:bg-[#223c2f]">
-          <td class="p-4">
-            <img
-              src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              class="w-16 h-16 rounded-lg"
-              alt="Krastavci"
-            />
-          </td>
-          <td class="pe-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">Krastavci</td>
-
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
-            <!-- <textarea
-              class="w-full resize-none rounded-lg border-gray-200 text-center focus:outline-[#223c2f] shadow-sm sm:text-sm p-2"
-            >
-Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola, puni prirodne svježine i blagih nota koje pristaju svakom jelu."
-            </textarea> -->
-            Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih
-            obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola,
-            puni prirodne svježine i blagih nota koje pristaju svakom jelu.
-          </td>
-          <td class="px-4 py-4">
-            <input
-              type="checkbox"
-              class="size-5 rounded-lg border-gray-300 shadow-sm ms-6"
-              id="Option1"
-              disabled
-            />
-          </td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">2.99 €</td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">kg</td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-teal-500 hover:underline">Uredi</a>
-          </td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-red-500 hover:underline">Obriši</a>
-          </td>
-        </tr>
-        <tr class="bg-white border-b border-gray-200 group hover:bg-[#223c2f]">
-          <td class="p-4">
-            <img
-              src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              class="w-16 h-16 rounded-lg"
-              alt="Krastavci"
-            />
-          </td>
-          <td class="pe-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">Krastavci</td>
-
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
-            <!-- <textarea
-              class="w-full resize-none rounded-lg border-gray-200 text-center focus:outline-[#223c2f] shadow-sm sm:text-sm p-2"
-            >
-Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola, puni prirodne svježine i blagih nota koje pristaju svakom jelu."
-            </textarea> -->
-            Hrskavi, sočni i osvježavajući. Krastavci su nezaobilazni dio ljetnih salata i zdravih
-            obroka. Uzgojeni bez pesticida, naši krastavci dolaze izravno s polja do vašeg stola,
-            puni prirodne svježine i blagih nota koje pristaju svakom jelu.
-          </td>
-          <td class="px-4 py-4">
-            <input
-              type="checkbox"
-              class="size-5 rounded-lg border-gray-300 shadow-sm ms-6"
-              id="Option1"
-              disabled
-            />
-          </td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">2.99 €</td>
-          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">kg</td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-teal-500 hover:underline">Uredi</a>
-          </td>
-          <td class="px-6 py-4">
-            <a href="#" class="font-medium text-red-500 hover:underline">Obriši</a>
-          </td>
+          <template v-if="uredivanjeId === p.id">
+            <td class="px-6 py-4">
+              <button
+                class="font-medium text-yellow-500 hover:underline"
+                @click.prevent="spremiUredeno(p)"
+              >
+                Spremi
+              </button>
+            </td>
+            <td class="px-6 py-4">
+              <button
+                class="font-medium text-gray-600 hover:underline group-hover:text-gray-100"
+                @click.prevent="prekiniUredivanje"
+              >
+                Odustani
+              </button>
+            </td>
+          </template>
+          <template v-else>
+            <td class="px-6 py-4">
+              <button
+                class="font-medium text-teal-500 hover:underline"
+                @click.prevent="zapocniUredivanje(p)"
+              >
+                Uredi
+              </button>
+            </td>
+            <td class="px-6 py-4">
+              <button
+                class="font-medium text-red-500 hover:underline"
+                @click.prevent="obrisiProizvod(p)"
+              >
+                Obriši
+              </button>
+            </td>
+          </template>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 <script setup>
-import { ref } from "vue"
+import { ref, reactive, onMounted, computed } from "vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { usePonudaEtrznicaStore } from "@/stores/ponudaEtrznica"
+
+const autentifikacija = useAutentifikacijskiStore()
+const ponudaEtrznica = usePonudaEtrznicaStore()
+
 const formaZaDodavanjeProizvodaOtvorena = ref(false)
+
 const otvoriFormuZaDodavanjeProizvoda = () => {
   formaZaDodavanjeProizvodaOtvorena.value = !formaZaDodavanjeProizvodaOtvorena.value
 }
 
-const slikaProizvoda = ref(
-  "https://images.unsplash.com/photo-1675162113465-a3609eedc50d?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTB8fG5vJTIwaW1hZ2V8ZW58MHx8MHx8fDI%3D",
+const odabirSlike = ref(null)
+const novaSlika = ref(null)
+const lokalniPretpregled = ref(null)
+
+const forma = reactive({
+  naziv: "",
+  opis: "",
+  cijena: null,
+  mjerna_jedinica: "kg",
+  proizvod_dostupan: true,
+  kategorija_id: null,
+})
+
+const aktivnaKategorijaId = computed(() => ponudaEtrznica.aktivnaKategorijaId)
+const ukupnoDostupno = computed(() =>
+  (ponudaEtrznica.kategorije || []).reduce((sum, k) => sum + (k.broj || 0), 0),
 )
 
-const odabranaSlikaProizvoda = ref(null)
+onMounted(async () => {
+  await ponudaEtrznica.ucitajKategorije()
+  await ponudaEtrznica.ucitajProizvode()
+})
 
-const odabirSlikeproizvoda = () => {
-  odabranaSlikaProizvoda.value?.click()
+function odaberiSlikuProizvoda(e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  novaSlika.value = f
+  lokalniPretpregled.value = URL.createObjectURL(f)
 }
 
-const promjenaSlike = (event) => {
-  const slika = event.target.files[0]
-  if (slika) {
-    const ucitavanjeSlike = new FileReader()
-    ucitavanjeSlike.onload = (e) => {
-      slikaProizvoda.value = e.target.result
-    }
-    ucitavanjeSlike.readAsDataURL(slika)
+async function promijeniSliku(p, e) {
+  const f = e.target.files?.[0]
+  if (!f) return
+  await ponudaEtrznica.ucitajSlikuProizvoda(p.id, f)
+}
+
+async function dodajProizvod() {
+  if (!forma.kategorija_id) return
+  const kreirano = await ponudaEtrznica.dodajProizvod({
+    ...forma,
+    opg_id: autentifikacija.korisnicki_profil?.opg_id || autentifikacija.korisnicki_profil?.id,
+  })
+  if (novaSlika.value) {
+    await ponudaEtrznica.ucitajSlikuProizvoda(kreirano.id, novaSlika.value)
+  }
+
+  Object.assign(forma, {
+    naziv: "",
+    opis: "",
+    cijena: null,
+    mjerna_jedinica: "kg",
+    proizvod_dostupan: true,
+    kategorija_id: null,
+  })
+  novaSlika.value = null
+  lokalniPretpregled.value = null
+  formaZaDodavanjeProizvodaOtvorena.value = false
+}
+
+async function filtrirajPoKategoriji(kid) {
+  await ponudaEtrznica.ucitajProizvode(kid || null)
+}
+
+const uredivanjeId = ref(null)
+const urediFormu = reactive({
+  naziv: "",
+  opis: "",
+  cijena: null,
+  mjerna_jedinica: "",
+  proizvod_dostupan: true,
+  kategorija_id: null,
+})
+
+function zapocniUredivanje(p) {
+  uredivanjeId.value = p.id
+  Object.assign(urediFormu, {
+    naziv: p.naziv,
+    opis: p.opis,
+    cijena: p.cijena,
+    mjerna_jedinica: p.mjerna_jedinica,
+    proizvod_dostupan: p.proizvod_dostupan,
+    kategorija_id: p.kategorija_id,
+  })
+}
+
+function prekiniUredivanje() {
+  uredivanjeId.value = null
+}
+async function spremiUredeno(p) {
+  await ponudaEtrznica.urediProizvod(p.id, { ...urediFormu })
+  uredivanjeId.value = null
+}
+
+async function obrisiProizvod(p) {
+  if (confirm("Obrisati proizvod?")) {
+    await ponudaEtrznica.obrisiProizvod(p.id)
   }
 }
 </script>

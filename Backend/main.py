@@ -1,9 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import autentifikacija, korisnicki_profil
+from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica
 from starlette.staticfiles import StaticFiles
+from seeds import seed_kategorije_proizvoda
+from database import SessionLocal
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="OPG Distribucija API", description="API je napravljen u svrhu diplomskog rada")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db = SessionLocal()
+    try:
+        seed_kategorije_proizvoda(db)
+    finally:
+        db.close()
+
+    yield
+
+app = FastAPI(title="OPG Distribucija API", description="API je napravljen u svrhu diplomskog rada", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,6 +29,9 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(autentifikacija.router)
 app.include_router(korisnicki_profil.router)
+app.include_router(uredi_ponudu_etrznica.router)
+
+
 
 
 

@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Enum, func, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric
 from sqlalchemy.orm import relationship
 import enum
 
@@ -89,5 +89,53 @@ class Opg(Base):
 
     korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False, unique=True) 
     korisnik = relationship("Korisnik", back_populates="opg")
+    proizvodi = relationship("Proizvod", back_populates="opg", cascade="all, delete-orphan", passive_deletes=True)
 
-    
+class KategorijaProizvoda(Base):
+    __tablename__="kategorije_proizvoda"
+
+    id = Column(Integer, primary_key=True, index=True)
+    naziv = Column(String(150), nullable=False, unique=True)
+    slug = Column(String(255), nullable=False, unique=True)
+    datum_izrade = Column(DateTime(timezone=True), server_default=func.now(), nullable=False) 
+    datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    proizvodi = relationship("Proizvod", back_populates="kategorija", passive_deletes=True)
+
+
+class Proizvod(Base):
+    __tablename__="proizvodi"
+
+    id = Column(Integer, primary_key=True, index=True)
+    naziv = Column(String(200), nullable=False)
+    opis = Column(String(500), nullable=True)
+    cijena = Column(Numeric(12,2), nullable=False)
+    slika_proizvoda = Column(String(500), nullable=True)
+    proizvod_dostupan = Column(Boolean, default=True, nullable=False)
+    mjerna_jedinica = Column(String(50), nullable=False)
+    slug = Column(String(255), nullable=False)
+
+    datum_izrade = Column(DateTime(timezone=True), server_default=func.now(), nullable=False) 
+    datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    kategorija_id = Column(
+        Integer,
+        ForeignKey("kategorije_proizvoda.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True
+    )
+
+
+    opg_id = Column(
+        Integer,
+        ForeignKey("opgovi.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    kategorija = relationship("KategorijaProizvoda", back_populates="proizvodi")
+    opg = relationship("Opg", back_populates="proizvodi")
+
+    __table_args__=(
+        UniqueConstraint("opg_id", "slug", name="uq_proizvod_opg_slug"),
+    )
