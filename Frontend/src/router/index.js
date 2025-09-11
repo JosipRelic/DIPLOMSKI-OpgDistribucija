@@ -36,6 +36,7 @@ import ETrznicaKategorijaProizvodaPrirodnaKozmetikaView from "@/views/etrznica/k
 import ETrznicaKategorijaProizvodaIzSumeiDvoristaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaIzSumeiDvoristaView.vue"
 import ProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ProizvodDetaljiView.vue"
 import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 
 const routes = [
   {
@@ -46,6 +47,7 @@ const routes = [
   {
     path: "/profil/kupac",
     component: ProfilKupacView,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "",
@@ -55,27 +57,32 @@ const routes = [
         path: "nadzorna-ploca",
         name: "profilKupacNadzornaPloca",
         component: ProfilKupacNadzornaPlocaView,
+        meta: { requiresAuth: true },
       },
       {
         path: "moje-narudzbe",
         name: "profilKupacMojeNarudzbe",
         component: ProfilKupacMojeNarudzbeView,
+        meta: { requiresAuth: true },
       },
       {
         path: "moje-narudzbe/detalji-narudzbe",
         name: "profilKupacMojeNarudzbeDetaljiNarudzbe",
         component: ProfilKupacMojeNarudzbeDetaljiNarudzbeView,
+        meta: { requiresAuth: true },
       },
       {
         path: "postavke-profila",
         name: "profilKupacPostavke",
         component: ProfilKupacPostavkeView,
+        meta: { requiresAuth: true },
       },
     ],
   },
   {
     path: "/profil/opg",
     component: ProfilOpgView,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "",
@@ -85,37 +92,44 @@ const routes = [
         path: "nadzorna-ploca",
         name: "profilOpgNadzornaPloca",
         component: ProfilOpgNadzornaPlocaView,
+        meta: { requiresAuth: true },
       },
       {
         path: "primljene-narudzbe",
         name: "profilOpgPrimljeneNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeView,
+        meta: { requiresAuth: true },
       },
       {
         path: "primljene-narudzbe/detalji-narudzbe",
         name: "profilOpgPrimljeneNarudzbeDetaljiNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView,
+        meta: { requiresAuth: true },
       },
       {
         path: "postavke-profila",
         name: "profilOpgPostavke",
         component: ProfilOpgPostavkeView,
+        meta: { requiresAuth: true },
       },
       {
         path: "ponuda-etrznica",
         name: "profilOpgPonudaETrznica",
         component: ProfilOpgPonudaETrznicaView,
+        meta: { requiresAuth: true },
       },
 
       {
         path: "ponuda-farmaplus",
         name: "profilOpgPonudaFarmaPlus",
         component: ProfilOpgPonudaFarmaPlusView,
+        meta: { requiresAuth: true },
       },
       {
         path: "detalji-kupca",
         name: "profilOpgDetaljiKupca",
         component: ProfilOpgDetaljiKupcaView,
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -253,6 +267,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const autentifikacija = useAutentifikacijskiStore()
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!autentifikacija.korisnikAutentificiran) {
+      return next({ name: "prijava" })
+    }
+  }
+  next()
 })
 
 export default router
