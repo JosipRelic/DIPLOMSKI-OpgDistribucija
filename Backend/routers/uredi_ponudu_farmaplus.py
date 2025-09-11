@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from sqlalchemy import func, case
 from typing import List, Dict, Any
-from models import Proizvod, KategorijaProizvoda, Opg, Korisnik, TipKorisnika
-from schemas import KreiranjeProizvoda, AzuriranjeProizvoda, PrikazProizvoda
+from models import Usluga, KategorijaUsluge, Opg, Korisnik, TipKorisnika
+from schemas import KreiranjeUsluge, AzuriranjeUsluge, PrikazUsluge
 from security import dohvati_id_trenutnog_korisnika
 import os
 from datetime import datetime
@@ -16,7 +16,7 @@ def get_db():
     finally:
         db.close()
 
-router = APIRouter(prefix="/opg/ponuda-etrznica", tags=["OPG ponuda proizvoda"])
+router = APIRouter(prefix="/opg/ponuda-farmaplus", tags=["OPG ponuda usluga"])
 
 def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
     opg = db.query(Opg).filter(Opg.korisnik_id == korisnik_id).first()
@@ -25,7 +25,7 @@ def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
     return opg
 
 @router.get("/kategorije", response_model=List[Dict[str, Any]])
-def kategorije(
+def kategorije_usluga(
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
@@ -33,137 +33,137 @@ def kategorije(
 
     kategorije_s_brojacem = (
         db.query(
-            KategorijaProizvoda.id,
-            KategorijaProizvoda.naziv,
-            KategorijaProizvoda.slug,
-            func.count(Proizvod.id).label("ukupno"),
+            KategorijaUsluge.id,
+            KategorijaUsluge.naziv,
+            KategorijaUsluge.slug,
+            func.count(Usluga.id).label("ukupno"),
             func.sum(
                 case(
-                    (Proizvod.proizvod_dostupan == False, 1),
+                    (Usluga.usluga_dostupna == False, 1),
                     else_=0
                 )
             ).label("nedostupni"),
             func.sum(case(
-                (Proizvod.proizvod_dostupan == True, 1),
+                (Usluga.usluga_dostupna == True, 1),
                 else_=0
             )).label("dostupni")
         ).outerjoin(
-            Proizvod,
-            (Proizvod.kategorija_id == KategorijaProizvoda.id) & 
-            (Proizvod.opg_id == opg.id) 
-        ).group_by(KategorijaProizvoda.id, KategorijaProizvoda.naziv, KategorijaProizvoda.slug).order_by(KategorijaProizvoda.naziv.asc()).all()
+            Usluga,
+            (Usluga.kategorija_id == KategorijaUsluge.id) & 
+            (Usluga.opg_id == opg.id) 
+        ).group_by(KategorijaUsluge.id, KategorijaUsluge.naziv, KategorijaUsluge.slug).order_by(KategorijaUsluge.naziv.asc()).all()
     )
     return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "ukupno": int(kategorija.ukupno or 0), "nedostupni": int(kategorija.nedostupni or 0), "dostupni": int(kategorija.dostupni or 0)} for kategorija in kategorije_s_brojacem]
 
-@router.get("", response_model=List[PrikazProizvoda])
-def lista_proizvoda(
+
+@router.get("", response_model=List[PrikazUsluge])
+def lista_usluga(
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     kategorija_id: int | None = None,
     db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
-    proizvod = db.query(Proizvod).filter(Proizvod.opg_id == opg.id)
+    usluga = db.query(Usluga).filter(Usluga.opg_id == opg.id)
     if kategorija_id:
-        proizvod = proizvod.filter(Proizvod.kategorija_id == kategorija_id)
-    return proizvod.order_by(Proizvod.datum_izrade.desc()).all() 
+        usluga = usluga.filter(Usluga.kategorija_id == kategorija_id)
+    return usluga.order_by(Usluga.datum_izrade.desc()).all() 
 
 
-@router.post("", response_model=PrikazProizvoda)
-def kreiraj_proizvod(
-    body: KreiranjeProizvoda,
+@router.post("", response_model=PrikazUsluge)
+def kreiraj_uslugu(
+    body: KreiranjeUsluge,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
-    if not db.get(KategorijaProizvoda, body.kategorija_id):
+    if not db.get(KategorijaUsluge, body.kategorija_id):
         raise HTTPException(status_code=404, detail="Kategorija ne postoji")
     
-    proizvod = Proizvod(
+    usluga = Usluga(
         naziv = body.naziv,
         opis = body.opis,
         cijena = body.cijena,
         mjerna_jedinica = body.mjerna_jedinica,
-        proizvod_dostupan = body.proizvod_dostupan,
+        usluga_dostupna = body.usluga_dostupna,
         kategorija_id = body.kategorija_id,
         opg_id = opg.id,
         slug = f"{opg.id}-{body.naziv.lower().replace(' ', '-')}",
-        slika_proizvoda = body.slika_proizvoda
+        slika_usluge = body.slika_usluge
 
     )
-    db.add(proizvod)
+    db.add(usluga)
     db.commit()
-    db.refresh(proizvod)
-    return proizvod
+    db.refresh(usluga)
+    return usluga
 
-@router.put("/{proizvod_id}", response_model=PrikazProizvoda)
-def uredi_proizvod(
-    proizvod_id: int,
-    body: AzuriranjeProizvoda,
+
+@router.put("/{usluga_id}", response_model=PrikazUsluge)
+def uredi_uslugu(
+    usluga_id: int,
+    body: AzuriranjeUsluge,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
-    proizvod = db.get(Proizvod, proizvod_id)
-    if not proizvod or proizvod.opg_id != opg.id:
-        raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
+    usluga = db.get(Usluga, usluga_id)
+    if not usluga or usluga.opg_id != opg.id:
+        raise HTTPException(status_code=404, detail="Usluga nije pronađena")
     
-    for p in ["naziv", "opis", "cijena", "slika_proizvoda", "proizvod_dostupan", "mjerna_jedinica", "kategorija_id"]:
+    for p in ["naziv", "opis", "cijena", "slika_usluge", "usluga_dostupna", "mjerna_jedinica", "kategorija_id"]:
          val = getattr(body, p, None)
          if val is not None:
-             setattr(proizvod, p, val)
+             setattr(usluga, p, val)
     db.commit()
-    db.refresh(proizvod)
-    return proizvod
+    db.refresh(usluga)
+    return usluga
 
-
-@router.delete("/{proizvod_id}", status_code=204)
-def obrisi_proizvod(
-    proizvod_id: int,
+@router.delete("/{usluga_id}", status_code=204)
+def obrisi_uslugu(
+    usluga_id: int,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
-    proizvod = db.get(Proizvod, proizvod_id)
-    if not proizvod or proizvod.opg_id != opg.id:
-        raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
-    if proizvod.slika_proizvoda and proizvod.slika_proizvoda.startswith("/static/uploads/"):
+    usluga = db.get(Usluga, usluga_id)
+    if not usluga or usluga.opg_id != opg.id:
+        raise HTTPException(status_code=404, detail="Usluga nije pronađena")
+    if usluga.slika_usluge and usluga.slika_usluge.startswith("/static/uploads/"):
         try:
-            aps = os.path.join(os.path.dirname(__file__), proizvod.slika_proizvoda.lstrip("/"))
+            aps = os.path.join(os.path.dirname(__file__), usluga.slika_usluge.lstrip("/"))
             if os.path.exists(aps):
                 os.remove(aps)
         except Exception:
             pass
     
-    db.delete(proizvod)
+    db.delete(usluga)
     db.commit()
     return
 
-
-@router.post("/{proizvod_id}/slika", response_model=PrikazProizvoda)
-def ucitaj_sliku_proizvoda(
+@router.post("/{usluga_id}/slika", response_model=PrikazUsluge)
+def ucitaj_sliku_usluge(
     request: Request,
-    proizvod_id: int,
-    slika_proizvoda: UploadFile = File(...),
+    usluga_id: int,
+    slika_usluge: UploadFile = File(...),
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
     trenutno_vrijeme = datetime.now().strftime("%H%M%S%f")
     opg = opg_ili_404(db, id_korisnika)
-    proizvod = db.get(Proizvod, proizvod_id)
-    if not proizvod or proizvod.opg_id != opg.id:
-        raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
+    usluga = db.get(Usluga, usluga_id)
+    if not usluga or usluga.opg_id != opg.id:
+        raise HTTPException(status_code=404, detail="Usluga nije pronađena")
     
     os.makedirs("static/uploads", exist_ok=True)
-    ekstenzija = os.path.splitext(slika_proizvoda.filename)[1].lower() or ".jpg"
-    naziv_slike = f"proizvod_{proizvod.id}{trenutno_vrijeme}{ekstenzija}"
+    ekstenzija = os.path.splitext(slika_usluge.filename)[1].lower() or ".jpg"
+    naziv_slike = f"usluga_{usluga.id}_{trenutno_vrijeme}{ekstenzija}"
     path = os.path.join("static", "uploads", naziv_slike)
 
     with open(path, "wb") as f:
-        f.write(slika_proizvoda.file.read())
+        f.write(slika_usluge.file.read())
 
     url = request.url_for("static", path=f"uploads/{naziv_slike}")
 
-    proizvod.slika_proizvoda = str(url)
+    usluga.slika_usluge = str(url)
     db.commit()
-    db.refresh(proizvod)
-    return proizvod 
+    db.refresh(usluga)
+    return usluga 

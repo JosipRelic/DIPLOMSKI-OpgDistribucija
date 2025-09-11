@@ -89,7 +89,7 @@
         {{
           formaZaDodavanjeProizvodaOtvorena
             ? "Dodaj informacije o proizvodu"
-            : "Dodaj novi proizovod"
+            : "Dodaj novi proizvod"
         }}
       </p>
     </div>
@@ -277,7 +277,11 @@
                 @change="promijeniSliku(p, $event)"
               />
               <img
-                :src="p.slika_proizvoda || 'https://placehold.co/64x64?text=SlikaProizvoda'"
+                :src="
+                  p._lokalniUrl ||
+                  p.slika_proizvoda ||
+                  'https://placehold.co/64x64?text=SlikaProizvoda'
+                "
                 class="w-16 h-16 rounded-lg cursor-pointer"
                 :alt="p.naziv"
                 @click="$refs['ucitajSliku' + p.id][0].click()"
@@ -326,7 +330,7 @@
               <textarea
                 v-model.trim="urediFormu.opis"
                 rows="2"
-                class="w-full h-full rounded border border-yellow-500 px-2 py-1"
+                class="h-full w-50 rounded border border-yellow-500 px-2 py-1"
               ></textarea>
             </template>
             <template v-else>{{ p.opis }}</template>
@@ -454,6 +458,7 @@ onMounted(async () => {
 function odaberiSlikuProizvoda(e) {
   const f = e.target.files?.[0]
   if (!f) return
+  if (lokalniPretpregled.value) URL.revokeObjectURL(lokalniPretpregled.value)
   novaSlika.value = f
   lokalniPretpregled.value = URL.createObjectURL(f)
 }
@@ -461,7 +466,9 @@ function odaberiSlikuProizvoda(e) {
 async function promijeniSliku(p, e) {
   const f = e.target.files?.[0]
   if (!f) return
-  await ponudaEtrznica.ucitajSlikuProizvoda(p.id, f)
+  if (p._lokalniUrl) URL.revokeObjectURL(p._lokalniUrl)
+  p._novaSlika = f
+  p._lokalniUrl = URL.createObjectURL(f)
 }
 
 async function dodajProizvod() {
@@ -514,10 +521,26 @@ function zapocniUredivanje(p) {
 }
 
 function prekiniUredivanje() {
+  const p = ponudaEtrznica.proizvodi.find((x) => x.id === uredivanjeId.value)
+  if (p?._lokalniUrl) {
+    URL.revokeObjectURL(p._lokalniUrl)
+    delete p._lokalniUrl
+  }
+  if (p?._novaSlika) {
+    delete p._novaSlika
+  }
   uredivanjeId.value = null
 }
+
 async function spremiUredeno(p) {
   await ponudaEtrznica.urediProizvod(p.id, { ...urediFormu })
+  if (p._novaSlika) {
+    const res = await ponudaEtrznica.ucitajSlikuProizvoda(p.id, p._novaSlika)
+    if (res?.slika_proizvoda) p.slika_proizvoda = res.slika_proizvoda
+    if (p._lokalniUrl) URL.revokeObjectURL(p._lokalniUrl)
+    delete p._lokalniUrl
+    delete p._novaSlika
+  }
   uredivanjeId.value = null
 }
 

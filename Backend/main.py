@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica
+from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica, uredi_ponudu_farmaplus
 from starlette.staticfiles import StaticFiles
-from seeds import seed_kategorije_proizvoda
+from seeds import seed_kategorije_proizvoda, seed_kategorije_usluga
 from database import SessionLocal
 from contextlib import asynccontextmanager
 
@@ -11,6 +11,7 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_kategorije_proizvoda(db)
+        seed_kategorije_usluga(db)
     finally:
         db.close()
 
@@ -30,6 +31,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(autentifikacija.router)
 app.include_router(korisnicki_profil.router)
 app.include_router(uredi_ponudu_etrznica.router)
+app.include_router(uredi_ponudu_farmaplus.router)
 
 
 

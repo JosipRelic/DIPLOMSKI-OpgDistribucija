@@ -1,10 +1,10 @@
 import { defineStore } from "pinia"
 import api from "@/services/api"
 
-export const usePonudaEtrznicaStore = defineStore("ponudaEtrznica", {
+export const usePonudaFarmaPlusStore = defineStore("ponudaFarmaPlus", {
   state: () => ({
     kategorije: [],
-    proizvodi: [],
+    usluge: [],
     aktivnaKategorijaId: null,
     loading: false,
     error: null,
@@ -13,7 +13,7 @@ export const usePonudaEtrznicaStore = defineStore("ponudaEtrznica", {
     async ucitajKategorije() {
       this.loading = true
       try {
-        const { data } = await api.get("/opg/ponuda-etrznica/kategorije")
+        const { data } = await api.get("/opg/ponuda-farmaplus/kategorije")
         this.kategorije = data
       } catch (e) {
         this.error = e.response?.data?.detail || "Greška pri dohvaćanju kategorija"
@@ -22,29 +22,29 @@ export const usePonudaEtrznicaStore = defineStore("ponudaEtrznica", {
       }
     },
 
-    async ucitajProizvode(kategorijaId = null) {
+    async ucitajUsluge(kategorijaId = null) {
       this.loading = true
       try {
-        const { data } = await api.get("/opg/ponuda-etrznica", {
+        const { data } = await api.get("/opg/ponuda-farmaplus", {
           params: kategorijaId ? { kategorija_id: kategorijaId } : {},
         })
-        this.proizvodi = data
+        this.usluge = data
         this.aktivnaKategorijaId = kategorijaId
       } catch (e) {
-        this.error = e.response?.data?.detail || "Greška pri dohvaćanju proizvoda"
+        this.error = e.response?.data?.detail || "Greška pri dohvaćanju usluge"
       } finally {
         this.loading = false
       }
     },
 
-    async dodajProizvod(payload) {
-      const { data } = await api.post("/opg/ponuda-etrznica", payload)
-      this.proizvodi.unshift(data)
-      if (data.proizvod_dostupan) {
+    async dodajUslugu(payload) {
+      const { data } = await api.post("/opg/ponuda-farmaplus", payload)
+      this.usluge.unshift(data)
+      if (data.usluga_dostupna) {
         const k = this.kategorije.find((k) => k.id === data.kategorija_id)
         if (k) {
           k.ukupno = (k.ukupno ?? 0) + 1
-          if (data.proizvod_dostupan) {
+          if (data.usluga_dostupna) {
             k.dostupni = (k.dostupni ?? 0) + 1
           } else {
             k.nedostupni = (k.nedostupni ?? 0) + 1
@@ -54,23 +54,23 @@ export const usePonudaEtrznicaStore = defineStore("ponudaEtrznica", {
       return data
     },
 
-    async urediProizvod(id, patch) {
-      const { data } = await api.put(`/opg/ponuda-etrznica/${id}`, patch)
-      const idx = this.proizvodi.findIndex((p) => p.id === id)
-      if (idx !== -1) this.proizvodi[idx] = data
+    async urediUslugu(id, patch) {
+      const { data } = await api.put(`/opg/ponuda-farmaplus/${id}`, patch)
+      const idx = this.usluge.findIndex((p) => p.id === id)
+      if (idx !== -1) this.usluge[idx] = data
       await this.ucitajKategorije()
       return data
     },
 
-    async obrisiProizvod(id) {
-      const stari = this.proizvodi.find((p) => p.id === id)
-      await api.delete(`/opg/ponuda-etrznica/${id}`)
-      this.proizvodi = this.proizvodi.filter((p) => p.id !== id)
+    async obrisiUslugu(id) {
+      const stari = this.usluge.find((p) => p.id === id)
+      await api.delete(`/opg/ponuda-farmaplus/${id}`)
+      this.usluge = this.usluge.filter((p) => p.id !== id)
 
       const k = this.kategorije.find((k) => k.id === stari.kategorija_id)
       if (k) {
         k.ukupno = Math.max(0, (k.ukupno ?? 0) - 1)
-        if (stari.proizvod_dostupan) {
+        if (stari.usluga_dostupna) {
           k.dostupni = Math.max(0, (k.dostupni ?? 0) - 1)
         } else {
           k.nedostupni = Math.max(0, (k.nedostupni ?? 0) - 1)
@@ -78,14 +78,14 @@ export const usePonudaEtrznicaStore = defineStore("ponudaEtrznica", {
       }
     },
 
-    async ucitajSlikuProizvoda(id, slika_proizvoda) {
+    async ucitajSlikuUsluge(id, slika_usluge) {
       const forma = new FormData()
-      forma.append("slika_proizvoda", slika_proizvoda)
-      const { data } = await api.post(`/opg/ponuda-etrznica/${id}/slika`, forma, {
+      forma.append("slika_usluge", slika_usluge)
+      const { data } = await api.post(`/opg/ponuda-farmaplus/${id}/slika`, forma, {
         headers: { "Content-Type": "multipart/form-data" },
       })
-      const idx = this.proizvodi.findIndex((p) => p.id === id)
-      if (idx !== -1) this.proizvodi[idx] = data
+      const idx = this.usluge.findIndex((p) => p.id === id)
+      if (idx !== -1) this.usluge[idx] = data
       return data
     },
   },

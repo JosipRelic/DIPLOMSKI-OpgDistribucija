@@ -104,6 +104,42 @@ class PrikazProizvoda(Proizvod):
     model_config = {"from_attributes": True}
 
 
+class KategorijaUsluge(BaseModel):
+    id: int
+    naziv: str = Field(min_length=1, max_length=150)
+    slug: str
+
+    model_config = {"from_attributes": True}
+
+
+class Usluga(BaseModel):
+    naziv: str = Field(min_length=1, max_length=200)
+    opis: Optional[str] = Field(default=None)
+    cijena: Decimal = Field(..., max_digits=12, decimal_places=2)
+    slika_usluge: Optional[str] = Field(default=None)
+    usluga_dostupna: bool = Field(default=True)
+    mjerna_jedinica: str = Field(min_length=1, max_length=50)
+    kategorija_id: int
+
+class KreiranjeUsluge(Usluga):
+    opg_id: int
+
+class AzuriranjeUsluge(BaseModel):
+    naziv: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    opis: Optional[str] = Field(default=None)
+    cijena: Optional[Decimal] = Field(None, max_digits=12, decimal_places=2)
+    slika_usluge: Optional[str] = Field(default=None)
+    usluga_dostupna: Optional[bool] = Field(default=None)
+    mjerna_jedinica: Optional[str] = Field(default=None, min_length=1, max_length=50)
+    kategorija_id: Optional[int] = Field(default=None)
+
+class PrikazUsluge(Usluga):
+    id: int
+    slug: str
+    opg_id: int
+    
+    model_config = {"from_attributes": True}
+
 class Token(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"
