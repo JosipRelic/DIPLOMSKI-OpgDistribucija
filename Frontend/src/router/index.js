@@ -47,7 +47,7 @@ const routes = [
   {
     path: "/profil/kupac",
     component: ProfilKupacView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, roles: ["Kupac"] },
     children: [
       {
         path: "",
@@ -57,32 +57,32 @@ const routes = [
         path: "nadzorna-ploca",
         name: "profilKupacNadzornaPloca",
         component: ProfilKupacNadzornaPlocaView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Kupac"] },
       },
       {
         path: "moje-narudzbe",
         name: "profilKupacMojeNarudzbe",
         component: ProfilKupacMojeNarudzbeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Kupac"] },
       },
       {
         path: "moje-narudzbe/detalji-narudzbe",
         name: "profilKupacMojeNarudzbeDetaljiNarudzbe",
         component: ProfilKupacMojeNarudzbeDetaljiNarudzbeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Kupac"] },
       },
       {
         path: "postavke-profila",
         name: "profilKupacPostavke",
         component: ProfilKupacPostavkeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Kupac"] },
       },
     ],
   },
   {
     path: "/profil/opg",
     component: ProfilOpgView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, roles: ["Opg"] },
     children: [
       {
         path: "",
@@ -92,44 +92,44 @@ const routes = [
         path: "nadzorna-ploca",
         name: "profilOpgNadzornaPloca",
         component: ProfilOpgNadzornaPlocaView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
         path: "primljene-narudzbe",
         name: "profilOpgPrimljeneNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
         path: "primljene-narudzbe/detalji-narudzbe",
         name: "profilOpgPrimljeneNarudzbeDetaljiNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
         path: "postavke-profila",
         name: "profilOpgPostavke",
         component: ProfilOpgPostavkeView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
         path: "ponuda-etrznica",
         name: "profilOpgPonudaETrznica",
         component: ProfilOpgPonudaETrznicaView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
 
       {
         path: "ponuda-farmaplus",
         name: "profilOpgPonudaFarmaPlus",
         component: ProfilOpgPonudaFarmaPlusView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
         path: "detalji-kupca",
         name: "profilOpgDetaljiKupca",
         component: ProfilOpgDetaljiKupcaView,
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, roles: ["Opg"] },
       },
     ],
   },
@@ -269,14 +269,37 @@ const router = createRouter({
   routes: routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const autentifikacija = useAutentifikacijskiStore()
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!autentifikacija.korisnikAutentificiran) {
-      return next({ name: "prijava" })
+router.beforeEach(async (to) => {
+  const auth = useAutentifikacijskiStore()
+
+  const requiresAuth = to.matched.some((r) => r.meta?.requiresAuth)
+  if (requiresAuth && !auth.korisnikAutentificiran) {
+    return { name: "prijava", query: { redirect: to.fullPath } }
+  }
+
+  const rec = [...to.matched].reverse().find((r) => r.meta?.roles)
+  const allowed = rec?.meta?.roles || null
+  if (!allowed) return true
+
+  let role = auth.tip_korisnika
+
+  if (!role && auth.korisnikAutentificiran) {
+    try {
+      await auth.dohvatiProfil()
+      role = auth.tip_korisnika || auth.korisnicki_profil?.tip_korisnika
+    } catch {
+      auth.odjava()
+      return { name: "prijava", query: { redirect: to.fullPath } }
     }
   }
-  next()
+
+  if (!role || !allowed.includes(role)) {
+    if (role === "Kupac") return { name: "profilKupacNadzornaPloca" }
+    if (role === "Opg") return { name: "profilOpgNadzornaPloca" }
+    return { name: "pocetna" }
+  }
+
+  return true
 })
 
 export default router
