@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from sqlalchemy import func
+from sqlalchemy import func, case
 from typing import List, Dict, Any
 from models import Proizvod, KategorijaProizvoda, Opg, Korisnik, TipKorisnika
 from schemas import KreiranjeProizvoda, AzuriranjeProizvoda, PrikazProizvoda
@@ -35,15 +35,24 @@ def kategorije(
             KategorijaProizvoda.id,
             KategorijaProizvoda.naziv,
             KategorijaProizvoda.slug,
-            func.count(Proizvod.id).label("broj")
+            func.count(Proizvod.id).label("ukupno"),
+            func.sum(
+                case(
+                    (Proizvod.proizvod_dostupan == False, 1),
+                    else_=0
+                )
+            ).label("nedostupni"),
+            func.sum(case(
+                (Proizvod.proizvod_dostupan == True, 1),
+                else_=0
+            )).label("dostupni")
         ).outerjoin(
             Proizvod,
             (Proizvod.kategorija_id == KategorijaProizvoda.id) & 
-            (Proizvod.opg_id == opg.id) &
-            (Proizvod.proizvod_dostupan == True)
+            (Proizvod.opg_id == opg.id) 
         ).group_by(KategorijaProizvoda.id, KategorijaProizvoda.naziv, KategorijaProizvoda.slug).order_by(KategorijaProizvoda.naziv.asc()).all()
     )
-    return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "broj": int(kategorija.broj)} for kategorija in kategorije_s_brojacem]
+    return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "ukupno": int(kategorija.ukupno or 0), "nedostupni": int(kategorija.nedostupni or 0), "dostupni": int(kategorija.dostupni or 0)} for kategorija in kategorije_s_brojacem]
 
 @router.get("", response_model=List[PrikazProizvoda])
 def lista_proizvoda(

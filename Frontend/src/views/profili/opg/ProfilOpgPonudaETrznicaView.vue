@@ -1,5 +1,10 @@
 <template>
   <div class="relative overflow-x-auto m-4 shadow-md rounded-lg">
+    <div class="bg-white pt-2 px-4 flex flex-items justify-center">
+      <p class="text-green-600 pe-2">(Dostupno proizvoda)</p>
+      <p class="text-red-400 pe-2">(Nema dostupnih proizvoda)</p>
+      <p class="text-yellow-500 pe-2">(Proizvod postoji, ali je nedostupan)</p>
+    </div>
     <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white">
       <button
         type="button"
@@ -15,6 +20,9 @@
         <span :class="ukupnoDostupno > 0 ? 'text-green-600' : 'text-red-400'"
           >({{ ukupnoDostupno }})</span
         >
+        <span v-if="ukupnoNedostupno > 0" class="text-yellow-500 ms-1"
+          >({{ ukupnoNedostupno }})</span
+        >
       </button>
       <button
         v-for="k in ponudaEtrznica.kategorije"
@@ -29,7 +37,11 @@
         @click="filtrirajPoKategoriji(k.id)"
       >
         {{ k.naziv }}
-        <span :class="k.broj === 0 ? 'text-red-400' : 'text-green-600'">({{ k.broj }})</span>
+        <span
+          :class="(k.dostupni ?? k.ukupno - k.nedostupni) > 0 ? 'text-green-600' : 'text-red-400'"
+          >({{ k.dostupni ?? k.ukupno - k.nedostupni }})</span
+        >
+        <span v-if="k.nedostupni > 0" class="text-yellow-500 ms-1">({{ k.nedostupni }})</span>
       </button>
     </div>
 
@@ -236,7 +248,7 @@
       Nemate proizvoda u ovoj kategoriji...
     </div>
 
-    <table v-else class="w-full text-sm text-left rtl:text-right text-gray-500">
+    <table v-else class="w-full text-sm text-center rtl:text-right text-gray-500">
       <thead class="text-xs uppercase bg-gray-200 text-gray-700">
         <tr>
           <th scope="col" class="px-16 py-3"></th>
@@ -321,10 +333,10 @@
           </td>
           <td class="px-4 py-4">
             <template v-if="uredivanjeId === p.id">
-              <input type="checkbox" v-model="urediFormu.proizvod_dostupan" />
+              <input type="checkbox" class="scale-150" v-model="urediFormu.proizvod_dostupan" />
             </template>
             <template v-else>
-              <input type="checkbox" :checked="p.proizvod_dostupan" disabled />
+              <input type="checkbox" class="scale-150" :checked="p.proizvod_dostupan" disabled />
             </template>
           </td>
           <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
@@ -422,8 +434,16 @@ const forma = reactive({
 })
 
 const aktivnaKategorijaId = computed(() => ponudaEtrznica.aktivnaKategorijaId)
+
 const ukupnoDostupno = computed(() =>
-  (ponudaEtrznica.kategorije || []).reduce((sum, k) => sum + (k.broj || 0), 0),
+  (ponudaEtrznica.kategorije || []).reduce(
+    (sum, k) => sum + (k.dostupni ?? (k.ukupno || 0) - (k.nedostupni || 0)),
+    0,
+  ),
+)
+
+const ukupnoNedostupno = computed(() =>
+  (ponudaEtrznica.kategorije || []).reduce((sum, k) => sum + (k.nedostupni || 0), 0),
 )
 
 onMounted(async () => {
