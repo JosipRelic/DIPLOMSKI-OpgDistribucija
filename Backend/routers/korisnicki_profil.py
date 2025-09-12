@@ -9,7 +9,7 @@ from typing import Annotated
 from utils import obrisi_uploadanu_sliku
 from datetime import datetime
 
-router = APIRouter(prefix="/profil", tags=["profil"])
+router = APIRouter(prefix="/profil", tags=["Korisnički profil"])
 
 def get_db():
     db = SessionLocal()

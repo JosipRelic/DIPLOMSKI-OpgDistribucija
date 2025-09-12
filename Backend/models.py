@@ -86,7 +86,9 @@ class Opg(Base):
     datum_pridruzivanja = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     slug = Column(String(255), unique=True, nullable=False)
-
+    prosjecna_ocjena = Column(Numeric(3, 2), nullable=True)
+    broj_recenzija = Column(Integer, default=0)
+    
     korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False, unique=True) 
     korisnik = relationship("Korisnik", back_populates="opg")
     proizvodi = relationship("Proizvod", back_populates="opg", cascade="all, delete-orphan", passive_deletes=True)
@@ -98,6 +100,8 @@ class KategorijaProizvoda(Base):
     id = Column(Integer, primary_key=True, index=True)
     naziv = Column(String(150), nullable=False, unique=True)
     slug = Column(String(255), nullable=False, unique=True)
+    opis = Column(String(500), nullable=True)
+    slika_kategorije = Column(String(500), nullable=True)
     datum_izrade = Column(DateTime(timezone=True), server_default=func.now(), nullable=False) 
     datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 

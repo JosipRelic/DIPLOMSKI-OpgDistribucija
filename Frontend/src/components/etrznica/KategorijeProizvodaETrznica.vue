@@ -14,155 +14,35 @@
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
     >
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
+      <router-link
+        v-for="kategorija in kategorije_s.kategorije"
+        :key="kategorija.id"
+        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer block"
+        :to="{ name: 'ETrznicaKategorija', params: { slug: kategorija.slug } }"
       >
-        <router-link :to="{ name: 'ETrznicaKategorijaDomaceVoce' }">
-          <img
-            :src="slikeETrznicaKategorijeVoce"
-            alt="Domaće voće"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Domaće voće</div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaSezonskoPovrce' }">
-          <img
-            :src="slikeETrznicaKategorijePovrce"
-            alt="Sezonsko povrće"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Sezonsko povrće</div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaJajaiMlijecniProizvodi' }">
-          <img
-            :src="slikeETrznicaKategorijeMlijecniProizvodi"
-            alt="Jaja i mliječni proizvodi"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">
-            Jaja i mliječni proizvodi
-          </div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaIzKosnice' }">
-          <img
-            :src="slikeETrznicaKategorijeIzKosnice"
-            alt="Iz košnice"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Iz košnice</div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaPicaiRakije' }">
-          <img
-            :src="slikeETrznicaKategorijePica"
-            alt="Domaća pića i rakije"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">
-            Domaća pića i rakije
-          </div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaUljaizPrirode' }">
-          <img
-            :src="slikeETrznicaKategorijeUlja"
-            alt="Ulja iz prirode"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Ulja iz prirode</div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaCajeviZacinskoBilje' }">
-          <img
-            :src="slikeETrznicaKategorijeCajeviZacini"
-            alt="Čajevi i začinsko bilje"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">
-            Čajevi i začinsko bilje
-          </div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaSuhomesnato' }">
-          <img
-            :src="slikeETrznicaKategorijeSuhomesnato"
-            alt="Suhomesnati proizvodi"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">
-            Suhomesnati proizvodi
-          </div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaPrirodnaKozmetika' }">
-          <img
-            :src="slikeETrznicaKategorijeKozmetika"
-            alt="Prirodna kozmetika"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Prirodna kozmetika</div>
-        </router-link>
-      </div>
-
-      <div
-        class="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white cursor-pointer"
-      >
-        <router-link :to="{ name: 'ETrznicaKategorijaIzSumeiDvorista' }">
-          <img
-            :src="slikeETrznicaKategorijeSumaDvoriste"
-            alt="Iz šume i dvorišta"
-            class="w-full h-52 object-cover bg-gray-100"
-          />
-          <div class="p-4 text-center text-lg font-semibold text-gray-800">Iz šume i dvorišta</div>
-        </router-link>
-      </div>
+        <img
+          :src="resolveImg(kategorija.slika_kategorije)"
+          :alt="kategorija.naziv"
+          class="w-full h-52 object-cover bg-gray-100"
+        />
+        <div class="p-4 text-center text-lg font-semibold text-gray-800">
+          {{ kategorija.naziv }}
+        </div>
+      </router-link>
     </div>
   </section>
 </template>
+
 <script setup>
-import slikeETrznicaKategorijeVoce from "@/assets/slike/etrznica-kategorije-voce.jpg"
-import slikeETrznicaKategorijePovrce from "@/assets/slike/etrznica-kategorije-povrce.jpg"
-import slikeETrznicaKategorijeMlijecniProizvodi from "@/assets/slike/etrznica-kategorije-mlijecniproizvodi.jpg"
-import slikeETrznicaKategorijeIzKosnice from "@/assets/slike/etrznica-kategorije-izkosnice.jpg"
-import slikeETrznicaKategorijePica from "@/assets/slike/etrznica-kategorije-pica.jpg"
-import slikeETrznicaKategorijeUlja from "@/assets/slike/etrznica-kategorije-ulja.jpg"
-import slikeETrznicaKategorijeCajeviZacini from "@/assets/slike/etrznica-kategorije-cajevi-zacini.jpg"
-import slikeETrznicaKategorijeSuhomesnato from "@/assets/slike/etrznica-kategorije-suhomesnato.jpg"
-import slikeETrznicaKategorijeKozmetika from "@/assets/slike/etrznica-kategorije-kozmetika.jpg"
-import slikeETrznicaKategorijeSumaDvoriste from "@/assets/slike/etrznica-kategorije-sumaidvoriste.jpg"
+import { onMounted } from "vue"
+import { useEtrznicaKategorijeStore } from "@/stores/eTrznicaKategorije"
+
+const kategorije_s = useEtrznicaKategorijeStore()
+onMounted(() => kategorije_s.ucitajSveKategorije())
+
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
+function resolveImg(src) {
+  if (!src) return ""
+  return src.startsWith("/") ? `${BASE_URL}${src}` : src
+}
 </script>

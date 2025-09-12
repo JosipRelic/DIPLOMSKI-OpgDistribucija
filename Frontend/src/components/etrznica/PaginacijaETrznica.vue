@@ -1,67 +1,50 @@
 <template>
-  <ol class="mt-8 flex justify-center gap-1 text-xs font-medium">
-    <li>
-      <a
-        href="#"
-        class="inline-flex size-8 items-center justify-center rounded-sm border border-gray-100"
-      >
-        <span class="sr-only">Prethodna stranica</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="size-3"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+  <div class="flex justify-center mt-4">
+    <ol
+      v-if="ukupnoStranica > 1"
+      class="flex border border-gray-200 shadow-md rounded-md items-center justify-center max-w-full"
+    >
+      <li>
+        <button
+          :disabled="stranica <= 1"
+          @click="$emit('idi-na', stranica - 1)"
+          class="text-black border-r border-gray-200 font-semibold px-4 py-2 cursor-pointer"
         >
-          <path
-            fill-rule="evenodd"
-            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-    </li>
+          Prethodna stranica
+        </button>
+      </li>
 
-    <li>
-      <a href="#" class="block size-8 rounded-sm border border-gray-100 text-center leading-8">
-        1
-      </a>
-    </li>
-
-    <li class="block size-8 rounded-sm border-black bg-black text-center leading-8 text-white">
-      2
-    </li>
-
-    <li>
-      <a href="#" class="block size-8 rounded-sm border border-gray-100 text-center leading-8">
-        3
-      </a>
-    </li>
-
-    <li>
-      <a href="#" class="block size-8 rounded-sm border border-gray-100 text-center leading-8">
-        4
-      </a>
-    </li>
-
-    <li>
-      <a
-        href="#"
-        class="inline-flex size-8 items-center justify-center rounded-sm border border-gray-100"
-      >
-        <span class="sr-only">Sljedeća stranica</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="size-3"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+      <li v-for="n in ukupnoStranica" :key="n">
+        <button
+          @click="$emit('idi-na', n)"
+          class="flex space-x-2 px-4 py-2 cursor-pointer border"
+          :class="
+            n === stranica
+              ? 'border-gray-300 bg-orange-500 text-white shadow-3xl shadow-orange-500'
+              : 'border-gray-100'
+          "
         >
-          <path
-            fill-rule="evenodd"
-            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </a>
-    </li>
-  </ol>
+          {{ n }}
+        </button>
+      </li>
+
+      <li>
+        <button
+          :disabled="stranica >= ukupnoStranica"
+          @click="$emit('idi-na', stranica + 1)"
+          class="text-black border-l border-gray-200 font-semibold px-4 py-2 cursor-pointer"
+        >
+          Sljedeća stranica
+        </button>
+      </li>
+    </ol>
+  </div>
 </template>
+
+<script setup>
+defineProps({
+  stranica: { type: Number, default: 1 },
+  ukupnoStranica: { type: Number, default: 1 },
+})
+defineEmits(["idi-na"])
+</script>

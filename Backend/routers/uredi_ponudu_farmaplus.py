@@ -17,7 +17,7 @@ def get_db():
     finally:
         db.close()
 
-router = APIRouter(prefix="/opg/ponuda-farmaplus", tags=["OPG ponuda usluga"])
+router = APIRouter(prefix="/opg/ponuda-farmaplus", tags=["OPG profil - Uređivanje ponude Farma+"])
 
 def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
     opg = db.query(Opg).filter(Opg.korisnik_id == korisnik_id).first()

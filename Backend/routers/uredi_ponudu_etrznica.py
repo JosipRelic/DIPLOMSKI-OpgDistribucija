@@ -17,7 +17,7 @@ def get_db():
     finally:
         db.close()
 
-router = APIRouter(prefix="/opg/ponuda-etrznica", tags=["OPG ponuda proizvoda"])
+router = APIRouter(prefix="/opg/ponuda-etrznica", tags=["OPG profil - Uređivanje ponude E-Tržnica"])
 
 def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
     opg = db.query(Opg).filter(Opg.korisnik_id == korisnik_id).first()
@@ -26,7 +26,7 @@ def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
     return opg
 
 @router.get("/kategorije", response_model=List[Dict[str, Any]])
-def kategorije(
+def kategorije_proizvoda(
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
 ):
