@@ -271,6 +271,10 @@ const router = useRouter()
 
 const obavijest = ref(null)
 
+const odabranaSlika = ref(null)
+const novaSlika = ref(null)
+const lokalniPretpregledSlike = ref(null)
+
 const slika = computed(
   () =>
     lokalniPretpregledSlike.value ||
@@ -278,13 +282,9 @@ const slika = computed(
     "https://placehold.co/80x80?text=SlikaProfila",
 )
 
-const odabranaSlika = ref(null)
-
 const odabirSlike = () => {
   odabranaSlika.value?.click()
 }
-
-const lokalniPretpregledSlike = ref(null)
 
 const promjenaSlike = async (event) => {
   const slika = event.target.files?.[0]
@@ -292,8 +292,10 @@ const promjenaSlike = async (event) => {
     return
   }
 
+  if (lokalniPretpregledSlike.value) URL.revokeObjectURL(lokalniPretpregledSlike.value)
+
+  novaSlika.value = slika
   lokalniPretpregledSlike.value = URL.createObjectURL(slika)
-  await autentifikacija.ucitajSlikuProfila(slika)
 }
 
 const forma = reactive({
@@ -331,6 +333,18 @@ const azurirajPodatkeKupca = async (e) => {
     await autentifikacija.azurirajProfil({
       ...forma,
     })
+
+    if (novaSlika.value) {
+      const ok = await autentifikacija.ucitajSlikuProfila(novaSlika.value)
+      if (!ok) throw new Error("Neuspješan upload slike")
+      novaSlika.value = null
+      if (odabranaSlika.value) odabranaSlika.value.value = ""
+      if (lokalniPretpregledSlike.value) {
+        URL.revokeObjectURL(lokalniPretpregledSlike.value)
+        lokalniPretpregledSlike.value = null
+      }
+    }
+
     obavijest.value = { tip_obavijesti: "Uspjeh", poruka: "Podaci su uspješno ažurirani." }
     if (obavijest.value) {
       setTimeout(() => {
