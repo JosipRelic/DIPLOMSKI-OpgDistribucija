@@ -6,6 +6,8 @@ from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika
 from security import dohvati_id_trenutnog_korisnika
 import schemas
 from typing import Annotated
+from utils import obrisi_uploadanu_sliku
+from datetime import datetime
 
 router = APIRouter(prefix="/profil", tags=["profil"])
 
@@ -154,13 +156,17 @@ def ucitaj_sliku_profila(
     db: Session = Depends(get_db),
 
 ):
+    trenutno_vrijeme = datetime.now().strftime("%H%M%S%f")
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
     if not korisnik:
         raise HTTPException(status_code=404, detail="Korisnik ne postoji")
+    
+    if korisnik.korisnicki_profil and korisnik.korisnicki_profil.slika_profila:
+        obrisi_uploadanu_sliku(korisnik.korisnicki_profil.slika_profila)
 
     os.makedirs("static/uploads", exist_ok=True)
     ekstenzija = os.path.splitext(slika.filename)[1].lower() or ".jpg"
-    naziv_slike = f"korisnik_{korisnik.id}{ekstenzija}"
+    naziv_slike = f"korisnik_{korisnik.id}_{trenutno_vrijeme}{ekstenzija}"
     path = os.path.join("static", "uploads", naziv_slike)
 
     with open(path, "wb") as f:
@@ -185,6 +191,9 @@ def obrisi_profil(
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
     if not korisnik:
         raise HTTPException(status_code=404, detail="Korisnik ne postoji")
+    
+    if korisnik.korisnicki_profil and korisnik.korisnicki_profil.slika_profila:
+        obrisi_uploadanu_sliku(korisnik.korisnicki_profil.slika_profila)
     
     db.delete(korisnik)
     db.commit()

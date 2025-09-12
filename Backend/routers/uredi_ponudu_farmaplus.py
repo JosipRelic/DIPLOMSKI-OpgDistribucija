@@ -8,6 +8,7 @@ from schemas import KreiranjeUsluge, AzuriranjeUsluge, PrikazUsluge
 from security import dohvati_id_trenutnog_korisnika
 import os
 from datetime import datetime
+from utils import obrisi_uploadanu_sliku
 
 def get_db():
     db = SessionLocal()
@@ -127,13 +128,9 @@ def obrisi_uslugu(
     usluga = db.get(Usluga, usluga_id)
     if not usluga or usluga.opg_id != opg.id:
         raise HTTPException(status_code=404, detail="Usluga nije pronađena")
-    if usluga.slika_usluge and usluga.slika_usluge.startswith("/static/uploads/"):
-        try:
-            aps = os.path.join(os.path.dirname(__file__), usluga.slika_usluge.lstrip("/"))
-            if os.path.exists(aps):
-                os.remove(aps)
-        except Exception:
-            pass
+    
+    if usluga.slika_usluge:
+        obrisi_uploadanu_sliku(usluga.slika_usluge)
     
     db.delete(usluga)
     db.commit()
@@ -153,6 +150,9 @@ def ucitaj_sliku_usluge(
     if not usluga or usluga.opg_id != opg.id:
         raise HTTPException(status_code=404, detail="Usluga nije pronađena")
     
+    if usluga.slika_usluge:
+        obrisi_uploadanu_sliku(usluga.slika_usluge)
+
     os.makedirs("static/uploads", exist_ok=True)
     ekstenzija = os.path.splitext(slika_usluge.filename)[1].lower() or ".jpg"
     naziv_slike = f"usluga_{usluga.id}_{trenutno_vrijeme}{ekstenzija}"

@@ -8,6 +8,7 @@ from schemas import KreiranjeProizvoda, AzuriranjeProizvoda, PrikazProizvoda
 from security import dohvati_id_trenutnog_korisnika
 import os
 from datetime import datetime
+from utils import obrisi_uploadanu_sliku
 
 def get_db():
     db = SessionLocal()
@@ -126,14 +127,10 @@ def obrisi_proizvod(
     proizvod = db.get(Proizvod, proizvod_id)
     if not proizvod or proizvod.opg_id != opg.id:
         raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
-    if proizvod.slika_proizvoda and proizvod.slika_proizvoda.startswith("/static/uploads/"):
-        try:
-            aps = os.path.join(os.path.dirname(__file__), proizvod.slika_proizvoda.lstrip("/"))
-            if os.path.exists(aps):
-                os.remove(aps)
-        except Exception:
-            pass
     
+    if proizvod.slika_proizvoda:
+        obrisi_uploadanu_sliku(proizvod.slika_proizvoda)
+
     db.delete(proizvod)
     db.commit()
     return
@@ -153,6 +150,9 @@ def ucitaj_sliku_proizvoda(
     if not proizvod or proizvod.opg_id != opg.id:
         raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
     
+    if proizvod.slika_proizvoda:
+        obrisi_uploadanu_sliku(proizvod.slika_proizvoda)
+
     os.makedirs("static/uploads", exist_ok=True)
     ekstenzija = os.path.splitext(slika_proizvoda.filename)[1].lower() or ".jpg"
     naziv_slike = f"proizvod_{proizvod.id}{trenutno_vrijeme}{ekstenzija}"
