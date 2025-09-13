@@ -65,6 +65,7 @@
               v-for="proizvod in proizvodi_s.proizvodi"
               :key="proizvod.id"
               :proizvod="proizvod"
+              :kat-slug="route.params.slug"
             />
           </div>
 

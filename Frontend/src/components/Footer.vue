@@ -18,7 +18,7 @@
       <ul class="mt-6 flex justify-center gap-6 md:gap-8">
         <li>
           <a
-            href="#"
+            href="https://github.com/JosipRelic/DIPLOMSKI-OpgDistribucija"
             rel="noreferrer"
             target="_blank"
             class="text-gray-100 transition hover:text-gray-700/75"

@@ -24,7 +24,7 @@ import ProfilOpgPonudaETrznicaView from "@/views/profili/opg/ProfilOpgPonudaETrz
 import ProfilOpgPonudaFarmaPlusView from "@/views/profili/opg/ProfilOpgPonudaFarmaPlusView.vue"
 import ProfilOpgDetaljiKupcaView from "@/views/profili/opg/ProfilOpgDetaljiKupcaView.vue"
 import ETrznicaKategorijaProizvodaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaView.vue"
-import ProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ProizvodDetaljiView.vue"
+import ETrznicaProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ETrznicaProizvodDetaljiView.vue"
 import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 
@@ -140,9 +140,9 @@ const routes = [
     name: "ETrznicaKategorija",
   },
   {
-    name: "krastavci",
-    path: "/e-trznica/kategorija-proizvoda/sezonsko-povrce/krastavci",
-    component: ProizvodDetaljiView,
+    name: "ETrznicaProizvodDetalji",
+    path: "/e-trznica/kategorija-proizvoda/:katSlug/:proizvodSlugId",
+    component: ETrznicaProizvodDetaljiView,
   },
 
   {

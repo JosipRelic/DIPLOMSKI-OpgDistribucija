@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
 from typing import List, Optional, Dict, Any
@@ -253,4 +253,59 @@ def proizvodi_po_kategoriji(
         ],
         "ukupno": ukupno,
         "ukupno_u_kategoriji": ukupno_u_kategoriji
+    }
+
+@router.get("/proizvodi/{proizvod_id}", response_model=Dict[str, Any])
+def detalji_proizvoda(
+    proizvod_id: int = Path(..., ge=1),
+    db: Session = Depends(get_db)
+):
+    proizvod = (
+        db.query(
+            Proizvod.id, 
+            Proizvod.naziv, 
+            Proizvod.opis, 
+            Proizvod.cijena,
+            Proizvod.mjerna_jedinica,
+            Proizvod.slika_proizvoda,
+            Proizvod.slug,
+            Proizvod.proizvod_dostupan,
+            Opg.id.label("opg_id"),
+            Opg.naziv.label("opg_naziv"),
+            Opg.slug.label("opg_slug"),
+            KorisnickiProfil.grad,
+            KorisnickiProfil.zupanija,
+            KategorijaProizvoda.naziv.label("kategorija_naziv"),
+            KategorijaProizvoda.slug.label("kategorija_slug")
+        ) 
+        .join(Opg, Opg.id == Proizvod.opg_id)
+        .join(Korisnik, Korisnik.id == Opg.korisnik_id)
+        .join(KorisnickiProfil, KorisnickiProfil.korisnik_id == Korisnik.id)
+        .join(KategorijaProizvoda, KategorijaProizvoda.id == Proizvod.kategorija_id)
+        .filter(Proizvod.id == proizvod_id)
+        .first()
+    )
+    if not proizvod:
+        raise HTTPException(status_code=404, detail="Proizvod nije pronađen")
+    
+    return {
+        "id": proizvod.id,
+        "naziv": proizvod.naziv,
+        "opis": proizvod.opis,
+        "cijena": float(proizvod.cijena),
+        "mjerna_jedinica": proizvod.mjerna_jedinica,
+        "slika_proizvoda": proizvod.slika_proizvoda,
+        "slug": proizvod.slug,
+        "proizvod_dostupan": proizvod.proizvod_dostupan,
+        "opg": {
+            "id": proizvod.opg_id,
+            "naziv": proizvod.opg_naziv,
+            "slug": proizvod.opg_slug,
+            "grad": proizvod.grad,
+            "zupanija": proizvod.zupanija
+        },
+        "kategorija": {
+            "naziv": proizvod.kategorija_naziv,
+            "slug": proizvod.kategorija_slug
+        }
     }
