@@ -41,7 +41,7 @@
       <label for="Sortiraj" class="block text-xs font-medium text-gray-700"> Sortiraj </label>
       <select
         id="Sortiraj"
-        class="mt-1 rounded-sm shadow-md p-2 text-sm border border-gray-300 cursor-pointer"
+        class="mt-1 rounded shadow shadow-md p-2 text-sm border border-gray-200 cursor-pointer"
         v-model="sortiraj"
       >
         <option value="novo" class="text-gray-900">Najnovije</option>
@@ -56,7 +56,7 @@
       <p class="block text-xs font-medium text-gray-700">Filteri</p>
       <div class="shadow-md">
         <details
-          class="mt-1 overflow-hidden rounded-sm border border-gray-300 [&_summary::-webkit-details-marker]:hidden"
+          class="mt-1 overflow-hidden rounded shadow-md border border-b-0 border-gray-200 [&_summary::-webkit-details-marker]:hidden"
         >
           <summary
             class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -111,7 +111,7 @@
         </details>
 
         <details
-          class="overflow-hidden rounded-sm border border-gray-300 [&_summary::-webkit-details-marker]:hidden"
+          class="overflow-hidden rounded shadow-xs border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
         >
           <summary
             class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -171,8 +171,17 @@
       <button
         type="button"
         @click="proizvodi_s.ponistiFiltere()"
-        class="text-sm text-gray-900 underline underline-offset-4 cursor-pointer"
+        class="text-sm text-gray-600 cursor-pointer border border-dotted p-2 rounded pr-3 border-gray-300 shadow-md flex items-center gap-3"
       >
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48">
+          <path fill="#F57C00" d="M29 23H19L7 9h34z" />
+          <path
+            fill="#FF9800"
+            d="m29 38l-10 6V23h10zM41.5 9h-35C5.7 9 5 8.3 5 7.5S5.7 6 6.5 6h35c.8 0 1.5.7 1.5 1.5S42.3 9 41.5 9z"
+          />
+          <circle cx="38" cy="38" r="10" fill="#F44336" />
+          <path fill="#fff" d="M32 36h12v4H32z" />
+        </svg>
         Poništi sve filtere
       </button>
     </div>
