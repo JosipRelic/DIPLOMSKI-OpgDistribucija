@@ -83,7 +83,7 @@
           <div class="border-t border-gray-200 bg-white">
             <header class="flex items-center justify-between p-4">
               <span class="text-sm text-gray-700">
-                {{ proizvodi_s.filteri.zupanije.length }} Odabrano
+                <span class="font-bold">{{ proizvodi_s.filteri.zupanije.length }}</span> Odabrano
               </span>
               <button
                 type="button"
@@ -138,7 +138,7 @@
           <div class="border-t border-gray-200 bg-white">
             <header class="flex items-center justify-between p-4">
               <span class="text-sm text-gray-700">
-                {{ proizvodi_s.filteri.mjesta.length }} Odabrano
+                <span class="font-bold">{{ proizvodi_s.filteri.mjesta.length }}</span> Odabrano
               </span>
               <button
                 type="button"

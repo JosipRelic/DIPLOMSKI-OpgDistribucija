@@ -35,7 +35,8 @@
     </span>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-20 py-8 mb-14">
-      <KarticaOPGa />
+      <!-- <KarticaOPGa />-->
+      OPGOVII
     </div>
   </section>
 

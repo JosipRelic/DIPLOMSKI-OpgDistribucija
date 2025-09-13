@@ -14,15 +14,27 @@ export const useEtrznicaOpgoviStore = defineStore("eTrznicaOpgovi", {
       zupanije: [],
       mjesta: [],
       ocjena_min: null,
+      bez_recenzija: false,
       sortiranje: "",
     },
 
     filteriZupanije: [],
     filteriMjesta: [],
     kat_slug: null,
+
+    statistika: {
+      broj_registriranih_opgova: 0,
+      broj_usluga: 0,
+      broj_proizvoda: 0,
+    },
   }),
 
   actions: {
+    async ucitajStatistiku() {
+      const { data } = await api.get("/e-trznica/statistika")
+      this.statistika = data
+    },
+
     postaviKategoriju(slug) {
       this.kat_slug = slug || null
     },
@@ -42,7 +54,8 @@ export const useEtrznicaOpgoviStore = defineStore("eTrznicaOpgovi", {
           q: this.filteri.q || undefined,
           zupanije: this.filteri.zupanije.join(",") || undefined,
           mjesta: this.filteri.mjesta.join(",") || undefined,
-          ocjena_min: this.filteri.ocjena_min || undefined,
+          ocjena_min: this.filteri.ocjena_min ?? undefined,
+          bez_recenzija: this.filteri.bez_recenzija || undefined,
           sortiranje: this.filteri.sortiranje || undefined,
           stranica: this.stranica,
           velicina_stranice: this.velicina_stranice,
@@ -62,7 +75,14 @@ export const useEtrznicaOpgoviStore = defineStore("eTrznicaOpgovi", {
     },
 
     ponistiFiltere() {
-      this.filteri = { q: "", zupanije: [], mjesta: [], ocjena_min: null, sortiranje: "" }
+      this.filteri = {
+        q: "",
+        zupanije: [],
+        mjesta: [],
+        ocjena_min: null,
+        bez_recenzija: false,
+        sortiranje: "",
+      }
       this.stranica = 1
       this.ucitajOpgove()
     },

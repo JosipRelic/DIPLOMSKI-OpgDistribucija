@@ -77,27 +77,6 @@
   </section>
 
   <section>
-    <div class="bg-[#f5ebdc] py-10 sm:py-20">
-      <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
-          <div
-            v-for="podatak in dummy_podaci"
-            :key="podatak.id"
-            class="mx-auto flex max-w-xs flex-col gap-y-4"
-          >
-            <dt class="text-base/7 text-gray-900">{{ podatak.name }}</dt>
-            <dd
-              class="order-first text-3xl font-semibold tracking-tight text-[#223c2f] sm:text-5xl"
-            >
-              {{ podatak.value }}
-            </dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-  </section>
-
-  <section>
     <OpgoviETrznica />
   </section>
 </template>
@@ -105,10 +84,4 @@
 import NaslovnaEtrznica from "@/components/etrznica/NaslovnaETrznica.vue"
 import KategorijeProizvodaETrznica from "@/components/etrznica/KategorijeProizvodaETrznica.vue"
 import OpgoviETrznica from "@/components/etrznica/OpgoviETrznica.vue"
-
-const dummy_podaci = [
-  { id: 1, name: "Registriranih OPG-ova", value: "120" },
-  { id: 2, name: "Proizvoda u ponudi", value: "5000+" },
-  { id: 3, name: "Narudžbi", value: "200+" },
-]
 </script>

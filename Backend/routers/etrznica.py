@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
 from typing import List, Optional, Dict, Any
 from database import SessionLocal
-from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil
+from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil, Usluga
+import math
 
 router = APIRouter(prefix="/e-trznica", tags=["E-tržnica"])
 
@@ -98,6 +99,7 @@ def opgovi(
     zupanije: Optional[str] = Query(default=None, description="odvojeno-zarezom"),
     mjesta: Optional[str] = Query(default=None, description="odvojeno-zarezom"),
     ocjena_min: Optional[float] = Query(default=None),
+    bez_recenzija: Optional[bool] = Query(default=False, description="true = samo opgovi bez recenzija"),
     sortiranje: Optional[str] = Query(default=None, description="naziv_asc|naziv_desc|ocjena_desc|ocjena_asc") ,
     stranica: int = 1,
     velicina_stranice: int = 9,
@@ -137,9 +139,22 @@ def opgovi(
     if mjesta:
         podaci_opgova = podaci_opgova.filter(KorisnickiProfil.grad.in_(mjesta.split(",")))
 
-    if ocjena_min is not None:
-        podaci_opgova = podaci_opgova.filter((Opg.prosjecna_ocjena != None) & (Opg.prosjecna_ocjena >= ocjena_min))
-    
+    if bez_recenzija:
+        podaci_opgova = podaci_opgova.filter(
+            or_(Opg.broj_recenzija == 0, Opg.prosjecna_ocjena.is_(None))
+        )
+    else:
+        if ocjena_min is not None:
+            podaci_opgova = podaci_opgova.filter(
+                Opg.prosjecna_ocjena.is_not(None)
+            )
+
+            if ocjena_min in (1,2,3,4):
+                podaci_opgova = podaci_opgova.filter(
+                    and_(Opg.prosjecna_ocjena >= ocjena_min, Opg.prosjecna_ocjena < ocjena_min + 1)
+                )
+            elif ocjena_min >= 5:
+                podaci_opgova = podaci_opgova.filter(Opg.prosjecna_ocjena >= 5)
 
     if sortiranje == "naziv_asc":
         podaci_opgova = podaci_opgova.order_by(Opg.naziv.asc())
@@ -154,6 +169,8 @@ def opgovi(
     
 
     ukupno = db.query(func.count(distinct(Opg.id))).select_from(podaci_opgova.subquery()).scalar()
+    ukupno_stranica = math.ceil(ukupno / velicina_stranice) if velicina_stranice else 0
+
     opg_ids = (
     db.query(distinct(Opg.id))
       .select_from(podaci_opgova.subquery())
@@ -163,6 +180,7 @@ def opgovi(
     )
     ids = [oid[0] for oid in opg_ids]
     prikaz_opgova = podaci_opgova.filter(Opg.id.in_(ids)).all()
+
 
     return {
         "opgovi": [
@@ -180,7 +198,8 @@ def opgovi(
                 zupanija = opg.zupanija
             ) for opg in prikaz_opgova
         ],
-        "ukupno": ukupno
+        "ukupno": ukupno,
+        "ukupno_stranica": ukupno_stranica
     }
 
 
@@ -308,4 +327,18 @@ def detalji_proizvoda(
             "naziv": proizvod.kategorija_naziv,
             "slug": proizvod.kategorija_slug
         }
+    }
+
+@router.get("/statistika", response_model=Dict[str,int])
+def statistika(
+    db: Session = Depends(get_db)
+):
+    broj_registriranih_opgova = db.query(func.count(Opg.id)).scalar()
+    broj_usluga = db.query(func.count(Usluga.id)).scalar()
+    broj_proizvoda = db.query(func.count(Proizvod.id)).scalar()
+
+    return{
+        "broj_registriranih_opgova": int(broj_registriranih_opgova or 0),
+        "broj_usluga": int(broj_usluga or 0),
+        "broj_proizvoda": int(broj_proizvoda or 0)
     }

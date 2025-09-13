@@ -131,7 +131,7 @@ const routes = [
   },
   {
     name: "ETrznicaDetaljiOPGa",
-    path: "/e-trznica/detalji-opga",
+    path: "/e-trznica/detalji-opga/:opgSlug",
     component: ETrznicaDetaljiOPGaView,
   },
   {
