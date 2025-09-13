@@ -15,20 +15,20 @@
       <div class="space-y-4">
         <div>
           <label for="PretragaProizvoda">
-            <span class="block text-xs font-medium text-gray-700"> Pretraži po nazivu </span>
-
+            <span class="block text-xs font-medium text-gray-700 mb-1"> Pretraži po nazivu </span>
             <div class="relative">
               <input
+                v-model="q"
                 type="text"
                 id="PretragaProizvoda"
-                class="mt-0.5 w-full h-10 rounded border-gray-300 pe-10 shadow-sm sm:text-sm bg-white p-3"
+                placeholder="Unesi naziv OPG-a, adresu ili mjesto..."
+                class="mt-0.5 w-full h-10 rounded border-gray-300 pe-10 shadow-md sm:text-sm bg-white p-3"
               />
-
               <span class="absolute inset-y-0 right-2 grid w-8 place-content-center">
                 <button
                   type="button"
                   aria-label="Submit"
-                  class="rounded-full p-1.5 text-gray-700 transition-colors hover:bg-gray-100"
+                  class="rounded-full p-1.5 text-gray-700 hover:bg-gray-100"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -52,12 +52,15 @@
         <div>
           <label for="Sortiraj" class="block text-xs font-medium text-gray-700"> Sortiraj </label>
 
-          <select id="Sortiraj" class="mt-1 rounded-sm border-gray-300 text-sm">
-            <option>Sortiraj po</option>
-            <option value="Naziv, Silazno">Naziv, Silazno</option>
-            <option value="Naziv, Uzlazno">Naziv, Uzlazno</option>
-            <option value="Cijena, Silazno">Ocjena, Silazno</option>
-            <option value="Cijena, Uzlazno">Ocjena, Uzlazno</option>
+          <select
+            id="Sortiraj"
+            class="mt-1 rounded shadow shadow-md p-2 text-sm border border-gray-200 cursor-pointer"
+          >
+            <option value="novo" class="text-gray-900">Najnovije</option>
+            <option value="naziv_asc" class="text-gray-900">Naziv, Uzlazno</option>
+            <option value="naziv_desc" class="text-gray-900">Naziv, Silazno</option>
+            <option value="ocjena_asc" class="text-gray-900">Ocjena, Uzlazno</option>
+            <option value="ocjena_desc" class="text-gray-900">Ocjena, Silazno</option>
           </select>
         </div>
 
@@ -66,7 +69,7 @@
 
           <div class="mt-1 space-y-2">
             <details
-              class="overflow-hidden rounded-sm border border-gray-300 [&_summary::-webkit-details-marker]:hidden"
+              class="overflow-hidden rounded shadow-md border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
             >
               <summary
                 class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -153,7 +156,7 @@
             </details>
 
             <details
-              class="overflow-hidden rounded-sm border border-gray-300 [&_summary::-webkit-details-marker]:hidden"
+              class="overflow-hidden rounded shadow-md border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
             >
               <summary
                 class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -240,7 +243,7 @@
             </details>
 
             <details
-              class="overflow-hidden rounded-sm border border-gray-300 [&_summary::-webkit-details-marker]:hidden"
+              class="overflow-hidden rounded shadow-md border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
             >
               <summary
                 class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -623,6 +626,23 @@
               </div>
             </details>
           </div>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="text-sm text-gray-600 cursor-pointer border p-2 rounded pr-3 border-gray-200 shadow-md flex items-center gap-3"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48">
+              <path fill="#F57C00" d="M29 23H19L7 9h34z" />
+              <path
+                fill="#FF9800"
+                d="m29 38l-10 6V23h10zM41.5 9h-35C5.7 9 5 8.3 5 7.5S5.7 6 6.5 6h35c.8 0 1.5.7 1.5 1.5S42.3 9 41.5 9z"
+              />
+              <circle cx="38" cy="38" r="10" fill="#F44336" />
+              <path fill="#fff" d="M32 36h12v4H32z" />
+            </svg>
+            Poništi sve filtere
+          </button>
         </div>
       </div>
 

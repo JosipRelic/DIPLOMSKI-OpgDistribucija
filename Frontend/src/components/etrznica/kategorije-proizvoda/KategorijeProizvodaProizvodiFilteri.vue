@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <div>
       <label for="PretragaProizvoda">
-        <span class="block text-xs font-sm text-gray-700"> Pretraži po nazivu </span>
+        <span class="block text-xs font-medium text-gray-700 mb-1"> Pretraži po nazivu </span>
         <div class="relative">
           <input
             v-model="q"
@@ -54,9 +54,9 @@
 
     <div>
       <p class="block text-xs font-medium text-gray-700">Filteri</p>
-      <div class="shadow-md">
+      <div class="space-y-2 mt-1">
         <details
-          class="mt-1 overflow-hidden rounded shadow-md border border-b-0 border-gray-200 [&_summary::-webkit-details-marker]:hidden"
+          class="overflow-hidden rounded shadow-md border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
         >
           <summary
             class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -111,7 +111,7 @@
         </details>
 
         <details
-          class="overflow-hidden rounded shadow-xs border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
+          class="overflow-hidden rounded shadow-md border border-gray-200 [&_summary::-webkit-details-marker]:hidden"
         >
           <summary
             class="flex cursor-pointer items-center justify-between gap-2 p-4 text-gray-900 transition"
@@ -171,7 +171,7 @@
       <button
         type="button"
         @click="proizvodi_s.ponistiFiltere()"
-        class="text-sm text-gray-600 cursor-pointer border border-dotted p-2 rounded pr-3 border-gray-300 shadow-md flex items-center gap-3"
+        class="text-sm text-gray-600 cursor-pointer border p-2 rounded pr-3 border-gray-200 shadow-md flex items-center gap-3"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 48 48">
           <path fill="#F57C00" d="M29 23H19L7 9h34z" />
