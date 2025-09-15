@@ -83,5 +83,5 @@
 <script setup>
 import NaslovnaEtrznica from "@/components/etrznica/NaslovnaETrznica.vue"
 import KategorijeProizvodaETrznica from "@/components/etrznica/KategorijeProizvodaETrznica.vue"
-import OpgoviETrznica from "@/components/etrznica/OpgoviETrznica.vue"
+import OpgoviETrznica from "@/components/etrznica/opgovi/OpgoviETrznica.vue"
 </script>

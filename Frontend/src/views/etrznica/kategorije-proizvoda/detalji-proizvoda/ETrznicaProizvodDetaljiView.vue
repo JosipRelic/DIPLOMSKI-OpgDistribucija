@@ -22,7 +22,13 @@
         <div>
           <h1 class="text-3xl font-bold text-gray-900">{{ proizvod.naziv }}</h1>
           <div class="flex items-center mt-2 space-x-2 text-sm text-gray-600">
-            <a href="#" class="hover:underline text-teal-500">{{ proizvod.opg.naziv }}</a>
+            <router-link
+              :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: proizvod.opg.slug } }"
+              href="#"
+              class="hover:underline text-teal-500"
+            >
+              {{ proizvod.opg.naziv }}
+            </router-link>
             <span class="text-gray-400">•</span>
             <span
               >{{ proizvod.opg.grad

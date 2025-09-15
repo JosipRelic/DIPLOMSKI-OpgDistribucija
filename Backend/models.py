@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric
+from sqlalchemy import Column, ForeignKey, Integer, Text, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric
 from sqlalchemy.orm import relationship
 import enum
 
@@ -193,4 +193,24 @@ class Usluga(Base):
 
     __table_args__=(
         UniqueConstraint("opg_id", "slug", name="uq_usluga_opg_slug"),
+    )
+
+
+class Recenzija(Base):
+    __tablename__ = "recenzije"
+    
+    id = Column(Integer, primary_key=True, index=True)  
+    ocjena = Column(Integer, nullable=False)
+    komentar = Column(Text, nullable=True)
+    datum_izrade = Column(DateTime, server_default=func.now())
+    datum_zadnje_izmjene = Column(DateTime, onupdate=func.now())
+
+    opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), nullable=False, index=True)
+    korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="SET NULL"), nullable=True)
+
+    opg = relationship("Opg", backref="recenzije")
+    korisnik = relationship("Korisnik")
+
+    __table_args__=(
+        UniqueConstraint("opg_id", "korisnik_id", name="uq_recenzija_opg_korisnik"),
     )

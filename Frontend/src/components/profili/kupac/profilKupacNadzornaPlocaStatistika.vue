@@ -20,11 +20,8 @@
           <div class="flex justify-between w-full mb-8">
             <span class="text-gray-500 font-bold">Vaš OPG favorit</span>
           </div>
-          <router-link
-            :to="{ name: 'ETrznicaDetaljiOPGa' }"
-            class="text-2xl font-bold text-orange-600 hover:text-orange-900"
-            href="#"
-            >OPG Horvat</router-link
+          <a class="text-2xl font-bold text-orange-600 hover:text-orange-900" href="#"
+            >OPG Horvat</a
           >
         </div>
         <div

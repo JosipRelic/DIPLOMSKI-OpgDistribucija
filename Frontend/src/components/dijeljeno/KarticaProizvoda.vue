@@ -26,9 +26,14 @@
         >
           {{ proizvod.naziv }}
         </strong>
-        <small class="text-sm text-teal-500 hover:underline cursor-pointer">{{
-          proizvod.opg_naziv
-        }}</small>
+        <small
+          v-if="prikaziLinkPremaOpgu && opgProfilSlug"
+          class="text-sm text-teal-500 hover:underline cursor-pointer"
+        >
+          <router-link :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: opgProfilSlug } }">{{
+            proizvod.opg_naziv
+          }}</router-link>
+        </small>
 
         <p
           v-if="proizvod.opis"
@@ -78,6 +83,7 @@ import { computed } from "vue"
 const props = defineProps({
   proizvod: { type: Object, required: true },
   katSlug: { type: String, required: true },
+  prikaziLinkPremaOpgu: { type: Boolean, default: true },
 })
 const defaultSlika = "https://placehold.co/600x600?text=Proizvod"
 const cijena = computed(() => {
@@ -89,4 +95,6 @@ const proizvodSlugId = computed(() => {
   const slug = props.proizvod.slug || `${props.proizvod.naziv}`.toLowerCase().replace(/\s+/g, "-")
   return `${slug}-${props.proizvod.id}`
 })
+
+const opgProfilSlug = computed(() => props.proizvod.opg_slug || null)
 </script>

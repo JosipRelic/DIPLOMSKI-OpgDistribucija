@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr
 from decimal import Decimal
 from typing import Literal, Optional
+from datetime import datetime
 
 class RegistracijaKupac(BaseModel):
     email: EmailStr
@@ -140,8 +141,20 @@ class PrikazUsluge(Usluga):
     
     model_config = {"from_attributes": True}
 
+class KreiranjeRecenzije(BaseModel):
+    ocjena: int = Field(..., ge=1, le=5)
+    komentar: str | None = None
+
+class PrikazRecenzije(BaseModel):
+    id: int
+    ocjena: int
+    komentar: str | None
+    korisnik_ime: str | None
+    datum_izrade: datetime
+
 class Token(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"
     tip_korisnika: Literal["Kupac", "Opg"]
-    
+
+

@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
+from sqlalchemy.exc import IntegrityError 
 from typing import List, Optional, Dict, Any
 from database import SessionLocal
-from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil, Usluga
+from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil, Usluga, KategorijaUsluge, Recenzija
 import math
+from schemas import KreiranjeRecenzije
+from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/e-trznica", tags=["E-tržnica"])
 
@@ -229,6 +232,7 @@ def proizvodi_po_kategoriji(
             Proizvod.id, Proizvod.naziv, Proizvod.opis, Proizvod.cijena,
             Proizvod.mjerna_jedinica, Proizvod.slika_proizvoda, Proizvod.slug,
             Opg.naziv.label("opg_naziv"),
+            Opg.slug.label("opg_slug"),
             KorisnickiProfil.grad, KorisnickiProfil.zupanija
         )
         .join(Opg, Opg.id == Proizvod.opg_id)
@@ -266,7 +270,7 @@ def proizvodi_po_kategoriji(
             dict(
                 id=proizvod.id, naziv=proizvod.naziv, opis=proizvod.opis,
                 cijena=float(proizvod.cijena), mjerna_jedinica=proizvod.mjerna_jedinica,
-                slika_proizvoda=proizvod.slika_proizvoda, slug=proizvod.slug,
+                slika_proizvoda=proizvod.slika_proizvoda, slug=proizvod.slug, opg_slug = proizvod.opg_slug,
                 opg_naziv=proizvod.opg_naziv, grad=proizvod.grad, zupanija=proizvod.zupanija
             ) for proizvod in proizvodi
         ],
@@ -342,3 +346,258 @@ def statistika(
         "broj_usluga": int(broj_usluga or 0),
         "broj_proizvoda": int(broj_proizvoda or 0)
     }
+
+
+@router.get("/opgovi/{slug}")
+def detalji_opga(slug: str, db:Session = Depends(get_db)):
+    opg = (
+        db.query(
+            Opg.id,
+            Opg.naziv,
+            Opg.opis,
+            Opg.slug,
+            Opg.prosjecna_ocjena,
+            Opg.broj_recenzija,
+            KorisnickiProfil.adresa,
+            KorisnickiProfil.grad,
+            KorisnickiProfil.postanski_broj,
+            KorisnickiProfil.zupanija,
+            KorisnickiProfil.slika_profila,
+            Korisnik.ime,
+            Korisnik.prezime,
+            Korisnik.broj_telefona,
+            Korisnik.email.label("email")
+        )
+        .join(Korisnik, Korisnik.id == Opg.korisnik_id)
+        .join(KorisnickiProfil, KorisnickiProfil.korisnik_id == Korisnik.id)
+        .filter(Opg.slug == slug)
+    ).first()
+
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    return {
+        "id": opg.id,
+        "naziv": opg.naziv,
+        "opis": opg.opis,
+        "slug": opg.slug,
+        "slika_profila": opg.slika_profila,
+        "prosjecna_ocjena": float(opg.prosjecna_ocjena) if opg.prosjecna_ocjena is not None else None,
+        "broj_recenzija": opg.broj_recenzija or 0,
+        "adresa": opg.adresa,
+        "grad": opg.grad,
+        "postanski_broj": opg.postanski_broj,
+        "zupanija": opg.zupanija,
+        "ime": opg.ime,
+        "prezime": opg.prezime,
+        "broj_telefona": opg.broj_telefona,
+        "email": opg.email
+    }
+
+@router.get("/opgovi/{slug}/kategorije-proizvoda")
+def opg_kategorije_proizvoda(slug: str, db: Session = Depends(get_db)):
+    opg = db.query(Opg.id).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    kategorije = (
+        db.query(
+            KategorijaProizvoda.id,
+            KategorijaProizvoda.naziv,
+            KategorijaProizvoda.slug,
+            func.count(Proizvod.id).label("broj")
+        )
+        .join(Proizvod, Proizvod.kategorija_id == KategorijaProizvoda.id)
+        .filter(Proizvod.opg_id == opg.id)
+        .group_by(KategorijaProizvoda.id, KategorijaProizvoda.naziv, KategorijaProizvoda.slug)
+        .order_by(KategorijaProizvoda.naziv.asc())
+        .all()
+    )
+
+    return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "broj": kategorija.broj} for kategorija in kategorije]
+
+
+@router.get("/opgovi/{slug}/kategorije-usluga")
+def opg_kategorije_usluga(slug: str, db: Session = Depends(get_db)):
+    opg = db.query(Opg.id).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    kategorije = (
+        db.query(
+            KategorijaUsluge.id,
+            KategorijaUsluge.naziv,
+            KategorijaUsluge.slug,
+            func.count(Usluga.id).label("broj")
+        )
+        .join(Usluga, Usluga.kategorija_id == KategorijaUsluge.id)
+        .filter(Usluga.opg_id == opg.id)
+        .group_by(KategorijaUsluge.id, KategorijaUsluge.naziv, KategorijaUsluge.slug)
+        .order_by(KategorijaUsluge.naziv.asc())
+        .all()
+    )
+
+    return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "broj": kategorija.broj} for kategorija in kategorije]
+
+@router.get("/opgovi/{slug}/proizvodi")
+def opg_proizvodi(slug: str, db: Session = Depends(get_db), stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen.")
+    
+    proizvodi = db.query(
+        Proizvod.id,
+        Proizvod.naziv,
+        Proizvod.opis,
+        Proizvod.cijena,
+        Proizvod.mjerna_jedinica,
+        Proizvod.slika_proizvoda,
+        Proizvod.slug,
+        Proizvod.kategorija_id,
+        KategorijaProizvoda.slug.label("kategorija_slug")
+    ).join(KategorijaProizvoda, KategorijaProizvoda.id == Proizvod.kategorija_id).filter(Proizvod.opg_id == opg.id)
+
+    if kat_slug:
+        kat = db.query(KategorijaProizvoda).filter_by(slug = kat_slug).first()
+        if kat:
+            proizvodi = proizvodi.filter(Proizvod.kategorija_id == kat.id)
+            
+    ukupno_proizvoda = proizvodi.count()
+    lista_proizvoda = (
+        proizvodi.order_by(Proizvod.naziv.asc()).offset((stranica-1)*velicina).limit(velicina).all()
+    )
+
+    return {
+        "ukupno_proizvoda": ukupno_proizvoda,
+        "lista_proizvoda": [
+            dict(
+                id = proizvod.id,
+                naziv = proizvod.naziv,
+                opis = proizvod.opis,
+                cijena = float(proizvod.cijena),
+                mjerna_jedinica = proizvod.mjerna_jedinica,
+                slika_proizvoda = proizvod.slika_proizvoda,
+                slug = proizvod.slug,
+                kategorija_slug = proizvod.kategorija_slug
+            ) for proizvod in lista_proizvoda
+        ]
+    }
+
+
+@router.get("/opgovi/{slug}/usluge")
+def opg_usluge(slug:str, db: Session = Depends(get_db), stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    usluge = db.query(Usluga).filter(Usluga.opg_id == opg.id)
+    
+    if kat_slug:
+        kat = db.query(KategorijaUsluge).filter_by(slug=kat_slug).first()
+        if kat: usluge = usluge.filter(Usluga.kategorija_id == kat.id)
+
+    ukupno_usluga = usluge.count()
+    lista_usluga = (usluge.order_by(Usluga.naziv.asc()).offset((stranica-1)*velicina).limit(velicina).all())
+
+    return {
+        "ukupno_usluga": ukupno_usluga,
+        "lista_usluga": [
+            dict(
+                id = usluga.id,
+                naziv = usluga.naziv,
+                opis = usluga.opis,
+                cijena = float(usluga.cijena),
+                mjerna_jedinica = usluga.mjerna_jedinica,
+                slika_usluge = usluga.slika_usluge,
+                opg_naziv = usluga.opg.naziv
+            ) for usluga in lista_usluga
+        ]
+    }
+
+
+@router.get("/opgovi/{slug}/recenzije")
+def opg_recenzije(
+    slug: str,
+    db: Session = Depends(get_db),
+    stranica: int = 1,
+    velicina: int = 10
+):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    recenzije = (
+        db.query(
+            Recenzija.id,
+            Recenzija.ocjena,
+            Recenzija.komentar,
+            Recenzija.datum_izrade,
+            Korisnik.ime,
+            Korisnik.prezime,
+            KorisnickiProfil.slika_profila.label("slika_korisnika")
+        )
+        .outerjoin(Korisnik, Korisnik.id == Recenzija.korisnik_id)
+        .outerjoin(KorisnickiProfil, KorisnickiProfil.korisnik_id == Korisnik.id)
+        .filter(Recenzija.opg_id == opg.id)
+        .order_by(Recenzija.datum_izrade.desc())
+    )
+
+    ukupno_recenzija = recenzije.count()
+    rezultati = recenzije.offset((stranica - 1)*velicina).limit(velicina).all()
+
+    return {
+        "ukupno_recenzija": ukupno_recenzija,
+        "recenzije": [
+            dict(
+                id = recenzija.id,
+                ocjena = recenzija.ocjena,
+                komentar = recenzija.komentar,              
+                korisnik_ime = ("{} {}".format(recenzija.ime, recenzija.prezime).strip() if recenzija.ime or recenzija.prezime else None),
+                datum_izrade = recenzija.datum_izrade.isoformat() if recenzija.datum_izrade else None,
+                slika_korisnika = recenzija.slika_korisnika 
+            ) for recenzija in rezultati
+        ]
+    }
+
+
+@router.post("/opgovi/{slug}/recenzije", status_code=201)
+def kreiraj_recenziju(
+    slug: str,
+    body: KreiranjeRecenzije,
+    db: Session = Depends(get_db),
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
+):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    postojeca = (
+        db.query(Recenzija)
+        .filter(Recenzija.opg_id == opg.id, Recenzija.korisnik_id == id_trenutnog_korisnika)
+        .first()
+    )
+
+    if postojeca:
+        raise HTTPException(status_code=409, detail="Već ste ocijenili ovaj OPG")
+    
+    nova = Recenzija(
+        opg_id = opg.id,
+        korisnik_id = id_trenutnog_korisnika,
+        ocjena = body.ocjena,
+        komentar = (body.komentar or "").lstrip() or None
+    )
+    db.add(nova)
+
+    try:
+        db.flush()
+
+        ponovno_izracunaj = db.query(func.avg(Recenzija.ocjena), func.count(Recenzija.id)).filter(Recenzija.opg_id == opg.id).first()
+        opg.prosjecna_ocjena = float(ponovno_izracunaj[0]) if ponovno_izracunaj[0] is not None else None
+        opg.broj_recenzija = int(ponovno_izracunaj[1] or 0) 
+        
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Neispravni podaci za recenziju")
+    
+    return {"ok": True, "message": "Hvala na recenziji!"}
