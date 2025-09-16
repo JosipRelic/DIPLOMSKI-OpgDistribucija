@@ -410,9 +410,12 @@
 import { ref, reactive, onMounted, computed } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { usePonudaFarmaPlusStore } from "@/stores/ponudaFarmaPlus"
+import { useUiStore } from "@/stores/ui"
 
 const autentifikacija = useAutentifikacijskiStore()
 const ponudaFarmaPlus = usePonudaFarmaPlusStore()
+
+const ui = useUiStore()
 
 const formaZaDodavanjeUslugeOtvorena = ref(false)
 
@@ -488,6 +491,7 @@ async function dodajUslugu() {
   novaSlika.value = null
   lokalniPretpregled.value = null
   formaZaDodavanjeUslugeOtvorena.value = false
+  ui.obavijest({ tekst: "Usluga je dodana.", tip_obavijesti: "uspjeh" })
 }
 
 async function filtrirajPoKategoriji(kid) {
@@ -526,6 +530,7 @@ function prekiniUredivanje() {
     delete p._novaSlika
   }
   uredivanjeId.value = null
+  ui.obavijest({ tekst: "Odustali ste od ažuriranja usluge.", tip_obavijesti: "informacija" })
 }
 async function spremiUredeno(p) {
   await ponudaFarmaPlus.urediUslugu(p.id, { ...urediFormu })
@@ -537,11 +542,20 @@ async function spremiUredeno(p) {
     delete p._novaSlika
   }
   uredivanjeId.value = null
+  ui.obavijest({ tekst: "Usluga je ažurirana.", tip_obavijesti: "uspjeh" })
 }
 
 async function obrisiUslugu(p) {
-  if (confirm("Obrisati uslugu?")) {
-    await ponudaFarmaPlus.obrisiUslugu(p.id)
-  }
+  const potvrda = await ui.obavijestSaPotvrdom({
+    naslov: "Obrisati uslugu?",
+    poruka: `Usluga "${p.naziv}" bit će trajno uklonjena.`,
+    tip_obavijesti: "upozorenje",
+    potvrdiRadnju: "Obriši",
+    odustaniOdRadnje: "Odustani",
+  })
+  if (!potvrda) return
+
+  await ponudaFarmaPlus.obrisiUslugu(p.id)
+  ui.obavijest({ tekst: "Usluga je obrisana.", tip_obavijesti: "uspjeh" })
 }
 </script>

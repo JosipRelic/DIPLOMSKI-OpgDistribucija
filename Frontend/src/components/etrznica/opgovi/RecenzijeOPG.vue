@@ -196,12 +196,14 @@ import { computed, onMounted, reactive, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useEtrznicaOpgDetaljiStore } from "@/stores/eTrznicaOpgDetalji"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useUiStore } from "@/stores/ui"
 
 const route = useRoute()
 const slug = computed(() => route.params.opgSlug)
 
 const store = useEtrznicaOpgDetaljiStore()
 const auth = useAutentifikacijskiStore()
+const ui = useUiStore()
 
 const prikaziFormu = ref(false)
 const slanje = ref(false)
@@ -243,6 +245,10 @@ async function posalji() {
   }
   slanje.value = true
   try {
+    ui.obavijest({
+      tekst: imaMoju.value ? "Recenzija ažurirana." : "Recenzija spremljena.",
+      tip_obavijesti: "uspjeh",
+    })
     await store.posaljiMojuRecenziju(slug.value, {
       ocjena: forma.ocjena,
       komentar: forma.komentar || null,
@@ -291,13 +297,22 @@ function izracunajProsjek(items) {
 }
 
 async function obrisi() {
-  if (!confirm("Jeste li sigurni da želite obrisati svoju recenziju?")) return
+  const potvrda = await ui.obavijestSaPotvrdom({
+    naslov: "Obrisati recenziju?",
+    poruka: "Ova radnja je napovratna.",
+    tip_obavijesti: "upozorenje",
+    potvrdiRadnju: "Obriši",
+    odsutaniOdRadnje: "Odustani",
+  })
+  if (!potvrda) return
   brisanje.value = true
   try {
     await store.obrisiMojuRecenziju(slug.value)
     prikaziFormu.value = false
+    ui.obavijest({ tekst: "Recenzija obrisana.", tip_obavijesti: "uspjeh" })
   } catch (e) {
     console.error(e)
+    ui.obavijest({ tekst: "Greška pri brisanju recenzije.", tip_obavijesti: "greska" })
   } finally {
     brisanje.value = false
   }

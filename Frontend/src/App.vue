@@ -4,6 +4,7 @@
 
     <main class="flex-grow">
       <router-view />
+      <GlobalneObavijesti />
     </main>
 
     <Footer />
@@ -13,6 +14,7 @@
 <script setup>
 import Navbar from "@/components/Navbar.vue"
 import Footer from "@/components/Footer.vue"
+import GlobalneObavijesti from "./components/GlobalneObavijesti.vue"
 </script>
 
 <style scoped></style>

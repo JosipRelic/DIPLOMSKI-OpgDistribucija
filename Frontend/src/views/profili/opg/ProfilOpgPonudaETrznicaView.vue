@@ -414,9 +414,11 @@
 import { ref, reactive, onMounted, computed } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { usePonudaEtrznicaStore } from "@/stores/ponudaEtrznica"
+import { useUiStore } from "@/stores/ui"
 
 const autentifikacija = useAutentifikacijskiStore()
 const ponudaEtrznica = usePonudaEtrznicaStore()
+const ui = useUiStore()
 
 const formaZaDodavanjeProizvodaOtvorena = ref(false)
 
@@ -492,6 +494,7 @@ async function dodajProizvod() {
   novaSlika.value = null
   lokalniPretpregled.value = null
   formaZaDodavanjeProizvodaOtvorena.value = false
+  ui.obavijest({ tekst: "Proizvod je dodan.", tip_obavijesti: "uspjeh" })
 }
 
 async function filtrirajPoKategoriji(kid) {
@@ -530,6 +533,7 @@ function prekiniUredivanje() {
     delete p._novaSlika
   }
   uredivanjeId.value = null
+  ui.obavijest({ tekst: "Odustali ste od ažuriranja proizvoda.", tip_obavijesti: "informacija" })
 }
 
 async function spremiUredeno(p) {
@@ -542,11 +546,19 @@ async function spremiUredeno(p) {
     delete p._novaSlika
   }
   uredivanjeId.value = null
+  ui.obavijest({ tekst: "Proizvod je ažuriran.", tip_obavijesti: "uspjeh" })
 }
 
 async function obrisiProizvod(p) {
-  if (confirm("Obrisati proizvod?")) {
-    await ponudaEtrznica.obrisiProizvod(p.id)
-  }
+  const potvrda = await ui.obavijestSaPotvrdom({
+    naslov: "Obrisati proizvod?",
+    poruka: `Proizvod "${p.naziv}" bit će trajno uklonjen.`,
+    tip_obavijesti: "upozorenje",
+    potvrdiRadnju: "Obriši",
+    odustaniOdRadnje: "Odustani",
+  })
+  if (!potvrda) return
+  await ponudaEtrznica.obrisiProizvod(p.id)
+  ui.obavijest({ tekst: "Proizvod je obrisan.", tip_obavijesti: "uspjeh" })
 }
 </script>

@@ -194,24 +194,6 @@
         </div>
       </div>
 
-      <div
-        v-if="obavijest"
-        :class="
-          obavijest.tip_obavijesti === 'Uspjeh'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-red-100 text-red-700'
-        "
-        class="p-3 rounded-md mt-4"
-      >
-        {{ obavijest.poruka }}
-        <button
-          @click="obavijest = null"
-          class="ml-4 text-xl leading-none float-end text-gray-600 hover:text-gray-600"
-        >
-          &times;
-        </button>
-      </div>
-
       <div class="mt-6 flex items-center justify-start gap-x-6">
         <button
           type="submit"
@@ -262,14 +244,14 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, computed, watchEffect, reactive } from "vue"
+import { ref, onMounted, computed, watchEffect, reactive, watch } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useRouter } from "vue-router"
+import { useUiStore } from "@/stores/ui"
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
-
-const obavijest = ref(null)
+const ui = useUiStore()
 
 const odabranaSlika = ref(null)
 const novaSlika = ref(null)
@@ -281,6 +263,36 @@ const slika = computed(
     autentifikacija.korisnicki_profil?.slika_profila ||
     "https://placehold.co/80x80?text=SlikaProfila",
 )
+
+const originalniPodaci = ref(null)
+
+function norm(v) {
+  return (v ?? "").toString().trim()
+}
+
+function trenutniPodaciProfila(kp = {}) {
+  return {
+    ime: norm(kp.ime),
+    prezime: norm(kp.prezime),
+    broj_telefona: norm(kp.broj_telefona),
+    drzava: norm(kp.drzava),
+    zupanija: norm(kp.zupanija),
+    grad: norm(kp.grad),
+    postanski_broj: norm(kp.postanski_broj),
+    adresa: norm(kp.adresa),
+    slug: norm(kp.slug),
+  }
+}
+
+function razlikaPodataka(formaObj, snapObj) {
+  const out = {}
+  for (const k of Object.keys(snapObj)) {
+    if (norm(formaObj[k]) !== snapObj[k]) {
+      out[k] = formaObj[k]
+    }
+  }
+  return out
+}
 
 const odabirSlike = () => {
   odabranaSlika.value?.click()
@@ -312,6 +324,7 @@ const forma = reactive({
 
 onMounted(async () => {
   await autentifikacija.dohvatiProfil()
+  originalniPodaci.value = trenutniPodaciProfila(autentifikacija.korisnicki_profil)
 })
 
 watchEffect(() => {
@@ -327,12 +340,31 @@ watchEffect(() => {
   forma.slug = kp.slug || ""
 })
 
+watch(
+  () => autentifikacija.korisnicki_profil,
+  (kp) => {
+    if (kp) originalniPodaci.value = trenutniPodaciProfila(kp)
+  },
+)
+
 const azurirajPodatkeKupca = async (e) => {
   e.preventDefault()
-  try {
-    await autentifikacija.azurirajProfil({
-      ...forma,
+
+  const payload = razlikaPodataka(forma, originalniPodaci.value)
+  const imaPromjena = Object.keys(payload).length > 0 || !!novaSlika.value
+
+  if (!imaPromjena) {
+    ui.obavijest({
+      tekst: "Nema promjena za spremiti.",
+      tip_obavijesti: "upozorenje",
     })
+    return
+  }
+
+  try {
+    if (Object.keys(payload).length > 0) {
+      await autentifikacija.azurirajProfil(payload)
+    }
 
     if (novaSlika.value) {
       const ok = await autentifikacija.ucitajSlikuProfila(novaSlika.value)
@@ -345,28 +377,29 @@ const azurirajPodatkeKupca = async (e) => {
       }
     }
 
-    obavijest.value = { tip_obavijesti: "Uspjeh", poruka: "Podaci su uspješno ažurirani." }
-    if (obavijest.value) {
-      setTimeout(() => {
-        obavijest.value = null
-      }, 4000)
-    }
+    originalniPodaci.value = trenutniPodaciProfila(autentifikacija.korisnicki_profil)
+
+    ui.obavijest({ tekst: "Podaci su uspješno ažurirani.", tip_obavijesti: "uspjeh" })
   } catch (err) {
-    obavijest.value = { tip_obavijesti: "Greška", poruka: "Greška pri ažuriranju podataka." }
-    if (obavijest.value) {
-      setTimeout(() => {
-        obavijest.value = null
-      }, 4000)
-    }
+    ui.obavijest({ tekst: "Greška pri ažuriranju podataka.", tip_obavijesti: "greška" })
   }
 }
 
 const obrisiProfil = async () => {
-  if (confirm("Jeste li sigurni da želite obrisati profil? Ova radnja je nepovratna.")) {
-    const ok = await autentifikacija.obrisiProfil()
-    if (ok) {
-      router.push({ name: "pocetna" })
-    }
+  const potvrda = await ui.obavijestSaPotvrdom({
+    naslov: "Obrisati profil?",
+    poruka: "Ova radnja je nepovratna.",
+    tip_obavijesti: "opasnost",
+    potvrdiRadnju: "Obriši",
+    odustaniOdRadnje: "Odustani",
+  })
+  if (!potvrda) return
+  const ok = await autentifikacija.obrisiProfil()
+  if (ok) {
+    ui.obavijest({ tekst: "Profil je obrisan.", tip_obavijesti: "uspjeh" })
+    router.push({ name: "pocetna" })
+  } else {
+    ui.obavijest({ tekst: "Greška pri brisanju profila.", tip_obavijesti: "greska" })
   }
 }
 </script>

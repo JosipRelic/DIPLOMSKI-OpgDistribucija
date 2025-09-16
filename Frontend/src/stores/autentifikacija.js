@@ -1,11 +1,21 @@
 import { defineStore } from "pinia"
 import api from "@/services/api"
+import { useUiStore } from "./ui"
 
 function postaviAutentifikacijskiHeader(token) {
   if (token) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`
   } else {
     delete api.defaults.headers.common["Authorization"]
+  }
+}
+
+function decodeExpMs(token) {
+  try {
+    const { exp } = JSON.parse(atob(token.split(".")[1]))
+    return exp ? exp * 1000 : null
+  } catch {
+    return null
   }
 }
 
@@ -16,6 +26,9 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
     korisnicki_profil: null,
     loading: false,
     error: null,
+    expires_at: Number(localStorage.getItem("expires_at") || 0),
+    _logoutTimerId: null,
+    _axiosInterceptorAttached: false,
   }),
 
   getters: {
@@ -23,8 +36,50 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
   },
 
   actions: {
+    _scheduleAutoLogout(ms) {
+      if (this._logoutTimerId) clearTimeout(this._logoutTimerId)
+      if (ms > 0) {
+        this._logoutTimerId = setTimeout(() => this.odjava("expired"), ms)
+      }
+    },
+
     init() {
-      if (this.token) postaviAutentifikacijskiHeader(this.token)
+      if (this.token) {
+        postaviAutentifikacijskiHeader(this.token)
+        const expMs = decodeExpMs(this.token)
+        if (expMs) {
+          this.expires_at = expMs
+          localStorage.setItem("expires_at", String(expMs))
+          if (Date.now() >= expMs) {
+            this.odjava("expired")
+          } else {
+            this._scheduleAutoLogout(expMs - Date.now())
+          }
+        }
+      }
+
+      window.addEventListener("storage", (e) => {
+        if (e.key === "token" && !e.newValue) this.odjava()
+      })
+
+      if (!this._axiosInterceptorAttached) {
+        api.interceptors.response.use(
+          (res) => res,
+          (err) => {
+            const status = err?.response?.status
+            const url = (err?.config?.url || "").toString()
+            const isAuthCall =
+              url.includes("/autentifikacija/prijava") ||
+              url.includes("/autentifikacija/registracija")
+
+            if (status === 401 && this.token && !isAuthCall) {
+              this.odjava("expired")
+            }
+            return Promise.reject(err)
+          },
+        )
+        this._axiosInterceptorAttached = true
+      }
     },
 
     async registrirajKupca(payload) {
@@ -37,7 +92,19 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         localStorage.setItem("token", this.token)
         localStorage.setItem("tip_korisnika", this.tip_korisnika)
         postaviAutentifikacijskiHeader(this.token)
+
+        const expMs = decodeExpMs(this.token)
+        if (expMs) {
+          this.expires_at = expMs
+          localStorage.setItem("expires_at", String(expMs))
+          this._scheduleAutoLogout(expMs - Date.now())
+        }
+
         await this.dohvatiProfil()
+        useUiStore().obavijest({
+          tekst: "Registacija uspješna. Dobrodošli!",
+          tip_obavijesti: "uspjeh",
+        })
         return true
       } catch (e) {
         this.error = e?.response?.data?.detail || e?.message || "Greška pri registraciji"
@@ -57,7 +124,19 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         localStorage.setItem("token", this.token)
         localStorage.setItem("tip_korisnika", this.tip_korisnika)
         postaviAutentifikacijskiHeader(this.token)
+
+        const expMs = decodeExpMs(this.token)
+        if (expMs) {
+          this.expires_at = expMs
+          localStorage.setItem("expires_at", String(expMs))
+          this._scheduleAutoLogout(expMs - Date.now())
+        }
+
         await this.dohvatiProfil()
+        useUiStore().obavijest({
+          tekst: "Registacija uspješna. Dobrodošli!",
+          tip_obavijesti: "uspjeh",
+        })
         return true
       } catch (e) {
         this.error = e?.response?.data?.detail || e?.message || "Greška pri registraciji"
@@ -80,7 +159,19 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         localStorage.setItem("token", this.token)
         localStorage.setItem("tip_korisnika", this.tip_korisnika)
         postaviAutentifikacijskiHeader(this.token)
+
+        const expMs = decodeExpMs(this.token)
+        if (expMs) {
+          this.expires_at = expMs
+          localStorage.setItem("expires_at", String(expMs))
+          this._scheduleAutoLogout(expMs - Date.now())
+        }
+
         await this.dohvatiProfil()
+        useUiStore().obavijest({
+          tekst: "Prijava uspješna. Dobrodošli!",
+          tip_obavijesti: "uspjeh",
+        })
         return true
       } catch (e) {
         console.error(e?.response?.data)
@@ -91,13 +182,52 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
       }
     },
 
-    odjava() {
+    async odjava(reason = "manual", { redirect = true } = {}) {
+      if (this._logoutTimerId) {
+        clearTimeout(this._logoutTimerId)
+        this._logoutTimerId = null
+      }
       this.token = null
       this.tip_korisnika = null
       this.error = null
+      this.expires_at = 0
       localStorage.removeItem("token")
       localStorage.removeItem("tip_korisnika")
+      localStorage.removeItem("expires_at")
       postaviAutentifikacijskiHeader(null)
+
+      const ui = useUiStore()
+      if (reason === "expired") {
+        ui.obavijest({
+          tekst: "Vaša sesija je istekla. Prijavite se ponovno.",
+          tip_obavijesti: "upozorenje",
+        })
+      }
+
+      if (reason === "manual") {
+        ui.obavijest({
+          tekst: "Odjavljeni ste.",
+          tip_obavijesti: "uspjeh",
+        })
+      }
+
+      if (redirect) {
+        const { default: router } = await import("@/router")
+        const cur = router.currentRoute.value
+        const authRoutes = new Set([
+          "prijava",
+          "registracija",
+          "registracijaKupac",
+          "registracijaOPG",
+          "zaboravljenaLozinka",
+        ])
+        if (!authRoutes.has(cur.name)) {
+          router.replace({
+            name: "prijava",
+            query: { redirect: cur.fullPath, expired: reason === "expired" ? 1 : undefined },
+          })
+        }
+      }
     },
 
     async dohvatiProfil() {
@@ -107,11 +237,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         this.korisnicki_profil = data
         return data
       } catch (e) {
-        this.token = null
-        this.korisnicki_profil = null
-        localStorage.removeItem("token")
-        postaviAutentifikacijskiHeader(null)
-        return null
+        throw e
       }
     },
 

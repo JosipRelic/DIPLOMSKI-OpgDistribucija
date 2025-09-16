@@ -9,6 +9,9 @@
         </div>
         <div class="mt-12 flex flex-col items-center">
           <h1 class="text-2xl xl:text-3xl font-extrabold">Prijava</h1>
+          <div v-if="showExpired" class="mt-6 rounded-lg bg-amber-50 text-amber-800 px-3 py-2">
+            Vaša sesija je istekla. Prijavite se ponovno.
+          </div>
           <form class="w-full flex-1 mt-8" @submit.prevent="posaljiPodatkeZaPrijavu">
             <div class="flex flex-col items-center">
               <button
@@ -99,16 +102,51 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaPrijave from "@/assets/slike/forma-prijave.png"
-import { ref } from "vue"
-import { useRouter } from "vue-router"
+import { ref, watch, onUnmounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 
 const email_ili_korisnicko_ime = ref("")
 const lozinka = ref("")
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
+const route = useRoute()
+
+const showExpired = ref(false)
+let hideTimer = null
+
+function clearExpiredParam() {
+  if (route.query.expired) {
+    const q = { ...route.query }
+    delete q.expired
+    router.replace({ query: q })
+  }
+}
+
+watch(
+  () => route.query.expired,
+  (val) => {
+    if (val === "1") {
+      showExpired.value = true
+      if (hideTimer) clearTimeout(hideTimer)
+      hideTimer = setTimeout(() => {
+        showExpired.value = false
+        clearExpiredParam()
+      }, 5000)
+    }
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => {
+  if (hideTimer) clearTimeout(hideTimer)
+})
 
 const posaljiPodatkeZaPrijavu = async () => {
+  showExpired.value = false
+  clearExpiredParam()
+  autentifikacija.error = null
+
   const ok = await autentifikacija.prijava({
     email_ili_korisnicko_ime: email_ili_korisnicko_ime.value,
     lozinka: lozinka.value,

@@ -207,6 +207,11 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAutentifikacijskiStore()
 
+  if (auth.token && auth.expires_at && Date.now() >= auth.expires_at) {
+    await auth.odjava("expired", { redirect: false })
+    return { name: "prijava", query: { redirect: to.fullPath, expired: 1 } }
+  }
+
   const requiresAuth = to.matched.some((r) => r.meta?.requiresAuth)
   if (requiresAuth && !auth.korisnikAutentificiran) {
     return { name: "prijava", query: { redirect: to.fullPath } }
@@ -222,9 +227,10 @@ router.beforeEach(async (to) => {
     try {
       await auth.dohvatiProfil()
       role = auth.tip_korisnika || auth.korisnicki_profil?.tip_korisnika
-    } catch {
-      auth.odjava()
-      return { name: "prijava", query: { redirect: to.fullPath } }
+    } catch (e) {
+      const expired = e?.response?.status === 401
+      await auth.odjava(expired ? "expired" : "manual", { redirect: false })
+      return { name: "prijava", query: { redirect: to.fullPath, expired: expired ? 1 : undefined } }
     }
   }
 
