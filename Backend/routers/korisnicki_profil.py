@@ -1,5 +1,5 @@
 import os
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika
@@ -8,6 +8,8 @@ import schemas
 from typing import Annotated
 from utils import obrisi_uploadanu_sliku
 from datetime import datetime
+from models import Recenzija
+from sqlalchemy import func, distinct
 
 router = APIRouter(prefix="/profil", tags=["Korisnički profil"])
 
@@ -19,6 +21,18 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+
+
+def _ponovno_izracunaj_prosjek_ocjene(db, opg_id: int):
+    prosjecna_ocjena, broj_recenzija = (
+        db.query(func.avg(Recenzija.ocjena), func.count(Recenzija.id)).filter(Recenzija.opg_id == opg_id).first()
+    )
+    opg = db.query(Opg).get(opg_id)
+    if opg:
+        opg.prosjecna_ocjena = float(prosjecna_ocjena) if prosjecna_ocjena is not None else None
+        opg.broj_recenzija = int(broj_recenzija or 0)
+
+
 
 def _serialize_me(korisnik: Korisnik) -> schemas.PrikazKorisnickogProfila:
     profil = korisnik.korisnicki_profil
@@ -192,9 +206,18 @@ def obrisi_profil(
     if not korisnik:
         raise HTTPException(status_code=404, detail="Korisnik ne postoji")
     
+    utjece_na_opgove = [
+        oid for (oid, ) in db.query(distinct(Recenzija.opg_id)).filter(Recenzija.korisnik_id == id_trenutnog_korisnika).all()
+    ]
+    
     if korisnik.korisnicki_profil and korisnik.korisnicki_profil.slika_profila:
         obrisi_uploadanu_sliku(korisnik.korisnicki_profil.slika_profila)
     
     db.delete(korisnik)
+    db.flush()
+
+    for opg_id in utjece_na_opgove:
+        _ponovno_izracunaj_prosjek_ocjene(db, opg_id)
+
     db.commit()
     return {"detalji": "Profil obrisan."}
