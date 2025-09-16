@@ -291,7 +291,6 @@
 import { onMounted, computed, ref } from "vue"
 import { useRoute } from "vue-router"
 import { useEtrznicaOpgDetaljiStore } from "@/stores/eTrznicaOpgDetalji"
-import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import KarticaProizvoda from "@/components/dijeljeno/KarticaProizvoda.vue"
 import KarticaUsluge from "@/components/dijeljeno/KarticaUsluge.vue"
 import RecenzijeOPG from "@/components/etrznica/opgovi/RecenzijeOPG.vue"
@@ -301,24 +300,6 @@ const slug = computed(() => route.params.opgSlug)
 
 const detalji_opga_s = useEtrznicaOpgDetaljiStore()
 const aktivniTab = ref("proizvodi")
-const autentifikacija = useAutentifikacijskiStore()
-
-const odabranaOcjena = ref(null)
-const komentar = ref("")
-
-const hoverOcjena = ref(null)
-
-const postaviOcjenu = (n) => {
-  odabranaOcjena.value = n
-}
-
-const postaviHover = (n) => {
-  hoverOcjena.value = n
-}
-
-const ocitiHover = () => {
-  hoverOcjena.value = null
-}
 
 onMounted(async () => {
   await detalji_opga_s.ucitajDetaljeOpga(slug.value)
@@ -360,20 +341,6 @@ const punaAdresa = computed(() => {
   ].filter(Boolean)
   return adresa.join(", ")
 })
-
-async function posaljiOcjenu() {
-  if (!autentifikacija.korisnikAutentificiran) {
-    alert("Morate biti prijavljeni da biste ocijenili OPG")
-    return
-  }
-  if (!odabranaOcjena.value) return
-  await detalji_opga_s.posaljiOcjenu(slug.value, {
-    ocjena: Number(odabranaOcjena.value),
-    komentar: komentar.value?.trim(),
-  })
-  odabranaOcjena.value = null
-  komentar.value = ""
-}
 
 const defaultSlika = "https://placehold.co/800x600?text=OPG"
 </script>

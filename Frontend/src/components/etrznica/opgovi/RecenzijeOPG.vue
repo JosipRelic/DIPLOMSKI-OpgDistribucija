@@ -42,9 +42,14 @@
           <button
             v-if="auth.korisnikAutentificiran"
             @click="otvoriFormu"
-            class="w-full border border-teal-500 bg-teal-500 hover:bg-teal-700 hover:border-teal-700 shadow-lg text-white hover:text-gray-200 rounded-xl px-4 py-3 transition"
+            class="w-full border shadow-lg text-white hover:text-gray-200 rounded-xl px-4 py-3 transition"
+            :class="
+              imaMoju
+                ? 'border-amber-500 bg-amber-500 hover:bg-amber-700 hover:border-amber-700'
+                : 'border-teal-500 bg-teal-500 hover:bg-teal-700 hover:border-teal-700'
+            "
           >
-            Napiši recenziju
+            {{ imaMoju ? "Uredi recenziju" : "Napiši recenziju" }}
           </button>
 
           <button
@@ -55,20 +60,28 @@
           >
             Prijavite se za recenziju
           </button>
+
+          <button
+            v-if="auth.korisnikAutentificiran && imaMoju"
+            @click="obrisi"
+            class="w-full mt-2 border shadow-lg border-red-400 bg-red-400 text-white hover:bg-red-700 hover:border-red-700 rounded-xl px-4 py-3 transition disabled:opacity-50"
+            :disabled="brisanje"
+          >
+            {{ brisanje ? "Brisanje…" : "Obriši recenziju" }}
+          </button>
         </div>
       </aside>
 
-      <!-- Desni panel: lista ili forma -->
       <div class="lg:col-span-2">
-        <!-- FORMA -->
         <div v-if="prikaziFormu" class="rounded-2xl border border-gray-100 p-6 bg-white shadow">
           <header class="mb-4">
-            <h3 class="text-lg font-semibold">Napišite recenziju</h3>
+            <h3 class="text-lg font-semibold">
+              {{ imaMoju ? "Uredite svoju recenziju" : "Napišite recenziju" }}
+            </h3>
             <p class="text-sm text-gray-600">Vaša ocjena pomaže drugima.</p>
           </header>
 
           <form @submit.prevent="posalji" class="space-y-4">
-            <!-- Ocjena -->
             <div>
               <label class="block text-sm font-medium mb-2">Ocjena</label>
               <div class="flex items-center gap-2">
@@ -98,7 +111,6 @@
               <p v-if="greskaOcjena" class="text-sm text-red-600 mt-1">{{ greskaOcjena }}</p>
             </div>
 
-            <!-- Komentar -->
             <div>
               <label class="block text-sm font-medium mb-2">Komentar (opcionalno)</label>
               <textarea
@@ -128,7 +140,6 @@
           </form>
         </div>
 
-        <!-- LISTA RECENZIJA -->
         <div v-else class="space-y-8">
           <article
             v-for="r in recenzije"
@@ -199,28 +210,31 @@ const greskaOcjena = ref(null)
 
 const placeholder = "https://placehold.co/96x96?text=K"
 
-// Učitavanje recenzija
 onMounted(async () => {
-  await store.ucitajRecenzije(slug.value, { stranica: 1, velicina: 20 }) // ili paginacija po želji
+  await store.ucitajRecenzije(slug.value, { stranica: 1, velicina: 20 })
+  if (auth.korisnikAutentificiran) {
+    await store.ucitajMojuRecenziju(slug.value)
+  }
 })
 
-// Lista recenzija iz store-a
 const recenzije = computed(() => store.recenzije?.lista_recenzija ?? [])
 
-// Prosjek i ukupno (preuzmi iz detalja OPG-a ako ih držiš u store-u)
+const mojaRecenzija = computed(() => store.moja_recenzija)
+const imaMoju = computed(() => !!store.moja_recenzija)
+
 const prosjek = computed(() => store.opg?.prosjecna_ocjena ?? izracunajProsjek(recenzije.value))
 const ukupnoRecenzija = computed(
   () => store.opg?.broj_recenzija ?? store.recenzije?.ukupno_recenzija ?? recenzije.value.length,
 )
 
-// Raspodjela zvjezdica
+const brisanje = ref(false)
+
 function postotak(zaKoliko) {
   if (!recenzije.value.length) return 0
   const n = recenzije.value.filter((r) => Number(r.ocjena) === zaKoliko).length
   return (n / recenzije.value.length) * 100
 }
 
-// Slanje
 async function posalji() {
   greskaOcjena.value = null
   if (!forma.ocjena || forma.ocjena < 1 || forma.ocjena > 5) {
@@ -229,15 +243,13 @@ async function posalji() {
   }
   slanje.value = true
   try {
-    await store.posaljiOcjenu(slug.value, {
+    await store.posaljiMojuRecenziju(slug.value, {
       ocjena: forma.ocjena,
       komentar: forma.komentar || null,
     })
-    // reset i zatvaranje
-    forma.ocjena = 0
-    forma.komentar = ""
+
     prikaziFormu.value = false
-    // ponovno učitaj recenzije
+
     await store.ucitajRecenzije(slug.value, { stranica: 1, velicina: 100 })
   } finally {
     slanje.value = false
@@ -245,6 +257,13 @@ async function posalji() {
 }
 
 function otvoriFormu() {
+  if (imaMoju.value) {
+    forma.ocjena = Number(mojaRecenzija.value?.ocjena || 0)
+    forma.komentar = mojaRecenzija.value?.komentar || ""
+  } else {
+    forma.ocjena = 0
+    forma.komentar = ""
+  }
   prikaziFormu.value = true
 }
 
@@ -252,7 +271,6 @@ function zatvoriFormu() {
   prikaziFormu.value = false
 }
 
-// Formatiranje datuma + vremena za hr-HR
 function formatDatum(val) {
   if (!val) return ""
   const d = new Date(val)
@@ -266,10 +284,22 @@ function formatDatum(val) {
   })
 }
 
-// fallback prosjek ako ga nema iz backend-a
 function izracunajProsjek(items) {
   if (!items.length) return 0
   const sum = items.reduce((a, b) => a + Number(b.ocjena || 0), 0)
   return sum / items.length
+}
+
+async function obrisi() {
+  if (!confirm("Jeste li sigurni da želite obrisati svoju recenziju?")) return
+  brisanje.value = true
+  try {
+    await store.obrisiMojuRecenziju(slug.value)
+    prikaziFormu.value = false
+  } catch (e) {
+    console.error(e)
+  } finally {
+    brisanje.value = false
+  }
 }
 </script>

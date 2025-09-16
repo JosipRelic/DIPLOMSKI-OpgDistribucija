@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Path
+from fastapi import APIRouter, Depends, HTTPException, Query, Path, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
 from sqlalchemy.exc import IntegrityError 
@@ -560,8 +560,43 @@ def opg_recenzije(
     }
 
 
-@router.post("/opgovi/{slug}/recenzije", status_code=201)
-def kreiraj_recenziju(
+
+@router.get("/opgovi/{slug}/moja-recenzija")
+def moja_recenzija(
+    slug: str,
+    db: Session = Depends(get_db),
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
+):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    
+    recenzija = (
+        db.query(
+            Recenzija.id,
+            Recenzija.ocjena,
+            Recenzija.komentar,
+            Recenzija.datum_izrade,
+            Recenzija.datum_zadnje_izmjene
+        )
+        .filter(Recenzija.opg_id == opg.id, Recenzija.korisnik_id == id_trenutnog_korisnika)
+        .first()
+    )
+
+    if not recenzija:
+        return None
+    
+    return {
+        "id": recenzija.id,
+        "ocjena": recenzija.ocjena,
+        "komentar": recenzija.komentar,
+        "datum_izrade": recenzija.datum_izrade.isoformat() if recenzija.datum_izrade else None,
+        "datum_zadnje_izmjene": recenzija.datum_zadnje_izmjene.isoformat() if recenzija.datum_zadnje_izmjene else None
+    }
+
+
+@router.put("/opgovi/{slug}/moja-recenzija")
+def posalji_moju_recenziju(
     slug: str,
     body: KreiranjeRecenzije,
     db: Session = Depends(get_db),
@@ -571,33 +606,80 @@ def kreiraj_recenziju(
     if not opg:
         raise HTTPException(status_code=404, detail="OPG nije pronađen")
     
-    postojeca = (
+    recenzija = (
         db.query(Recenzija)
         .filter(Recenzija.opg_id == opg.id, Recenzija.korisnik_id == id_trenutnog_korisnika)
         .first()
     )
 
-    if postojeca:
-        raise HTTPException(status_code=409, detail="Već ste ocijenili ovaj OPG")
+    if recenzija is None:
+        recenzija = Recenzija(
+            opg_id = opg.id,
+            korisnik_id = id_trenutnog_korisnika,
+            ocjena = body.ocjena,
+            komentar = (body.komentar or "").lstrip() or None
+        )
+        db.add(recenzija)
+    else:
+        recenzija.ocjena = body.ocjena
+        recenzija.komentar = (body.komentar or "").lstrip() or None
+        recenzija.datum_zadnje_izmjene = func.now()
     
-    nova = Recenzija(
-        opg_id = opg.id,
-        korisnik_id = id_trenutnog_korisnika,
-        ocjena = body.ocjena,
-        komentar = (body.komentar or "").lstrip() or None
+    db.flush()
+
+    izracun_prosjeka = (
+        db.query(func.avg(Recenzija.ocjena), func.count(Recenzija.id))
+        .filter(Recenzija.opg_id == opg.id)
+        .first()
     )
-    db.add(nova)
 
-    try:
-        db.flush()
+    opg.prosjecna_ocjena = float(izracun_prosjeka[0]) if izracun_prosjeka[0] is not None else None
+    opg.broj_recenzija = int(izracun_prosjeka[1] or 0)
 
-        ponovno_izracunaj = db.query(func.avg(Recenzija.ocjena), func.count(Recenzija.id)).filter(Recenzija.opg_id == opg.id).first()
-        opg.prosjecna_ocjena = float(ponovno_izracunaj[0]) if ponovno_izracunaj[0] is not None else None
-        opg.broj_recenzija = int(ponovno_izracunaj[1] or 0) 
-        
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Neispravni podaci za recenziju")
+    db.commit()
+    db.refresh(recenzija)
+
+    return {
+        "id": recenzija.id,
+        "ocjena": recenzija.ocjena,
+        "komentar": recenzija.komentar,
+        "datum_izrade": recenzija.datum_izrade.isoformat() if recenzija.datum_izrade else None,
+        "datum_zadnje_izmjene": recenzija.datum_zadnje_izmjene.isoformat() if recenzija.datum_zadnje_izmjene else None,
+        "prosjecna_ocjena": opg.prosjecna_ocjena,
+        "broj_recenzija": opg.broj_recenzija
+    }
+
+
+@router.delete("/opgovi/{slug}/moja-recenzija", status_code=204)
+def obrisi_moju_recenziju(
+    slug: str,
+    db: Session = Depends(get_db),
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
+):
+    opg = db.query(Opg).filter(Opg.slug == slug).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
     
-    return {"ok": True, "message": "Hvala na recenziji!"}
+    recenzija = (
+        db.query(Recenzija)
+        .filter(Recenzija.opg_id == opg.id, Recenzija.korisnik_id == id_trenutnog_korisnika)
+        .first()
+    )
+
+    if not recenzija:
+        return Response(status_code=204)
+    
+    db.delete(recenzija)
+    db.flush()
+
+    izracun_prosjeka = (
+        db.query(func.avg(Recenzija.ocjena), func.count(Recenzija.id))
+        .filter(Recenzija.opg_id == opg.id)
+        .first()
+    )
+
+    opg.prosjecna_ocjena = float(izracun_prosjeka[0]) if izracun_prosjeka[0] is not None else None
+    opg.broj_recenzija = int(izracun_prosjeka[1] or 0)
+
+    db.commit()
+    return Response(status_code=204)

@@ -43,6 +43,13 @@ class Korisnik(Base):
         cascade="all, delete-orphan"
     )
 
+    recenzije = relationship(
+        "Recenzija",
+        back_populates="korisnik",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+
 
 class KorisnickiProfil(Base):
     __tablename__="korisnicki_profili"
@@ -206,10 +213,11 @@ class Recenzija(Base):
     datum_zadnje_izmjene = Column(DateTime, onupdate=func.now())
 
     opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), nullable=False, index=True)
-    korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="SET NULL"), nullable=True)
+    korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False)
 
     opg = relationship("Opg", backref="recenzije")
-    korisnik = relationship("Korisnik")
+    korisnik = relationship("Korisnik", back_populates="recenzije")
+
 
     __table_args__=(
         UniqueConstraint("opg_id", "korisnik_id", name="uq_recenzija_opg_korisnik"),

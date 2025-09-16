@@ -11,6 +11,9 @@ export const useEtrznicaOpgDetaljiStore = defineStore("eTrznicaOpgDetalji", {
     usluge: { lista_usluga: [], ukupno_usluga: 0, loading: false },
     recenzije: { lista_recenzija: [], ukupno: 0, loading: false, stranica: 1, velicina: 10 },
 
+    moja_recenzija: null,
+    moja_recenzija_loading: false,
+
     katProizvodi: [],
     katUsluge: [],
     aktivnaKatProizvoda: null,
@@ -87,21 +90,44 @@ export const useEtrznicaOpgDetaljiStore = defineStore("eTrznicaOpgDetalji", {
       }
     },
 
-    async posaljiOcjenu(slug, { ocjena, komentar }) {
+    async ucitajMojuRecenziju(slug) {
+      this.moja_recenzija_loading = true
       try {
-        await api.post(`/e-trznica/opgovi/${slug}/recenzije`, { ocjena, komentar })
-        await Promise.all([
-          this.ucitajDetaljeOpga(slug),
-          this.ucitajRecenzije(slug, { stranica: 1, velicina: this.recenzije.velicina }),
-        ])
-        return { ok: true }
-      } catch (e) {
-        const status = e?.response?.status
-        if (status === 401) {
-          return { ok: false, reason: "unauth" }
-        }
-        return { ok: false, reason: "other", message: e?.response?.data?.detail || "Greška" }
+        const { data } = await api.get(`/e-trznica/opgovi/${slug}/moja-recenzija`)
+        this.moja_recenzija = data || null
+      } finally {
+        this.moja_recenzija_loading = false
       }
+    },
+
+    async posaljiMojuRecenziju(slug, { ocjena, komentar }) {
+      const { data } = await api.put(`/e-trznica/opgovi/${slug}/moja-recenzija`, {
+        ocjena,
+        komentar,
+      })
+      this.moja_recenzija = {
+        id: data.id,
+        ocjena: data.ocjena,
+        komentar: data.komentar,
+        datum_izrade: data.datum_izrade,
+        datum_zadnje_izmjene: data.datum_zadnje_izmjene,
+      }
+
+      await Promise.all([
+        this.ucitajDetaljeOpga(slug),
+        this.ucitajRecenzije(slug, { stranica: 1, velicina: this.recenzije.velicina }),
+      ])
+      return { ok: true }
+    },
+
+    async obrisiMojuRecenziju(slug) {
+      await api.delete(`/e-trznica/opgovi/${slug}/moja-recenzija`)
+      this.moja_recenzija = null
+      await Promise.all([
+        this.ucitajDetaljeOpga(slug),
+        this.ucitajRecenzije(slug, { stranica: 1, velicina: this.recenzije.velicina }),
+      ])
+      return { ok: true }
     },
   },
 })
