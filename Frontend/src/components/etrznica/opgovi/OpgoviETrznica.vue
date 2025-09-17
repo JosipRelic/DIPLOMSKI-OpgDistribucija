@@ -126,7 +126,11 @@
                     <span class="font-bold">{{ opgovi_s.filteri.zupanije.length }}</span> Odabrano
                   </span>
 
-                  <button type="button" class="text-sm text-gray-900 underline underline-offset-4">
+                  <button
+                    type="button"
+                    @click="ponistiZupanije"
+                    class="text-sm text-gray-900 underline underline-offset-4"
+                  >
                     Poništi
                   </button>
                 </header>
@@ -179,7 +183,11 @@
                     <span class="font-bold">{{ opgovi_s.filteri.mjesta.length }}</span> Odabrano
                   </span>
 
-                  <button type="button" class="text-sm text-gray-900 underline underline-offset-4">
+                  <button
+                    type="button"
+                    @click="ponistiMjesta"
+                    class="text-sm text-gray-900 underline underline-offset-4"
+                  >
                     Poništi
                   </button>
                 </header>
@@ -471,5 +479,14 @@ const bezRecenzija = computed({
 function ponistiOcjene() {
   ocjenaMin.value = null
   bezRecenzija.value = false
+}
+
+function ponistiZupanije() {
+  opgovi_s.filteri.zupanije = []
+  opgovi_s.ucitajOpgove()
+}
+function ponistiMjesta() {
+  opgovi_s.filteri.mjesta = []
+  opgovi_s.ucitajOpgove()
 }
 </script>

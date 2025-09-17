@@ -71,13 +71,16 @@ export const useEtrznicaProizvodiStore = defineStore("eTrznicaProizvodi", {
     },
 
     ponistiFiltere() {
-      this.filteri = { q: "", zupanije: [], mjesta: [], sortiranje: "novo" }
+      this.filteri.q = ""
+      this.filteri.sortiranje = "novo"
+      this.filteri.zupanije = []
+      this.filteri.mjesta = []
       this.stranica = 1
       this.ucitajProizvode()
     },
 
     setQ(v) {
-      this.filteri.q = v
+      if (this.filteri.q !== v) this.filteri.q = v
       this.stranica = 1
       this.ucitajProizvode()
     },
@@ -91,7 +94,7 @@ export const useEtrznicaProizvodiStore = defineStore("eTrznicaProizvodi", {
     },
 
     postaviSortiranje(v) {
-      this.filteri.sortiranje = v
+      if (this.filteri.sortiranje !== v) this.filteri.sortiranje = v
       this.stranica = 1
       this.ucitajProizvode()
     },

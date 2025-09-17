@@ -68,7 +68,7 @@
         </div>
 
         <button
-          class="mt-auto shadow-md block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-white uppercase transition-colors hover:bg-orange-900"
+          class="mt-auto shadow-md block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-white uppercase transition-colors hover:bg-orange-900 hover:border-orange-900"
         >
           Dodaj u košaricu
         </button>

@@ -133,7 +133,7 @@
         <div
           class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 px-20 py-8 mb-14"
         >
-          <KarticaUsluge />
+          <!-- <KarticaUsluge /> -->
 
           <PaginacijaETrznica />
         </div>

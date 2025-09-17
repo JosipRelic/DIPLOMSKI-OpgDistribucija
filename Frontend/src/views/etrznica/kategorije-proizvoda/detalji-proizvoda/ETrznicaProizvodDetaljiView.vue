@@ -102,7 +102,7 @@
         </div>
 
         <button
-          class="w-full bg-orange-600 shadow-md border border-orange-600 cursor-pointer hover:bg-orange-900 text-gray-100 py-3 px-6 rounded-lg text-sm font-medium transition"
+          class="w-full bg-orange-600 shadow-md border border-orange-600 cursor-pointer hover:bg-orange-900 hover:border-orange-900 text-gray-100 py-3 px-6 rounded-lg text-sm font-medium transition"
         >
           Dodaj u košaricu
         </button>

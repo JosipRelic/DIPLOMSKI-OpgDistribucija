@@ -5,7 +5,7 @@
         <span class="block text-xs font-medium text-gray-700 mb-1"> Pretraži po nazivu </span>
         <div class="relative">
           <input
-            v-model="q"
+            v-model.trim="q"
             type="text"
             id="PretragaProizvoda"
             placeholder="Unesi proizvod ili OPG..."
