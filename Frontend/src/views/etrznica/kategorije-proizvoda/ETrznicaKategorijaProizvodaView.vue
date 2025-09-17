@@ -109,7 +109,7 @@
               />
             </div>
 
-            <PaginacijaETrznica
+            <Paginacija
               v-if="proizvodi_s.imaProizvoda && proizvodi_s.ukupnoStranica > 1"
               :stranica="proizvodi_s.stranica"
               :ukupno-stranica="proizvodi_s.ukupnoStranica"
@@ -131,7 +131,7 @@ import { useEtrznicaProizvodiStore } from "@/stores/eTrznicaProizvodi"
 import KategorijeProizvodaProizvodiNaslovna from "@/components/etrznica/kategorije-proizvoda/KategorijeProizvodaProizvodiNaslovna.vue"
 import KategorijeProizvodaProizvodiFilteri from "@/components/etrznica/kategorije-proizvoda/KategorijeProizvodaProizvodiFilteri.vue"
 import KarticaProizvoda from "@/components/dijeljeno/KarticaProizvoda.vue"
-import PaginacijaETrznica from "@/components/etrznica/PaginacijaETrznica.vue"
+import Paginacija from "@/components/dijeljeno/Paginacija.vue"
 
 const route = useRoute()
 const kategorije_s = useEtrznicaKategorijeStore()

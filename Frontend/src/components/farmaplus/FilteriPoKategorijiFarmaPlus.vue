@@ -135,13 +135,13 @@
         >
           <!-- <KarticaUsluge /> -->
 
-          <PaginacijaETrznica />
+          <Paginacija />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import KarticaUsluge from "../dijeljeno/KarticaUsluge.vue"
-import PaginacijaETrznica from "@/components/etrznica/PaginacijaETrznica.vue"
+import KarticaUsluge from "@/components/dijeljeno/KarticaUsluge.vue"
+import Paginacija from "@/components/dijeljeno/Paginacija.vue"
 </script>

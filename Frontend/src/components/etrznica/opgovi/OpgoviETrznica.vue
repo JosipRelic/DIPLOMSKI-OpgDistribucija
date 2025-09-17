@@ -407,7 +407,7 @@
 import { onMounted, computed } from "vue"
 import { useEtrznicaOpgoviStore } from "@/stores/eTrznicaOpgovi"
 import KarticaOPGa from "@/components/dijeljeno/KarticaOPGa.vue"
-import Paginacija from "@/components/etrznica/PaginacijaETrznica.vue"
+import Paginacija from "@/components/dijeljeno/Paginacija.vue"
 
 const opgovi_s = useEtrznicaOpgoviStore()
 
