@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica, uredi_ponudu_farmaplus, etrznica
+from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica, uredi_ponudu_farmaplus, etrznica, farma_plus
 from starlette.staticfiles import StaticFiles
 from seeds import seed_kategorije_proizvoda, seed_kategorije_usluga
 from database import SessionLocal
@@ -33,7 +33,7 @@ app.include_router(korisnicki_profil.router)
 app.include_router(uredi_ponudu_etrznica.router)
 app.include_router(uredi_ponudu_farmaplus.router)
 app.include_router(etrznica.router)
-
+app.include_router(farma_plus.router)
 
 
 

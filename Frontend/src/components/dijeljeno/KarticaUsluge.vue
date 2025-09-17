@@ -27,7 +27,10 @@
         <div v-if="prikaziPonudacaUsluge" class="text-right">
           <span class="text-xs uppercase tracking-wide text-neutral-500">Uslugu nudi</span>
           <div class="text-sm font-medium hover:underline text-teal-500">
-            <a href="">{{ props.usluga.opg_naziv }}</a>
+            <router-link
+              :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: props.usluga.opg_slug } }"
+              >{{ props.usluga.opg_naziv }}</router-link
+            >
           </div>
         </div>
       </div>

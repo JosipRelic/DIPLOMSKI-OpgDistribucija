@@ -8,7 +8,7 @@ from models import TipKorisnika, Korisnik, Kupac, Opg, KorisnickiProfil
 from typing import Annotated
 from security import verifikacija_lozinke
 
-router = APIRouter(prefix="/autentifikacija", tags=["autentifikacija"])
+router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])
 
 def get_db():
     db = SessionLocal()

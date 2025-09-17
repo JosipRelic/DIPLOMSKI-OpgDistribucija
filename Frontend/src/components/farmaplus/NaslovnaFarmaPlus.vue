@@ -13,32 +13,29 @@
         >
       </p>
 
-      <dl class="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-14 lg:gap-x-8">
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-orange-600" href="#">Priprema tla</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Sjetva i sadnja</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Navodnjavanje</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Zaštita bilja i gnojidba</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Berba i žetva</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Skladištenje i prijevoz</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Održavanje i dodatne usluge</a>
-        </div>
-        <div class="border-t border-gray-200 pt-4">
-          <a class="font-medium text-gray-900" href="#">Prodaja/najam stoke i stočarska pomoć</a>
+      <dl
+        class="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:gap-y-14 lg:gap-x-8"
+        v-if="farma.kategorije.length"
+      >
+        <div v-for="k in farma.kategorije" :key="k.id" class="border-t border-gray-200 pt-4">
+          <button
+            @click="odaberiKategoriju(k.slug)"
+            class="font-medium inline-flex text-left items-center gap-2 cursor-pointer"
+            :class="aktivna(k.slug) ? 'text-orange-600' : 'text-gray-900 hover:text-orange-700'"
+          >
+            <span>{{ k.naziv }}</span>
+            <span
+              class="text-xs rounded-full px-2 py-0.5 border shadow-md"
+              :class="brojacKlase(k)"
+              title="Broj dostupnih usluga"
+            >
+              {{ k.dostupni }}
+            </span>
+          </button>
         </div>
       </dl>
+
+      <div v-else class="mt-8 text-gray-500">Učitavanje kategorija…</div>
     </div>
     <div class="grid grid-cols-2 grid-rows-2 gap-4 sm:gap-6 lg:gap-8">
       <img
@@ -65,8 +62,31 @@
   </div>
 </template>
 <script setup>
+import { useFarmaPlusStore } from "@/stores/farmaPlus"
 import slikeFarmaPlusKraveNaslovna from "@/assets/slike/farma-plus-krave-naslovna.png"
 import slikeFarmaPlusBranjeZitaNaslovna from "@/assets/slike/farma-plus-branjezita-naslovna.png"
 import slikeFarmaPlusSpricanjeKukuruzaNaslovna from "@/assets/slike/farma-plus-spricanjekukuruza-naslovna.png"
 import slikeFarmaPlusOranjeNaslovna from "@/assets/slike/farma-plus-oranje-naslovna.png"
+
+const farma = useFarmaPlusStore()
+
+function odaberiKategoriju(slug) {
+  farma.postaviKategoriju(slug)
+}
+
+function aktivna(slug) {
+  return farma.kat_slug === slug
+}
+
+function brojacKlase(k) {
+  if (farma.kat_slug === k.slug) {
+    return "border-orange-600 text-white bg-orange-600"
+  }
+
+  if (k.dostupni > 0) {
+    return "border-[#223c2f] text-white bg-[#223c2f]"
+  }
+
+  return "border-gray-200 text-gray-600"
+}
 </script>

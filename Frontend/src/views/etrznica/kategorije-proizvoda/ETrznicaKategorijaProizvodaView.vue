@@ -46,9 +46,7 @@
           </div>
 
           <div :class="{ 'opacity-50 pointer-events-none': proizvodi_s.loading }">
-            <div
-              class="grid grid-cols-1 max-sm:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-8 mb-14"
-            >
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 py-8 mb-14">
               <div
                 v-if="proizvodi_s.kategorijaPrazna"
                 class="col-span-full rounded-lg border border-dashed border-gray-300 p-10 mt-4 text-center"
