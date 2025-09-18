@@ -1,5 +1,6 @@
 <template>
   <div class="relative overflow-x-auto m-4 shadow-md rounded-lg">
+    <ProfilOpgPonudaFarmaPlusKalendar />
     <div class="bg-white pt-2 px-4 flex flex-items justify-center">
       <p class="text-green-600 pe-2">(Dostupno usluga)</p>
       <p class="text-red-400 pe-2">(Nema dostupnih usluga)</p>
@@ -411,6 +412,7 @@ import { ref, reactive, onMounted, computed } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { usePonudaFarmaPlusStore } from "@/stores/ponudaFarmaPlus"
 import { useUiStore } from "@/stores/ui"
+import ProfilOpgPonudaFarmaPlusKalendar from "@/components/profili/opg/ProfilOpgPonudaFarmaPlusKalendar.vue"
 
 const autentifikacija = useAutentifikacijskiStore()
 const ponudaFarmaPlus = usePonudaFarmaPlusStore()
