@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import PocetnaView from "@/views/PocetnaView.vue"
 import ETrznicaView from "@/views/etrznica/ETrznicaView.vue"
-import FarmaPlusView from "@/views/FarmaPlusView.vue"
+import FarmaPlusView from "@/views/farma_plus/FarmaPlusView.vue"
 import RegistracijaOPGView from "@/views/autentifikacija/RegistracijaOPGView.vue"
 import RegistracijaKupacView from "@/views/autentifikacija/RegistracijaKupacView.vue"
 import RegistracijaOdabirKorisnikaView from "@/views/autentifikacija/RegistracijaOdabirKorisnikaView.vue"
@@ -26,6 +26,7 @@ import ProfilOpgDetaljiKupcaView from "@/views/profili/opg/ProfilOpgDetaljiKupca
 import ETrznicaKategorijaProizvodaView from "@/views/etrznica/kategorije-proizvoda/ETrznicaKategorijaProizvodaView.vue"
 import ETrznicaProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/detalji-proizvoda/ETrznicaProizvodDetaljiView.vue"
 import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vue"
+import FarmaPlusDetaljiUslugeView from "@/views/farma_plus/FarmaPlusDetaljiUslugeView.vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 
 const routes = [
@@ -149,6 +150,11 @@ const routes = [
     name: "farmaPlus",
     path: "/farma-plus",
     component: FarmaPlusView,
+  },
+  {
+    name: "farmaPlusDetaljiUsluge",
+    path: "/farma-plus/detalji-usluge",
+    component: FarmaPlusDetaljiUslugeView,
   },
   {
     name: "kosarica",

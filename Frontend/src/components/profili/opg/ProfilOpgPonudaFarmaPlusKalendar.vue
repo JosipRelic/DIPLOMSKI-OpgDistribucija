@@ -1,5 +1,27 @@
 <template>
   <div class="text-slate-100 p-8">
+    <div
+      role="alert"
+      class="rounded-xl border-s-4 border-blue-200 bg-blue-50 p-4 max-w-3xl mb-3 mx-auto"
+    >
+      <div class="flex items-center gap-2 text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="21" fill="#2196F3" />
+          <path fill="#fff" d="M22 22h4v11h-4z" />
+          <circle cx="24" cy="16.5" r="2.5" fill="#fff" />
+        </svg>
+
+        <strong class="font-medium">
+          Dodajte datume i vremenske periode u kojima ste slobodni za obavljanje svih vaših usluga
+        </strong>
+      </div>
+
+      <p class="mt-2 text-sm text-blue-400">
+        Ukoliko ne navedete datum, dogovor oko obavljanja vaših usluga ćete obavljati sami izravno
+        nakon narudžbe s potražiteljem vaših usluga. Usluge bez definiranog datuma će se prikazivati
+        s oznakom "Datum po dogovoru".
+      </p>
+    </div>
     <div class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5">
         <div class="flex items-center justify-between mb-6">
@@ -39,7 +61,7 @@
             class="relative aspect-square rounded-2xl transition-colors flex items-center justify-center"
             :class="[
               day.inMonth
-                ? 'text-gray-600 hover:text-white hover:bg-[#223c2f]'
+                ? 'text-gray-600 hover:text-white hover:bg-[#223c2f] shadow-sm'
                 : 'bg-white text-gray-300',
               isSameDate(day.date, selectedDate) && 'shadow-lg bg-[#223c2f] text-white',
             ]"

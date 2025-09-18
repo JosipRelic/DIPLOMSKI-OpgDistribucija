@@ -11,7 +11,7 @@
       <header class="flex items-start justify-between gap-2">
         <h3 class="text-lg font-semibold leading-snug">{{ props.usluga.naziv }}</h3>
         <span class="shrink-0 rounded-full bg-[#223c2f] px-3 py-1 text-xs font-medium text-gray-100"
-          >Datum po dogovoru</span
+          >Datum po dogovoru / Dostupni termini</span
         >
       </header>
       <p class="text-sm text-gray-700">
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class="hidden">
         <span class="flex justify-center text-center text-xs">Unesite količinu</span>
         <div
           class="flex items-center justify-center shadow mt-1 mx-auto rounded-sm border border-gray-200 mb-3 w-fit"
@@ -61,10 +61,11 @@
           </button>
         </div>
       </div>
+
       <button
-        class="mt-auto block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-gray-100 uppercase transition-colors hover:bg-orange-900"
+        class="mt-auto block rounded-xl border border-orange-600 bg-orange-600 hover:border-orange-900 px-5 py-3 text-sm font-medium tracking-widest text-gray-100 uppercase transition-colors hover:bg-orange-900"
       >
-        Dodaj u košaricu
+        <router-link :to="{ name: 'farmaPlusDetaljiUsluge' }"> Rezerviraj uslugu </router-link>
       </button>
     </div>
   </article>
