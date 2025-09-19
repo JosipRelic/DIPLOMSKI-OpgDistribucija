@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field, EmailStr
 from decimal import Decimal
 from typing import Literal, Optional
-from datetime import datetime
+from datetime import datetime, date
+
 
 class RegistracijaKupac(BaseModel):
     email: EmailStr
@@ -120,6 +121,7 @@ class Usluga(BaseModel):
     slika_usluge: Optional[str] = Field(default=None)
     usluga_dostupna: bool = Field(default=True)
     mjerna_jedinica: str = Field(min_length=1, max_length=50)
+    trajanje_po_mjernoj_jedinici: Optional[int] = Field(default=None, ge=0)
     kategorija_id: int
 
 class KreiranjeUsluge(Usluga):
@@ -132,6 +134,7 @@ class AzuriranjeUsluge(BaseModel):
     slika_usluge: Optional[str] = Field(default=None)
     usluga_dostupna: Optional[bool] = Field(default=None)
     mjerna_jedinica: Optional[str] = Field(default=None, min_length=1, max_length=50)
+    trajanje_po_mjernoj_jedinici: Optional[int] = Field(default=None, ge=0)
     kategorija_id: Optional[int] = Field(default=None)
 
 class PrikazUsluge(Usluga):
@@ -151,6 +154,28 @@ class PrikazRecenzije(BaseModel):
     komentar: str | None
     korisnik_ime: str | None
     datum_izrade: datetime
+
+class TjednoPravilo(BaseModel):
+    dan_u_tjednu: int = Field(ge=0, le=6)
+    odabrano: bool
+    pocetno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
+    zavrsno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
+    naslov: Optional[str] = None
+
+class TjednoPraviloPrikaz(TjednoPravilo):
+    id: int
+
+class DatumRaspolozivosti(BaseModel):
+    datum: date
+    pocetno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
+    zavrsno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
+    naslov: Optional[str] = None
+
+class DatumRapolozivostiPrikaz(DatumRaspolozivosti):
+    id: int
+
+class MjeseciKalendaraPrikaz(BaseModel):
+    slotovi: dict[str, list[tuple[str, str]]]
 
 class Token(BaseModel):
     access_token: str

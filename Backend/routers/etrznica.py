@@ -509,6 +509,7 @@ def opg_usluge(slug:str, db: Session = Depends(get_db), stranica: int = 1, velic
                 cijena = float(usluga.cijena),
                 mjerna_jedinica = usluga.mjerna_jedinica,
                 slika_usluge = usluga.slika_usluge,
+                slug = usluga.slug,
                 opg_naziv = usluga.opg.naziv
             ) for usluga in lista_usluga
         ]

@@ -163,7 +163,7 @@
         </div>
       </div>
       <div>
-        <label class="block mb-2 text-sm font-medium text-gray-900"
+        <label class="block mb-1 text-sm font-medium text-gray-900"
           >Odaberi kategoriju usluge</label
         >
         <select
@@ -186,7 +186,7 @@
         />
       </div>
       <div>
-        <label class="block mb-2 text-sm font-medium text-gray-900"
+        <label class="block mb-1 text-sm font-medium text-gray-900"
           >Odaberi mjernu jedinicu usluge</label
         >
         <select
@@ -200,6 +200,29 @@
           <option>ral (jutro)</option>
           <option>kom</option>
         </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-900">Trajanje po mjernoj jedinici</label>
+        <div class="flex items-center gap-2">
+          <input
+            type="number"
+            min="0"
+            v-model.number="trajanje_s"
+            class="mt-1 w-20 rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+          />
+          sat/i
+          <input
+            type="number"
+            min="0"
+            max="59"
+            v-model.number="trajanje_m"
+            class="w-20 mt-1 rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
+          />
+          minuta
+        </div>
+        <small class="text-gray-500"
+          >Unesite koliko vam vremena treba za 1 {{ forma.mjerna_jedinica }}</small
+        >
       </div>
       <div>
         <label class="block text-sm font-medium">Cijena</label>
@@ -255,6 +278,7 @@
           <th scope="col" class="px-4 py-3">Dostupno</th>
           <th scope="col" class="px-6 py-3">Cijena</th>
           <th scope="col" class="px-6 py-3">Mjerna jedinica</th>
+          <th scope="col" class="px-6 py-3">Trajanje / jedinica</th>
           <th scope="col" class="px-6 py-3"></th>
           <th scope="col" class="px-6 py-3"></th>
         </tr>
@@ -366,6 +390,25 @@
             </template>
             <template v-else>{{ p.mjerna_jedinica }}</template>
           </td>
+          <td class="px-6 py-4 font-semibold text-gray-600 group-hover:text-gray-100">
+            <template v-if="uredivanjeId === p.id">
+              <input
+                type="time"
+                step="60"
+                v-model="urediFormu._trajanje_hhmm"
+                class="w-28 rounded border px-2 py-1 border-yellow-500"
+              />
+            </template>
+            <template v-else>
+              {{
+                p.trajanje_po_mjernoj_jedinici != null
+                  ? String(Math.floor(p.trajanje_po_mjernoj_jedinici / 60)).padStart(2, "0") +
+                    ":" +
+                    String(p.trajanje_po_mjernoj_jedinici % 60).padStart(2, "0")
+                  : "—"
+              }}
+            </template>
+          </td>
           <template v-if="uredivanjeId === p.id">
             <td class="px-6 py-4">
               <button
@@ -420,6 +463,9 @@ const ponudaFarmaPlus = usePonudaFarmaPlusStore()
 const ui = useUiStore()
 
 const formaZaDodavanjeUslugeOtvorena = ref(false)
+
+const trajanje_s = ref(0)
+const trajanje_m = ref(0)
 
 const otvoriFormuZaDodavanjeUsluge = () => {
   formaZaDodavanjeUslugeOtvorena.value = !formaZaDodavanjeUslugeOtvorena.value
@@ -476,6 +522,10 @@ async function dodajUslugu() {
   if (!forma.kategorija_id) return
   const kreirano = await ponudaFarmaPlus.dodajUslugu({
     ...forma,
+    trajanje_po_mjernoj_jedinici: Math.max(
+      0,
+      (trajanje_s.value || 0) * 60 + (trajanje_m.value || 0),
+    ),
     opg_id: autentifikacija.korisnicki_profil?.opg_id || autentifikacija.korisnicki_profil?.id,
   })
   if (novaSlika.value) {
@@ -492,6 +542,8 @@ async function dodajUslugu() {
   })
   novaSlika.value = null
   lokalniPretpregled.value = null
+  trajanje_s.value = 0
+  trajanje_m = 0
   formaZaDodavanjeUslugeOtvorena.value = false
   ui.obavijest({ tekst: "Usluga je dodana.", tip_obavijesti: "uspjeh" })
 }
@@ -517,6 +569,10 @@ function zapocniUredivanje(p) {
     opis: p.opis,
     cijena: p.cijena,
     mjerna_jedinica: p.mjerna_jedinica,
+    _trajanje_hhmm:
+      p.trajanje_po_mjernoj_jedinici != null
+        ? `${String(Math.floor(p.trajanje_po_mjernoj_jedinici / 60)).padStart(2, "0")}:${String(p.trajanje_po_mjernoj_jedinici % 60).padStart(2, "0")}`
+        : "00:00",
     usluga_dostupna: p.usluga_dostupna,
     kategorija_id: p.kategorija_id,
   })
@@ -535,7 +591,16 @@ function prekiniUredivanje() {
   ui.obavijest({ tekst: "Odustali ste od ažuriranja usluge.", tip_obavijesti: "informacija" })
 }
 async function spremiUredeno(p) {
-  await ponudaFarmaPlus.urediUslugu(p.id, { ...urediFormu })
+  const [hh, mm] = (urediFormu._trajanje_hhmm || "00:00").split(":").map(Number)
+  await ponudaFarmaPlus.urediUslugu(p.id, {
+    naziv: urediFormu.naziv,
+    opis: urediFormu.opis,
+    cijena: urediFormu.cijena,
+    mjerna_jedinica: urediFormu.mjerna_jedinica,
+    usluga_dostupna: urediFormu.usluga_dostupna,
+    kategorija_id: urediFormu.kategorija_id,
+    trajanje_po_mjernoj_jedinici: (hh || 0) * 60 + (mm || 0),
+  })
   if (p._novaSlika) {
     const res = await ponudaFarmaPlus.ucitajSlikuUsluge(p.id, p._novaSlika)
     if (res?.slika_usluge) p.slika_usluge = res.slika_usluge

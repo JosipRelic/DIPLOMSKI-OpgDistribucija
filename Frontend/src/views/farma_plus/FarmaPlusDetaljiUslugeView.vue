@@ -5,15 +5,24 @@
         <div class="flex flex-wrap gap-4 justify-between">
           <div class="p-4">
             <nav class="text-sm text-gray-500 flex items-center space-x-2 mb-2">
-              <span class="hover:underline cursor-pointer"><a href="#">Branje žita</a></span>
+              <span class="hover:underline cursor-pointer"
+                ><router-link :to="{ name: 'farmaPlus' }">Farma+</router-link></span
+              >
               <span>/</span>
-              <span class="font-medium">Berba i žetva </span>
+              <span class="font-medium">{{ usluga?.naziv || "Usluga" }}</span>
             </nav>
+
             <div>
-              <div class="flex items-center space-x-2 text-sm mt-3 font-medium text-green-600">
-                <h1 class="text-3xl font-bold text-gray-900">Branje žita</h1>
+              <div
+                class="flex items-center space-x-2 text-sm mt-3 font-medium"
+                :class="usluga?.usluga_dostupna ? 'text-green-600' : 'text-red-500'"
+              >
+                <h1 class="text-3xl font-bold text-gray-900">
+                  {{ usluga?.naziv || "Usluga" }}
+                </h1>
                 <div class="flex pt-2 space-x-1">
                   <svg
+                    v-if="usluga?.usluga_dostupna"
                     xmlns="http://www.w3.org/2000/svg"
                     class="w-5 h-5 ms-2"
                     fill="none"
@@ -27,53 +36,82 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span>Dostupno</span>
+                  <svg
+                    v-else
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5 ms-2"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  <span>{{ usluga?.usluga_dostupna ? "Dostupno" : "Nedostupno" }}</span>
                 </div>
               </div>
             </div>
 
             <p class="text-gray-600 font-normal text-base mt-2 mb-4 max-w-md">
-              Višegodišnje iskustvo branja žita u raznim uvjetima, brzo i efikasno.
+              {{ usluga?.opis || "Opis usluge nije dostupan." }}
             </p>
+
             <div class="flex items-center mt-2 space-x-2 text-sm text-gray-600 mb-4">
-              <a href="#" class="hover:underline text-teal-500"> OPG Horvat </a>
-              <span class="text-gray-400">•</span>
-              <span>Novska, Sisačko-Moslavačka</span>
+              <router-link
+                v-if="usluga?.opg_slug && usluga?.opg_naziv"
+                class="hover:underline text-teal-500"
+                :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: usluga.opg_slug } }"
+              >
+                {{ usluga.opg_naziv }}
+              </router-link>
+              <span v-if="usluga?.opg_naziv" class="text-gray-400">•</span>
+              <span v-if="usluga?.grad || usluga?.zupanija">
+                {{ [usluga?.grad, usluga?.zupanija].filter(Boolean).join(", ") }}
+              </span>
             </div>
 
             <div class="text-2xl font-semibold text-gray-900">
-              100.00 €
-              <span class="text-gray-400"> / ha</span>
-              <div class="flex items-center text-sm mb-4">
-                <span class="text-gray-600">Trajanje usluge: 1 ha = </span>
+              {{ cijenaLabel }}
+              <span class="text-gray-400"> / {{ usluga?.mjerna_jedinica }}</span>
+
+              <div class="flex items-center text-sm mb-4 mt-3">
+                <span class="text-gray-600"
+                  >Trajanje usluge: 1 {{ usluga?.mjerna_jedinica }} =
+                </span>
                 <input
-                  v-model="serviceLengthStr"
+                  :value="trajanjeHHMM"
                   type="time"
                   step="60"
                   class="px-2 py-1.5 rounded-xl text-orange-600"
+                  disabled
                 />
               </div>
+
               <div>
                 <div class="rounded-sm border border-gray-200 mt-2 w-fit shadow">
                   <button
                     type="button"
                     class="size-10 leading-10 text-gray-600 transition hover:text-red-600"
-                    @click="quantity = Math.max(1, (quantity || 1) - 1)"
+                    @click="kolicina = Math.max(1, (kolicina || 1) - 1)"
                   >
                     &minus;
                   </button>
 
                   <input
-                    v-model.number="quantity"
+                    v-model.number="kolicina"
                     type="number"
                     min="1"
-                    class="h-10 text-orange-600 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                    class="h-10 text-orange-600 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m=0 [&::-webkit-outer-spin-button]:appearance-none"
                   />
 
                   <button
                     type="button"
                     class="size-10 leading-10 text-gray-600 transition hover:text-green-600"
-                    @click="quantity = (quantity || 1) + 1"
+                    @click="kolicina = (kolicina || 1) + 1"
                   >
                     &plus;
                   </button>
@@ -84,15 +122,19 @@
                 <div class="flex items-center text-lg">
                   <span class="text-orange-600">Ukupno trajanje usluge:</span>
                   <span class="px-3 py-1.5 rounded-xl text-orange-600">{{
-                    totalDurationLabel
+                    ukupnoTrajanjeLabel
                   }}</span>
                 </div>
               </div>
             </div>
           </div>
+
           <img
-            src="https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGZhcm1pbmd8ZW58MHx8MHx8fDA%3D"
-            alt=""
+            :src="
+              usluga?.slika_usluge ||
+              'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
+            "
+            :alt="usluga?.naziv || 'Usluga'"
             class="rounded-md object-cover"
           />
         </div>
@@ -103,52 +145,60 @@
           <div class="flex items-center justify-between mb-4">
             <button
               class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
-              @click="moveMonth(-1)"
+              @click="pomakniMjesec(-1)"
             >
-              <
+              &lt;
             </button>
-            <div class="text-lg font-semibold text-orange-600">{{ monthLabel }}</div>
+            <div class="text-lg font-semibold text-orange-600">{{ naslovMjeseca }}</div>
             <button
               class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
-              @click="moveMonth(1)"
+              @click="pomakniMjesec(1)"
             >
-              >
+              &gt;
             </button>
           </div>
 
           <div class="grid grid-cols-7 text-center text-sm text-orange-600 mb-2 select-none">
-            <div v-for="(d, i) in weekdayShort" :key="i" class="py-1">{{ d }}</div>
+            <div v-for="(d, i) in kratkiDani" :key="i" class="py-1">{{ d }}</div>
           </div>
+
           <div class="grid grid-cols-7 gap-2">
             <button
-              v-for="day in daysGrid"
-              :key="day.key"
+              v-for="dan in daniMreza"
+              :key="dan.key"
               class="relative aspect-square rounded-xl flex items-center justify-center border border-white/5"
               :class="[
-                day.inMonth
+                dan.uMjesecu
                   ? 'text-gray-600 font-semibold hover:text-white hover:bg-[#223c2f] shadow-sm'
                   : 'bg-white text-gray-300',
-                isSameDate(day.date, selectedDate) && 'shadow-lg bg-[#223c2f] text-white',
-                isPastDay(day.date) && 'opacity-30 cursor-not-allowed',
+                jednakiDatumi(dan.datum, odabraniDatum) && 'shadow-lg bg-[#223c2f] text-white',
+                jeProsliDan(dan.datum) && 'opacity-30 cursor-not-allowed',
               ]"
-              :disabled="!day.inMonth || isPastDay(day.date)"
-              @click="selectDate(day.date)"
+              :disabled="!dan.uMjesecu || jeProsliDan(dan.datum)"
+              @click="odaberiDatum(dan.datum)"
             >
-              {{ day.date.getDate() }}
+              {{ dan.datum.getDate() }}
 
               <span
-                v-if="day.inMonth && dayHasAvailability(day.date)"
+                v-if="tipZaDatum(dan.datum) === 'green'"
                 class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-green-600"
-              ></span>
+              />
+              <span
+                v-else-if="tipZaDatum(dan.datum) === 'yellow'"
+                class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-yellow-400"
+              />
             </button>
           </div>
 
           <div class="flex gap-3 mt-4">
-            <button class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10" @click="goToday">
-              Today
+            <button class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10" @click="idiDanas">
+              Danas
             </button>
-            <button class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10" @click="clearDate">
-              Clear
+            <button
+              class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10"
+              @click="ocistiDatum"
+            >
+              Očisti
             </button>
           </div>
         </div>
@@ -157,42 +207,101 @@
           <div class="rounded-2xl bg-white p-6 shadow-xl">
             <div class="flex items-center justify-between mb-4">
               <div>
-                <h2 class="text-xl text-orange-600">{{ selectedDateTitle }}</h2>
+                <h2 class="text-xl text-orange-600">{{ naslovOdabranogDatuma }}</h2>
                 <div class="text-teal-500">
-                  Raspoloživo:
-                  <span v-if="rangeForSelected" class="font-medium">{{
-                    rangeLabel(rangeForSelected)
-                  }}</span>
+                  Raspoloživost:
+                  <template v-if="rasponiLabel">
+                    <span class="font-medium">{{ rasponiLabel }}</span>
+                  </template>
                   <span v-else class="text-gray-500">nema dostupnog raspona</span>
                 </div>
               </div>
               <div class="text-gray-500">
-                Ukupno potrebno: <span class="text-orange-600"> {{ totalDurationLabel }}</span>
+                <div>
+                  • Ukupno potrebno:
+                  <span class="text-teal-500">{{ ukupnoTrajanjeLabel }}</span>
+                </div>
+
+                <template v-if="preostaloMinuta > 0">
+                  • Preostalo:
+                  <span class="text-red-500">{{ preostaloLabel }}</span>
+                </template>
+                <template v-else>
+                  • <span class="text-green-600 font-medium">pokriveno ✓</span>
+                </template>
               </div>
             </div>
 
-            <div v-if="!selectedDate" class="text-slate-400">Odaberite datum u kalendaru.</div>
-            <div v-else-if="!rangeForSelected" class="text-slate-400">
-              Za odabrani dan nema radnog vremena.
+            <div v-if="!odabraniDatum" class="text-slate-400">Odaberite datum u kalendaru.</div>
+            <div v-else-if="rasponiZaOdabrani.length === 0" class="text-slate-400">
+              OPG nije raspoloživ za obavljanje usluga na odabrani datum.
             </div>
             <div v-else>
-              <div class="mb-3 text-gray-400" v-if="suggestions.length === 0">
-                Nema dovoljno mjesta u odabranom rasponu za {{ totalDurationLabel }}.
+              <div v-if="preostaloMinuta === 0" class="text-green-600">
+                Pokrili ste ukupno trajanje usluge.
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+              <div
+                v-else-if="tipOdabranogDana === 'green'"
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t-1 border-gray-100 pt-2"
+              >
                 <div
-                  v-for="opt in suggestions"
+                  v-for="opt in prijedlozi"
                   :key="opt.key"
                   class="flex items-center justify-between rounded-xl shadow-xl text-gray-600 border-gray-100 bg-white px-4 py-3"
                 >
                   <div class="font-medium">
-                    {{ formatTime(opt.start) }} – {{ formatTime(opt.end) }}
+                    {{ formatHM(opt.startMin) }} – {{ formatHM(opt.endMin) }}
                   </div>
                   <button
-                    class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg"
-                    @click="addToReservation(opt)"
+                    class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:opacity-40"
+                    @click="dodajURezervaciju(opt)"
+                    :disabled="preostaloMinuta === 0"
                   >
                     Dodaj u rezervaciju
+                  </button>
+                </div>
+              </div>
+
+              <div v-else-if="tipOdabranogDana === 'yellow'">
+                <h3 class="text-lg font-semibold text-orange-600 border-t-1 border-gray-100 pt-3">
+                  Kombiniraj termine
+                </h3>
+                <p class="text-gray-500 mb-3">
+                  Ukupno trajanje usluge premašuje rasploživost OPG-a za odabrani datum, predlažemo
+                  kombinaciju termina ispod:
+                </p>
+
+                <div v-if="!kombinacijaMultiDan">
+                  <p class="text-gray-400">
+                    Nije moguće pokriti preostalih {{ preostaloLabel }} kombiniranjem od ovog datuma
+                    nadalje.
+                  </p>
+                </div>
+
+                <div v-else class="space-y-2">
+                  <div
+                    v-for="(s, i) in kombinacijaMultiDan.stavke"
+                    :key="i"
+                    class="flex items-center justify-between rounded-xl bg-white shadow border border-gray-100 px-4 py-2"
+                  >
+                    <div class="text-gray-600">
+                      <div class="font-medium text-orange-600">{{ labelDatuma(s.dateKey) }}</div>
+                      <div class="text-teal-500 text-sm">
+                        {{ formatHM(s.startMin) }} – {{ formatHM(s.endMin) }}
+                      </div>
+                    </div>
+                    <span class="text-gray-500 text-sm">{{
+                      trajanjeLabel(s.endMin - s.startMin)
+                    }}</span>
+                  </div>
+
+                  <button
+                    class="mt-2 px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
+                    @click="dodajKombinacijuMultiDan"
+                    :disabled="!kombinacijaMultiDan || preostaloMinuta === 0"
+                  >
+                    Dodaj kombinaciju u rezervaciju
                   </button>
                 </div>
               </div>
@@ -203,40 +312,54 @@
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-semibold text-orange-600">Rezervirat ćete:</h3>
               <button
-                v-if="reservations.length"
+                v-if="rezervacije.length"
                 class="px-3 py-1.5 rounded-xl text-red-500"
-                @click="reservations = []"
+                @click="isprazniRezervacije"
               >
                 Isprazni
               </button>
             </div>
-            <div v-if="!reservations.length" class="text-gray-400">
+
+            <div v-if="!rezervacije.length" class="text-gray-400">
               Niste odabrali niti jedan termin.
             </div>
+
             <div v-else class="space-y-3">
               <div
-                v-for="(item, idx) in reservations"
-                :key="item.key"
+                v-for="(stavka, idx) in rezervacije"
+                :key="stavka.key"
                 class="flex items-center justify-between rounded-xl bg-white shadow-lg border border-gray-100 px-4 py-3"
               >
                 <div>
-                  <div class="font-medium text-orange-600">{{ item.title }}</div>
+                  <div class="font-medium text-orange-600">{{ stavka.title }}</div>
                   <div class="text-teal-500 text-sm">
-                    {{ item.dateLabel }} • {{ item.timeLabel }} • Količina {{ item.quantity }}
+                    {{ stavka.dateLabel }} • {{ stavka.timeLabel }} • Količina {{ stavka.quantity }}
                   </div>
                 </div>
                 <button
                   class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                  @click="reservations.splice(idx, 1)"
+                  @click="rezervacije.splice(idx, 1)"
                 >
-                  🗑️
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 2048 2048"
+                    class="text-red-500"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M1664 128h384v1792H0V128h384V0h128v128h1024V0h128v128zM384 256H128v256h1792V256h-256v128h-128V256H512v128H384V256zM128 1792h1792V640H128v1152zm1171-941l90 90l-274 275l274 275l-90 90l-275-275l-275 275l-90-90l274-275l-274-275l90-90l275 275l275-275z"
+                    />
+                  </svg>
                 </button>
               </div>
 
               <div class="pt-2">
                 <button
-                  class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg"
-                  @click="addAllToBasket"
+                  class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
+                  @click="dodajSveUKosaricu"
+                  :disabled="preostaloMinuta > 0 || !rezervacije.length"
                 >
                   Dodaj u košaricu sve termine
                 </button>
@@ -250,195 +373,310 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue"
+import { computed, reactive, ref, onMounted, watch } from "vue"
+import { useRoute } from "vue-router"
+import api from "@/services/api"
+import { useRaspolozivostOpgStore } from "@/stores/raspolozivostOpg"
 
 const pad = (n) => String(n).padStart(2, "0")
-const parseTimeToMinutes = (hhmm) => {
-  const [h, m] = (hhmm || "00:00").split(":").map(Number)
+const HM = (h, m) => `${pad(h)}:${pad(m)}`
+const hm2min = (hm) => {
+  const [h, m] = (hm || "00:00").split(":").map(Number)
   return (h || 0) * 60 + (m || 0)
 }
-const minutesToHM = (min) => `${Math.floor(min / 60)} h ${min % 60} min`
-const cloneDate = (d) => new Date(d.getTime())
-const setHM = (d, hm) => {
-  const [h, m] = hm.split(":").map(Number)
-  const x = cloneDate(d)
-  x.setHours(h || 0, m || 0, 0, 0)
-  return x
-}
-const addMinutes = (d, m) => {
-  const x = cloneDate(d)
-  x.setMinutes(x.getMinutes() + m)
-  return x
-}
-
-const isSameDate = (a, b) =>
+const min2hm = (m) => HM(Math.floor(m / 60), m % 60)
+const trajanjeLabel = (m) => `${Math.floor(m / 60)} h ${m % 60} min`
+const localKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+const jednakiDatumi = (a, b) =>
   a &&
   b &&
   a.getFullYear() === b.getFullYear() &&
   a.getMonth() === b.getMonth() &&
   a.getDate() === b.getDate()
-const isPastDay = (d) => {
-  const now = new Date()
-  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  const n = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  return x < n
+const jeProsliDan = (d) => {
+  const n = new Date()
+  const A = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const B = new Date(n.getFullYear(), n.getMonth(), n.getDate())
+  return A < B
 }
+const formatHM = (min) => min2hm(min)
+const labelDatuma = (k) =>
+  new Date(k + "T00:00:00").toLocaleDateString("hr-HR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  })
 
-const weekdayShort = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
-const weekdayLongFmt = new Intl.DateTimeFormat("hr-HR", {
+const pocetakMjeseca = (d) => new Date(d.getFullYear(), d.getMonth(), 1)
+const krajMjeseca = (d) => new Date(d.getFullYear(), d.getMonth() + 1, 0)
+const dodajMjesece = (d, n) => new Date(d.getFullYear(), d.getMonth() + n, 1)
+
+const fmtDanDug = new Intl.DateTimeFormat("hr-HR", {
   weekday: "long",
   day: "2-digit",
   month: "long",
   year: "numeric",
 })
-const monthFmt = new Intl.DateTimeFormat("hr-HR", { month: "long", year: "numeric" })
+const fmtMjesec = new Intl.DateTimeFormat("hr-HR", { month: "long", year: "numeric" })
+const kratkiDani = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
 
-const today = new Date()
-const viewMonth = ref(new Date(today.getFullYear(), today.getMonth(), 1))
-const selectedDate = ref(today)
-
-const startOfMonth = (d) => new Date(d.getFullYear(), d.getMonth(), 1)
-const endOfMonth = (d) => new Date(d.getFullYear(), d.getMonth() + 1, 0)
-const addMonths = (d, n) => new Date(d.getFullYear(), d.getMonth() + n, 1)
-
-const monthLabel = computed(() =>
-  monthFmt.format(viewMonth.value).replace(/^./, (c) => c.toUpperCase()),
+const ruta = useRoute()
+const idUsluge = computed(() =>
+  Number(
+    String(ruta.params.uslugaSlugId || "")
+      .split("-")
+      .pop(),
+  ),
 )
 
-const daysGrid = computed(() => {
-  const start = startOfMonth(viewMonth.value)
-  const end = endOfMonth(viewMonth.value)
+const raspolozivost = useRaspolozivostOpgStore()
+
+const usluga = ref(null)
+const ucitavanje = ref(true)
+
+const danas = new Date()
+const prikazMjeseca = ref(pocetakMjeseca(danas))
+const odabraniDatum = ref(danas)
+
+const naslovMjeseca = computed(() =>
+  fmtMjesec.format(prikazMjeseca.value).replace(/^./, (c) => c.toUpperCase()),
+)
+const naslovOdabranogDatuma = computed(() =>
+  odabraniDatum.value ? fmtDanDug.format(odabraniDatum.value) : "Odaberite datum",
+)
+
+onMounted(async () => {
+  try {
+    usluga.value = history.state?.usluga || null
+    if (!usluga.value && idUsluge.value) {
+      try {
+        const { data } = await api.get(`/farma-plus/usluga/${idUsluge.value}`)
+        usluga.value = data
+      } catch (e) {
+        console.warn("Ne mogu dohvatiti detalje usluge s API-ja.", e?.response?.data || e)
+      }
+    }
+  } finally {
+    ucitavanje.value = false
+  }
+})
+
+watch(
+  [prikazMjeseca, () => usluga.value?.opg_id],
+  async ([m, opgId]) => {
+    if (!opgId || !m) return
+    await raspolozivost.dohvatiKalendar({
+      opg_id: opgId,
+      godina: m.getFullYear(),
+      mjesec: m.getMonth() + 1,
+    })
+  },
+  { immediate: true },
+)
+
+const daniMreza = computed(() => {
+  const start = pocetakMjeseca(prikazMjeseca.value)
+  const end = krajMjeseca(prikazMjeseca.value)
   const startIdx = (start.getDay() + 6) % 7
-  const days = []
+  const dani = []
   for (let i = startIdx; i > 0; i--) {
     const d = new Date(start)
     d.setDate(d.getDate() - i)
-    days.push({ key: "p" + i + d.getTime(), date: d, inMonth: false })
+    dani.push({ key: "p" + i + d.getTime(), datum: d, uMjesecu: false })
   }
   for (let i = 1; i <= end.getDate(); i++) {
     const d = new Date(start)
     d.setDate(i)
-    days.push({ key: "m" + i, date: d, inMonth: true })
+    dani.push({ key: "m" + i, datum: d, uMjesecu: true })
   }
-  while (days.length % 7 !== 0 || days.length < 42) {
-    const d = new Date(days[days.length - 1].date)
+  while (dani.length % 7 !== 0 || dani.length < 42) {
+    const d = new Date(dani[dani.length - 1].datum)
     d.setDate(d.getDate() + 1)
-    days.push({ key: "n" + d.getTime(), date: d, inMonth: false })
+    dani.push({ key: "n" + d.getTime(), datum: d, uMjesecu: false })
   }
-  return days
+  return dani
 })
-
-function selectDate(d) {
-  selectedDate.value = d
+function odaberiDatum(d) {
+  odabraniDatum.value = d
 }
-function moveMonth(n) {
-  viewMonth.value = addMonths(viewMonth.value, n)
+function pomakniMjesec(n) {
+  prikazMjeseca.value = dodajMjesece(prikazMjeseca.value, n)
 }
-function goToday() {
-  viewMonth.value = startOfMonth(today)
-  selectedDate.value = today
+function idiDanas() {
+  prikazMjeseca.value = pocetakMjeseca(danas)
+  odabraniDatum.value = danas
 }
-function clearDate() {
-  selectedDate.value = null
-}
-
-const weeklyAvailability = {
-  0: { start: "10:00", end: "17:00" },
-  1: { start: "10:00", end: "17:00" },
-  2: { start: "10:00", end: "17:00" },
-  3: { start: "10:00", end: "17:00" },
-  4: { start: "10:00", end: "17:00" },
-  5: { start: "10:00", end: "14:00" },
-  6: null,
+function ocistiDatum() {
+  odabraniDatum.value = null
 }
 
-const dayHasAvailability = (date) => {
-  const idx = (date.getDay() + 6) % 7
-  return !!weeklyAvailability[idx]
-}
-
-const rangeForSelected = computed(() => {
-  if (!selectedDate.value) return null
-  const idx = (selectedDate.value.getDay() + 6) % 7
-  return weeklyAvailability[idx] || null
+const cijenaLabel = computed(() => `${Number(usluga.value?.cijena || 0).toFixed(2)} €`)
+const trajanjeHHMM = computed(() => {
+  const min = Number(usluga.value?.trajanje_po_mjernoj_jedinici || 0)
+  return HM(Math.floor(min / 60), min % 60)
 })
+const kolicina = ref(1)
+const ukupnoMinuta = computed(() =>
+  Math.max(0, Number(usluga.value?.trajanje_po_mjernoj_jedinici || 0) * (kolicina.value || 0)),
+)
+const ukupnoTrajanjeLabel = computed(() => trajanjeLabel(ukupnoMinuta.value))
 
-const rangeLabel = (r) => `${r.start} – ${r.end}`
-const selectedDateTitle = computed(() =>
-  selectedDate.value ? weekdayLongFmt.format(selectedDate.value) : "Odaberite datum",
+let rezervacije = reactive([])
+let kosarica = reactive([])
+
+const rezerviranoMinuta = computed(() =>
+  rezervacije.reduce((s, r) => s + Math.max(0, r.endMin - r.startMin), 0),
+)
+const preostaloMinuta = computed(() => Math.max(0, ukupnoMinuta.value - rezerviranoMinuta.value))
+const preostaloLabel = computed(() => trajanjeLabel(preostaloMinuta.value))
+
+const KORAK_MIN = 30
+
+function rawSlotoviZaKey(key) {
+  const arr = raspolozivost.kalendar[key] || []
+  return arr.map(([s, e]) => [hm2min(s), hm2min(e)]).sort((a, b) => a[0] - b[0])
+}
+
+function slobodniZaKey(key) {
+  let segs = rawSlotoviZaKey(key)
+  if (!segs.length) return []
+
+  const todayKey = localKey(new Date())
+  if (key === todayKey) {
+    const now = new Date()
+    const limit = Math.ceil((now.getHours() * 60 + now.getMinutes()) / KORAK_MIN) * KORAK_MIN
+    segs = segs.map(([a, b]) => [Math.max(a, limit), b]).filter(([a, b]) => b - a >= KORAK_MIN)
+  }
+
+  const rez = rezervacije
+    .filter((r) => r.dateKey === key)
+    .map((r) => [r.startMin, r.endMin])
+    .sort((a, b) => a[0] - b[0])
+
+  for (const [rs, re] of rez) {
+    const next = []
+    for (const [a, b] of segs) {
+      if (re <= a || rs >= b) {
+        next.push([a, b])
+        continue
+      }
+      if (rs > a) next.push([a, Math.max(a, rs)])
+      if (re < b) next.push([Math.min(b, re), b])
+    }
+    segs = next.filter(([x, y]) => y - x >= KORAK_MIN)
+    if (!segs.length) break
+  }
+  segs.sort((a, b) => a[0] - b[0])
+  return segs
+}
+
+const rasponiZaOdabrani = computed(() => {
+  if (!odabraniDatum.value) return []
+  return raspolozivost.kalendar[localKey(odabraniDatum.value)] || []
+})
+const rasponiLabel = computed(() =>
+  rasponiZaOdabrani.value.length
+    ? rasponiZaOdabrani.value.map(([p, k]) => `${p} – ${k}`).join(", ")
+    : null,
 )
 
-const serviceLengthStr = ref("01:30")
-const quantity = ref(1)
+function tipZaKey(key, need) {
+  if (need <= 0) return null
+  const free = slobodniZaKey(key)
+  if (!free.length) return null
+  const maxLen = Math.max(...free.map(([a, b]) => b - a))
+  if (maxLen >= need) return "green"
+  return "yellow"
+}
+function tipZaDatum(d) {
+  return tipZaKey(localKey(d), preostaloMinuta.value)
+}
+const tipOdabranogDana = computed(() =>
+  odabraniDatum.value ? tipZaDatum(odabraniDatum.value) : null,
+)
 
-const perUnitMinutes = computed(() => parseTimeToMinutes(serviceLengthStr.value))
-const totalMinutes = computed(() => Math.max(0, perUnitMinutes.value * (quantity.value || 0)))
-const totalDurationLabel = computed(() => minutesToHM(totalMinutes.value))
+const prijedlozi = computed(() => {
+  const need = preostaloMinuta.value
+  if (!odabraniDatum.value || need === 0) return []
+  if (tipOdabranogDana.value !== "green") return []
 
-const STEP = 30
-
-const suggestions = computed(() => {
-  const out = []
-  if (!selectedDate.value || !rangeForSelected.value) return out
-  if (totalMinutes.value === 0) return out
-
-  const r = rangeForSelected.value
-  const start = setHM(selectedDate.value, r.start)
-  const end = setHM(selectedDate.value, r.end)
-
-  const latestStart = addMinutes(end, -totalMinutes.value)
-  if (latestStart < start) return out
-
-  const now = new Date()
-  let iter = cloneDate(start)
-  const firstStart = isSameDate(iter, now)
-    ? new Date(
-        Math.max(
-          iter,
-          new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            now.getHours(),
-            Math.ceil(now.getMinutes() / STEP) * STEP,
-          ),
-        ),
-      )
-    : iter
-
-  for (let t = firstStart; t <= latestStart; t = addMinutes(t, STEP)) {
-    const e = addMinutes(t, totalMinutes.value)
-    out.push({ key: t.getTime() + "", start: t, end: e })
+  const key = localKey(odabraniDatum.value)
+  const free = slobodniZaKey(key)
+  const res = []
+  for (const [a, b] of free) {
+    if (b - a < need) continue
+    for (let t = a; t <= b - need; t += KORAK_MIN) {
+      res.push({ key: `${key}-${t}`, dateKey: key, startMin: t, endMin: t + need })
+    }
   }
-  return out
+  return res
 })
 
-let reservations = reactive([])
-let basket = reactive([])
+const kombinacijaMultiDan = computed(() => {
+  if (!odabraniDatum.value || tipOdabranogDana.value !== "yellow") return null
+  let need = preostaloMinuta.value
+  if (need <= 0) return null
 
-function addToReservation(opt) {
-  reservations.push({
+  const startKey = localKey(odabraniDatum.value)
+  const allKeys = Object.keys(raspolozivost.kalendar || {})
+    .filter((k) => k >= startKey)
+    .sort()
+
+  const parts = []
+  for (const key of allKeys) {
+    if (need <= 0) break
+    const free = slobodniZaKey(key)
+    for (const [a, b] of free) {
+      if (need <= 0) break
+      const take = Math.min(b - a, need)
+      if (take <= 0) continue
+      parts.push({ dateKey: key, startMin: a, endMin: a + take })
+      need -= take
+    }
+  }
+
+  if (need > 0) return null
+  return { stavke: parts }
+})
+
+function dodajURezervaciju(opt) {
+  if (preostaloMinuta.value === 0) return
+  rezervacije.push({
     key: opt.key + "-" + Math.random().toString(36).slice(2),
-    title: "Rezervacija",
-    dateLabel: weekdayLongFmt.format(opt.start),
-    timeLabel: `${formatTime(opt.start)} – ${formatTime(opt.end)}`,
-    quantity: quantity.value,
-    startISO: opt.start.toISOString(),
-    endISO: opt.end.toISOString(),
+    title: usluga.value?.naziv || "Rezervacija",
+    dateLabel: labelDatuma(opt.dateKey),
+    timeLabel: `${formatHM(opt.startMin)} – ${formatHM(opt.endMin)}`,
+    quantity: kolicina.value,
+    dateKey: opt.dateKey,
+    startMin: opt.startMin,
+    endMin: opt.endMin,
   })
 }
 
-function addAllToBasket() {
-  basket.push(
-    ...reservations.map((r) => ({
-      ...r,
-      basketKey: r.key + "-b",
-    })),
-  )
+function dodajKombinacijuMultiDan() {
+  if (!kombinacijaMultiDan.value || preostaloMinuta.value === 0) return
+  for (const s of kombinacijaMultiDan.value.stavke) {
+    rezervacije.push({
+      key: `${s.dateKey}-${s.startMin}-${Math.random().toString(36).slice(2)}`,
+      title: usluga.value?.naziv || "Rezervacija",
+      dateLabel: labelDatuma(s.dateKey),
+      timeLabel: `${formatHM(s.startMin)} – ${formatHM(s.endMin)}`,
+      quantity: kolicina.value,
+      dateKey: s.dateKey,
+      startMin: s.startMin,
+      endMin: s.endMin,
+    })
+  }
 }
 
-function formatTime(d) {
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`
+function dodajSveUKosaricu() {
+  if (preostaloMinuta.value > 0 || !rezervacije.length) return
+  kosarica.push(...rezervacije.map((r) => ({ ...r, basketKey: r.key + "-b" })))
+}
+
+function isprazniRezervacije() {
+  rezervacije.splice(0, rezervacije.length)
 }
 </script>
 

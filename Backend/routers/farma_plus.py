@@ -5,6 +5,7 @@ from sqlalchemy import func, or_, case
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Usluga, KategorijaUsluge, Opg, Korisnik, KorisnickiProfil
+from schemas import PrikazUsluge
 
 router = APIRouter(prefix="/farma-plus", tags=["Farma+"])
 
@@ -171,3 +172,10 @@ def usluge(
         "ukupno_usluga": ukupno_usluga,
         "ukupno_stranica": math.ceil(ukupno_usluga / velicina_stranice) if velicina_stranice else 1
     }
+
+@router.get("/usluga/{usluga_id}", response_model=PrikazUsluge)
+def dohvati_uslugu(usluga_id: int, db:Session = Depends(get_db)):
+    usluga = db.get(Usluga, usluga_id)
+    if not usluga:
+        raise HTTPException(status_code=404, detail="Usluga nije pronađena")
+    return usluga

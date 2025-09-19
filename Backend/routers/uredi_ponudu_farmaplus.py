@@ -85,6 +85,7 @@ def kreiraj_uslugu(
         opis = body.opis,
         cijena = body.cijena,
         mjerna_jedinica = body.mjerna_jedinica,
+        trajanje_po_mjernoj_jedinici = body.trajanje_po_mjernoj_jedinici,
         usluga_dostupna = body.usluga_dostupna,
         kategorija_id = body.kategorija_id,
         opg_id = opg.id,
@@ -110,7 +111,7 @@ def uredi_uslugu(
     if not usluga or usluga.opg_id != opg.id:
         raise HTTPException(status_code=404, detail="Usluga nije pronađena")
     
-    for p in ["naziv", "opis", "cijena", "slika_usluge", "usluga_dostupna", "mjerna_jedinica", "kategorija_id"]:
+    for p in ["naziv", "opis", "cijena", "slika_usluge", "usluga_dostupna", "mjerna_jedinica","trajanje_po_mjernoj_jedinici", "kategorija_id"]:
          val = getattr(body, p, None)
          if val is not None:
              setattr(usluga, p, val)

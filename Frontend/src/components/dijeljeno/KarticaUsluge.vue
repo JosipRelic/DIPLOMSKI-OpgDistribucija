@@ -1,6 +1,8 @@
 <template>
   <article
-    class="group relative overflow-hidden rounded-2xl border border-gray-100 shadow-xl transition-transform duration-200 ease-out hover:scale-[1.02] hover:shadow-md"
+    class="group relative overflow-hidden rounded-2xl border border-gray-100 shadow-xl transition-transform duration-200 ease-out hover:scale-[1.02] hover:shadow-md cursor-pointer"
+    :aria-label="`Pogledaj uslugu ${props.usluga.naziv}`"
+    @click="otvoriDetalje"
   >
     <img
       :src="props.usluga.slika_usluge || defaultSlika"
@@ -14,9 +16,11 @@
           >Datum po dogovoru / Dostupni termini</span
         >
       </header>
+
       <p class="text-sm text-gray-700">
         {{ props.usluga.opis }}
       </p>
+
       <div class="mt-1 flex items-center justify-between">
         <div>
           <span class="text-xs uppercase tracking-wide text-neutral-500">Cijena</span>
@@ -24,16 +28,20 @@
             {{ cijena }} / {{ props.usluga.mjerna_jedinica }}
           </div>
         </div>
+
         <div v-if="prikaziPonudacaUsluge" class="text-right">
           <span class="text-xs uppercase tracking-wide text-neutral-500">Uslugu nudi</span>
           <div class="text-sm font-medium hover:underline text-teal-500">
             <router-link
               :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: props.usluga.opg_slug } }"
-              >{{ props.usluga.opg_naziv }}</router-link
+              @click.stop
             >
+              {{ props.usluga.opg_naziv }}
+            </router-link>
           </div>
         </div>
       </div>
+
       <div class="hidden">
         <span class="flex justify-center text-center text-xs">Unesite količinu</span>
         <div
@@ -64,8 +72,11 @@
 
       <button
         class="mt-auto block rounded-xl border border-orange-600 bg-orange-600 hover:border-orange-900 px-5 py-3 text-sm font-medium tracking-widest text-gray-100 uppercase transition-colors hover:bg-orange-900"
+        @click.stop="otvoriDetalje"
       >
-        <router-link :to="{ name: 'farmaPlusDetaljiUsluge' }"> Rezerviraj uslugu </router-link>
+        <router-link :to="linkDetalji" class="block w-full h-full text-center">
+          Rezerviraj uslugu
+        </router-link>
       </button>
     </div>
   </article>
@@ -73,14 +84,30 @@
 
 <script setup>
 import { computed } from "vue"
+import { useRouter } from "vue-router"
 
 const props = defineProps({
   usluga: { type: Object, required: true },
   prikaziPonudacaUsluge: { type: Boolean, default: true },
 })
+
+const router = useRouter()
+
 const defaultSlika = "https://placehold.co/600x600?text=Usluga"
 const cijena = computed(() => {
   const n = Number(props.usluga.cijena || 0)
   return `${n.toFixed(2)} €`
 })
+
+const uslugaSlugId = computed(() => `${props.usluga.slug}-${props.usluga.id}`)
+
+const linkDetalji = computed(() => ({
+  name: "farmaPlusDetaljiUsluge",
+  params: { uslugaSlugId: uslugaSlugId.value },
+  state: { usluga: props.usluga },
+}))
+
+function otvoriDetalje() {
+  router.push(linkDetalji.value)
+}
 </script>

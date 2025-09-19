@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, ForeignKey, Integer, Text, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric
+from sqlalchemy import Column, ForeignKey, Integer, Text, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric, Date
 from sqlalchemy.orm import relationship
 import enum
 
@@ -174,6 +174,7 @@ class Usluga(Base):
     slika_usluge = Column(String(500), nullable=True)
     usluga_dostupna = Column(Boolean, default=True, nullable=False)
     mjerna_jedinica = Column(String(50), nullable=False)
+    trajanje_po_mjernoj_jedinici = Column(Integer, nullable=True)
     slug = Column(String(255), nullable=False)
 
     datum_izrade = Column(DateTime(timezone=True), server_default=func.now(), nullable=False) 
@@ -222,3 +223,34 @@ class Recenzija(Base):
     __table_args__=(
         UniqueConstraint("opg_id", "korisnik_id", name="uq_recenzija_opg_korisnik"),
     )
+
+
+class OpgTjednaRaspolozivost(Base):
+    __tablename__ = "opgovi_tjedna_raspolozivost"
+
+    id = Column(Integer, primary_key=True)
+    dan_u_tjednu = Column(Integer, nullable=False)
+    pocetno_vrijeme = Column(Integer, nullable=False)
+    zavrsno_vrijeme = Column(Integer, nullable=False)
+    odabrano = Column(Boolean, default=False, nullable=False)
+    naslov = Column(String(200), nullable=True)
+
+    opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), index=True, nullable=False)
+
+    __table_args__ = (UniqueConstraint("opg_id", "dan_u_tjednu", name="uq_danutjednu_rule"),)
+    opg = relationship("Opg", backref="tjedna_raspolozivost")
+
+
+class OpgRaspolozivostPoDatumu(Base):
+    __tablename__ = "opgovi_raspolozivost_po_datumu"
+
+    id = Column(Integer, primary_key=True)
+    
+    datum = Column(Date, nullable=False)
+    pocetno_vrijeme = Column(Integer, nullable=False)
+    zavrsno_vrijeme = Column(Integer, nullable=False)
+    naslov = Column(String(200), nullable=True)
+
+    opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), index=True, nullable=False)
+    
+    opg = relationship("Opg", backref="raspolozivost_po_datumu") 

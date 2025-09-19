@@ -153,7 +153,7 @@ const routes = [
   },
   {
     name: "farmaPlusDetaljiUsluge",
-    path: "/farma-plus/detalji-usluge",
+    path: "/farma-plus/detalji-usluge/:uslugaSlugId",
     component: FarmaPlusDetaljiUslugeView,
   },
   {
