@@ -3,7 +3,6 @@ import api from "@/services/api"
 
 export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
   state: () => ({
-    tjedno: [],
     datumi: [],
     kalendar: {},
     loading: false,
@@ -11,21 +10,6 @@ export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
   }),
 
   actions: {
-    async dohvatiTjedno() {
-      this.loading = true
-      try {
-        const { data } = await api.get("/opg/raspolozivost/tjedno")
-        this.tjedno = data
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async spremiTjedno(payload) {
-      const { data } = await api.put("/opg/raspolozivost/tjedno", payload)
-      this.tjedno = data
-    },
-
     async dohvatiMjesecneDatume({ godina, mjesec }) {
       const { data } = await api.get("/opg/raspolozivost/dani", { params: { godina, mjesec } })
       this.datumi = data

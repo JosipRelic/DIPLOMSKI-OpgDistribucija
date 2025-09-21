@@ -155,15 +155,6 @@ class PrikazRecenzije(BaseModel):
     korisnik_ime: str | None
     datum_izrade: datetime
 
-class TjednoPravilo(BaseModel):
-    dan_u_tjednu: int = Field(ge=0, le=6)
-    odabrano: bool
-    pocetno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
-    zavrsno_vrijeme: str = Field(pattern=r"^\d{2}:\d{2}$")
-    naslov: Optional[str] = None
-
-class TjednoPraviloPrikaz(TjednoPravilo):
-    id: int
 
 class DatumRaspolozivosti(BaseModel):
     datum: date

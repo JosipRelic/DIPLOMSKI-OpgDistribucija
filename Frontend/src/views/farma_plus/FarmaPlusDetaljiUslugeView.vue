@@ -291,7 +291,7 @@
                         {{ formatHM(s.startMin) }} – {{ formatHM(s.endMin) }}
                       </div>
                     </div>
-                    <span class="text-gray-500 text-sm">{{
+                    <span class="text-gray-500 text-md font-semibold">{{
                       trajanjeLabel(s.endMin - s.startMin)
                     }}</span>
                   </div>

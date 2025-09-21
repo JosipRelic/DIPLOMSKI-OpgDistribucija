@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Dict
 from datetime import date, datetime, timedelta
-from models import Opg, OpgTjednaRaspolozivost, OpgRaspolozivostPoDatumu
-from schemas import TjednoPravilo, TjednoPraviloPrikaz, DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz
+from models import Opg, OpgRaspolozivostPoDatumu
+from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
 from database import SessionLocal
 
@@ -30,77 +30,6 @@ def minute_u_hhmm(v: int) -> str:
     sati, minute = divmod(max(0, v), 60)
     return f"{sati:02d}:{minute:02d}"
 
-@router.get("/tjedno", response_model=List[TjednoPraviloPrikaz])
-def dohvati_tjedna_pravila(
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
-):
-    opg = opg_ili_404(db, id_korisnika)
-    
-    pravila = (
-        db.query(OpgTjednaRaspolozivost)
-        .filter(OpgTjednaRaspolozivost.opg_id == opg.id)
-        .order_by(OpgTjednaRaspolozivost.dan_u_tjednu.asc())
-        .all()
-    )
-
-    if not pravila:
-        return [
-            TjednoPraviloPrikaz(id=-(i+1), dan_u_tjednu=i, odabrano=False, pocetno_vrijeme="00:00", zavrsno_vrijeme="00:00", naslov=None)
-            for i in range(7)
-        ]
-    return [
-        TjednoPraviloPrikaz(
-            id = pravilo.dan_u_tjednu,
-            odabrano = pravilo.odabrano,
-            pocetno_vrijeme = minute_u_hhmm(pravilo.pocetno_vrijeme),
-            zavrsno_vrijeme = minute_u_hhmm(pravilo.zavrsno_vrijeme),
-            naslov = pravilo.naslov
-        ) for pravilo in pravila
-    ]
-
-
-@router.put("/tjedno", response_model=List[TjednoPraviloPrikaz])
-def spremi_tjedna_pravila(
-    body: List[TjednoPravilo],
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
-):
-    opg = opg_ili_404(db, id_korisnika)
-
-    postoji = {p.dan_u_tjednu: p for p in db.query(OpgTjednaRaspolozivost).filter_by(opg_id = opg.id).all()}
-    prikaz = []
-
-    for pravilo in body:
-        if pravilo.odabrano and hhmm_u_minute(pravilo.pocetno_vrijeme) >= hhmm_u_minute(
-            pravilo.zavrsno_vrijeme
-        ):
-            raise HTTPException(
-                status_code=400, detail="Završno vrijeme mora biti veće od početnog"
-            )
-        redak = postoji.get(pravilo.dan_u_tjednu) or OpgTjednaRaspolozivost(
-            opg_id=opg.id, dan_u_tjednu=pravilo.dan_u_tjednu
-        )
-        redak.odabrano = pravilo.odabrano
-        redak.pocetno_vrijeme = hhmm_u_minute(pravilo.pocetno_vrijeme)
-        redak.zavrsno_vrijeme = hhmm_u_minute(pravilo.zavrsno_vrijeme)
-        redak.naslov = pravilo.naslov
-        db.add(redak)
-        db.flush()
-        prikaz.append(redak)
-    
-    db.commit()
-
-    return [
-        TjednoPraviloPrikaz(
-            id = p.id,
-            dan_u_tjednu = p.dan_u_tjednu,
-            odabrano = p.odabrano,
-            pocetno_vrijeme = minute_u_hhmm(p.pocetno_vrijeme),
-            zavrsno_vrijeme = minute_u_hhmm(p.zavrsno_vrijeme),
-            naslov = p.naslov 
-        ) for p in prikaz
-    ]
 
 
 @router.get("/dani", response_model=List[DatumRapolozivostiPrikaz])
@@ -150,6 +79,19 @@ def dodaj_dan(
     if datetime.combine(body.datum, datetime.min.time()) < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
         raise HTTPException(status_code=400, detail="Datum je u prošlosti")
     
+    preklapanje = (
+        db.query(OpgRaspolozivostPoDatumu)
+        .filter(
+            OpgRaspolozivostPoDatumu.opg_id == opg.id,
+            OpgRaspolozivostPoDatumu.datum == body.datum,
+            OpgRaspolozivostPoDatumu.pocetno_vrijeme < zavrsno_vrijeme,
+            OpgRaspolozivostPoDatumu.zavrsno_vrijeme > pocetno_vrijeme,
+            ).first()
+    )
+
+    if preklapanje:
+        raise HTTPException(status_code=409, detail="Raspon se preklapa s postojećim terminom.")
+
     dan = OpgRaspolozivostPoDatumu(opg_id = opg.id, datum = body.datum, pocetno_vrijeme = pocetno_vrijeme, zavrsno_vrijeme = zavrsno_vrijeme, naslov = body.naslov)
     
     db.add(dan)
@@ -189,7 +131,7 @@ def kalendar_mjesec(
     else:
         kraj = date(godina, mjesec+1, 1) - timedelta(days=1)
     
-    tjedno = {d.dan_u_tjednu: d for d in db.query(OpgTjednaRaspolozivost).filter_by(opg_id = opg_id).all()}
+ 
     dnevno = db.query(OpgRaspolozivostPoDatumu).filter(
         OpgRaspolozivostPoDatumu.opg_id == opg_id,
         OpgRaspolozivostPoDatumu.datum >= pocetak,
@@ -212,10 +154,7 @@ def kalendar_mjesec(
             for p, k in sorted(dani_po_datumu[d]):
                 raspon.append( (minute_u_hhmm(p), minute_u_hhmm(k)) )
        
-        else:
-            t = tjedno.get( (d.weekday() + 6) % 7)
-            if t and t.odabrano:
-                raspon.append( (minute_u_hhmm(t.pocetno_vrijeme), minute_u_hhmm(t.zavrsno_vrijeme)) )
+    
         
         if raspon:
             slotovi[key] = raspon

@@ -392,19 +392,6 @@ const redoviTjedna = reactive([
   { kljuc: "sun", naziv: "Ned", offset: 6, ukljuceno: false, od: "00:00", do: "00:00" },
 ])
 
-async function ucitajTjednoIzBaze() {
-  await raspolozivost.dohvatiTjedno()
-
-  for (const red of redoviTjedna) {
-    const zapis = (raspolozivost.tjedno || []).find((p) => p.dan_u_tjednu === red.offset)
-    if (zapis) {
-      red.ukljuceno = !!zapis.odabrano
-      red.od = zapis.pocetno_vrijeme || "00:00"
-      red.do = zapis.zavrsno_vrijeme || "00:00"
-    }
-  }
-}
-
 async function ucitajDatumeZaMjesec() {
   const g = prikazMjeseca.value.getFullYear()
   const m = prikazMjeseca.value.getMonth() + 1
@@ -585,7 +572,15 @@ async function spremiJedanDatum() {
     await ucitajDatumeZaMjesec()
     ui.obavijest({ tekst: "Termin dodan.", tip_obavijesti: "uspjeh" })
   } catch (e) {
-    ui.obavijest({ tekst: "Greška pri dodavanju termina.", tip_obavijesti: "greska" })
+    const status = e?.response?.status
+    if (status === 409) {
+      ui.obavijest({ tekst: "Termin se preklapa s postojećim terminom.", tip_obavijesti: "greska" })
+    } else {
+      ui.obavijest({
+        tekst: detail || "Greška pri dodavanju termina.",
+        tip_obavijesti: "greska",
+      })
+    }
   } finally {
     ponistiObrasce()
   }
@@ -616,7 +611,6 @@ watch(prikazMjeseca, () => {
 })
 
 onMounted(async () => {
-  await ucitajTjednoIzBaze()
   await ucitajDatumeZaMjesec()
 })
 </script>

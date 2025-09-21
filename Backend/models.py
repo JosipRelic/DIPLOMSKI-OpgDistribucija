@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, ForeignKey, Integer, Text, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric, Date
+from sqlalchemy import Column, ForeignKey, Integer, Text, String, Boolean, Enum, func, DateTime, UniqueConstraint, Numeric, Date, CheckConstraint, Index
 from sqlalchemy.orm import relationship
 import enum
 
@@ -225,22 +225,6 @@ class Recenzija(Base):
     )
 
 
-class OpgTjednaRaspolozivost(Base):
-    __tablename__ = "opgovi_tjedna_raspolozivost"
-
-    id = Column(Integer, primary_key=True)
-    dan_u_tjednu = Column(Integer, nullable=False)
-    pocetno_vrijeme = Column(Integer, nullable=False)
-    zavrsno_vrijeme = Column(Integer, nullable=False)
-    odabrano = Column(Boolean, default=False, nullable=False)
-    naslov = Column(String(200), nullable=True)
-
-    opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    __table_args__ = (UniqueConstraint("opg_id", "dan_u_tjednu", name="uq_danutjednu_rule"),)
-    opg = relationship("Opg", backref="tjedna_raspolozivost")
-
-
 class OpgRaspolozivostPoDatumu(Base):
     __tablename__ = "opgovi_raspolozivost_po_datumu"
 
@@ -254,3 +238,11 @@ class OpgRaspolozivostPoDatumu(Base):
     opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), index=True, nullable=False)
     
     opg = relationship("Opg", backref="raspolozivost_po_datumu") 
+
+    __table_args__ = (
+        CheckConstraint("pocetno_vrijeme < zavrsno_vrijeme", name="ck_raspolozivost_ispravan_raspon"),
+
+        UniqueConstraint("opg_id", "datum", "pocetno_vrijeme", "zavrsno_vrijeme", name="uq_opg_datum_poc_kraj"),
+
+        Index("ix_raspolozivost_opg_datum", "opg_id", "datum"),
+    )
