@@ -612,6 +612,7 @@ async function spremiTjedniRaspored() {
     if (!r.ukljuceno) continue
     const datum = dodajDane(pon, r.offset)
     if (jeProsliDan(datum)) continue
+    if (jeUProslosti(datum, r.od)) continue
     kreiranja.push(
       raspolozivost.dodajDatum({
         datum: isoDatum(datum),
@@ -654,6 +655,15 @@ async function spremiJedanDatum() {
     return
   }
 
+  if (jeUProslosti(naCekanjuDatum.value, jedan.od)) {
+    ui.obavijest({ tekst: "Početno vrijeme je u prošlosti.", tip_obavijesti: "greska" })
+    return
+  }
+  if (jeUProslosti(naCekanjuDatum.value, jedan.do)) {
+    ui.obavijest({ tekst: "Završno vrijeme je u prošlosti.", tip_obavijesti: "greska" })
+    return
+  }
+
   try {
     await raspolozivost.dodajDatum({
       datum: isoDatum(naCekanjuDatum.value),
@@ -665,6 +675,7 @@ async function spremiJedanDatum() {
     ui.obavijest({ tekst: "Termin dodan.", tip_obavijesti: "uspjeh" })
   } catch (e) {
     const status = e?.response?.status
+    const detail = e?.response?.data?.detail
     if (status === 409) {
       ui.obavijest({ tekst: "Termin se preklapa s postojećim terminom.", tip_obavijesti: "greska" })
     } else {
@@ -696,7 +707,7 @@ const puniDanUTjednu = (d) => hrDanUTjednuPuni.format(d)
 const formatirajDatum = (d) => d.toLocaleDateString("hr-HR", { day: "2-digit", month: "long" })
 const formatirajPun = (d) =>
   d.toLocaleDateString("hr-HR", { day: "2-digit", month: "long", year: "numeric" })
-const rasponVremena = (e) => `${e.od} – ${e.do}`
+const rasponVremena = (e) => `${e.od} - ${e["do"]}`
 
 watch(prikazMjeseca, () => {
   ucitajDatumeZaMjesec()
@@ -776,6 +787,15 @@ async function spremiUredivanje() {
   }
   if ((urediStanje.od || "") >= (urediStanje.do || "")) {
     ui.obavijest({ tekst: "Završno vrijeme mora biti veće od početnog.", tip_obavijesti: "greska" })
+    return
+  }
+
+  if (jeUProslosti(urediStanje.datum, urediStanje.od)) {
+    ui.obavijest({ tekst: "Početno vrijeme je u prošlosti.", tip_obavijesti: "greska" })
+    return
+  }
+  if (jeUProslosti(urediStanje.datum, urediStanje.do)) {
+    ui.obavijest({ tekst: "Završno vrijeme je u prošlosti.", tip_obavijesti: "greska" })
     return
   }
 

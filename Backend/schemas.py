@@ -165,8 +165,13 @@ class DatumRaspolozivosti(BaseModel):
 class DatumRapolozivostiPrikaz(DatumRaspolozivosti):
     id: int
 
+class RasponKalendaraPrikaz(BaseModel):
+    od: str
+    do: str
+    naslov: Optional[str] = None
+
 class MjeseciKalendaraPrikaz(BaseModel):
-    slotovi: dict[str, list[tuple[str, str]]]
+    slotovi: dict[str, list[RasponKalendaraPrikaz]]
 
 class Token(BaseModel):
     access_token: str

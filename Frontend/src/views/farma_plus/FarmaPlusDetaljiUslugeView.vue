@@ -191,11 +191,14 @@
           </div>
 
           <div class="flex gap-3 mt-4">
-            <button class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10" @click="idiDanas">
+            <button
+              class="px-3 py-1.5 rounded-xl text-orange-600 hover:text-orange-900"
+              @click="idiDanas"
+            >
               Danas
             </button>
             <button
-              class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10"
+              class="px-3 py-1.5 rounded-xl text-gray-600 hover:text-gray-900"
               @click="ocistiDatum"
             >
               Očisti
@@ -209,7 +212,6 @@
               <div>
                 <h2 class="text-xl text-orange-600">{{ naslovOdabranogDatuma }}</h2>
                 <div class="text-teal-500">
-                  Raspoloživost:
                   <template v-if="rasponiLabel">
                     <span class="font-medium">{{ rasponiLabel }}</span>
                   </template>
@@ -273,9 +275,9 @@
                 </p>
 
                 <div v-if="!kombinacijaMultiDan">
-                  <p class="text-gray-400">
+                  <p class="text-red-400">
                     Nije moguće pokriti preostalih {{ preostaloLabel }} kombiniranjem od ovog datuma
-                    nadalje.
+                    jer nadalje više nemamo termina.
                   </p>
                 </div>
 
@@ -534,8 +536,11 @@ const preostaloLabel = computed(() => trajanjeLabel(preostaloMinuta.value))
 const KORAK_MIN = 30
 
 function rawSlotoviZaKey(key) {
-  const arr = raspolozivost.kalendar[key] || []
-  return arr.map(([s, e]) => [hm2min(s), hm2min(e)]).sort((a, b) => a[0] - b[0])
+  const slots = (raspolozivost.kalendar && raspolozivost.kalendar[key]) || []
+  return slots
+    .map((s) => [hm2min(s.od), hm2min(s["do"])])
+    .filter(([a, b]) => Number.isFinite(a) && Number.isFinite(b) && b > a)
+    .sort((a, b) => a[0] - b[0])
 }
 
 function slobodniZaKey(key) {
@@ -545,8 +550,9 @@ function slobodniZaKey(key) {
   const todayKey = localKey(new Date())
   if (key === todayKey) {
     const now = new Date()
-    const limit = Math.ceil((now.getHours() * 60 + now.getMinutes()) / KORAK_MIN) * KORAK_MIN
-    segs = segs.map(([a, b]) => [Math.max(a, limit), b]).filter(([a, b]) => b - a >= KORAK_MIN)
+    const nowMin = now.getHours() * 60 + now.getMinutes()
+    const cutFrom = Math.ceil(nowMin / KORAK_MIN) * KORAK_MIN
+    segs = segs.map(([a, b]) => [Math.max(a, cutFrom), b])
   }
 
   const rez = rezervacije
@@ -561,13 +567,15 @@ function slobodniZaKey(key) {
         next.push([a, b])
         continue
       }
-      if (rs > a) next.push([a, Math.max(a, rs)])
-      if (re < b) next.push([Math.min(b, re), b])
+      if (rs > a) next.push([a, rs])
+      if (re < b) next.push([re, b])
     }
-    segs = next.filter(([x, y]) => y - x >= KORAK_MIN)
+    segs = next
     if (!segs.length) break
   }
-  segs.sort((a, b) => a[0] - b[0])
+
+  segs = segs.filter(([a, b]) => b - a >= KORAK_MIN)
+
   return segs
 }
 
@@ -577,7 +585,9 @@ const rasponiZaOdabrani = computed(() => {
 })
 const rasponiLabel = computed(() =>
   rasponiZaOdabrani.value.length
-    ? rasponiZaOdabrani.value.map(([p, k]) => `${p} – ${k}`).join(", ")
+    ? rasponiZaOdabrani.value
+        .map((s) => (s.naslov ? `${s.naslov} (${s.od} - ${s["do"]})` : `${s.od} - ${s["do"]}`))
+        .join(", ")
     : null,
 )
 
@@ -586,12 +596,13 @@ function tipZaKey(key, need) {
   const free = slobodniZaKey(key)
   if (!free.length) return null
   const maxLen = Math.max(...free.map(([a, b]) => b - a))
-  if (maxLen >= need) return "green"
-  return "yellow"
+  return maxLen >= need ? "green" : "yellow"
 }
+
 function tipZaDatum(d) {
   return tipZaKey(localKey(d), preostaloMinuta.value)
 }
+
 const tipOdabranogDana = computed(() =>
   odabraniDatum.value ? tipZaDatum(odabraniDatum.value) : null,
 )
@@ -614,9 +625,8 @@ const prijedlozi = computed(() => {
 })
 
 const kombinacijaMultiDan = computed(() => {
-  if (!odabraniDatum.value || tipOdabranogDana.value !== "yellow") return null
+  if (!odabraniDatum.value || preostaloMinuta.value <= 0) return null
   let need = preostaloMinuta.value
-  if (need <= 0) return null
 
   const startKey = localKey(odabraniDatum.value)
   const allKeys = Object.keys(raspolozivost.kalendar || {})

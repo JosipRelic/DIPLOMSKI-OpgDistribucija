@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import date, datetime, timedelta
 from models import Opg, OpgRaspolozivostPoDatumu
-from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz
+from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz, RasponKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
 from database import SessionLocal
 
@@ -122,6 +122,19 @@ def uredi_dan(
     if datetime.combine(body.datum, datetime.min.time()) < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
         raise HTTPException(status_code=400, detail="Datum je u prošlosti")
     
+    danas = date.today()
+    if body.datum < danas:
+        raise HTTPException(status_code=400, detail="Datum je u prošlosti") 
+
+    if body.datum == danas:
+        now = datetime.now()
+        now_min = now.hour * 60 + now.minute
+        if pocetak < now_min:
+            raise HTTPException(status_code=400, detail="Početno vrijeme je u prošlosti")
+        if zavrsetak <= now_min:
+            raise HTTPException(status_code=400, detail="Završno vrijeme je u prošlosti")
+
+
     preklapanje = (
         db.query(OpgRaspolozivostPoDatumu)
         .filter(
@@ -191,23 +204,25 @@ def kalendar_mjesec(
         OpgRaspolozivostPoDatumu.datum <= kraj
     ).all()
 
-    dani_po_datumu: Dict[date, list[tuple[int, int]]] = {}
+    dani_po_datumu: Dict[date, list[tuple[int, int, Optional[str]]]] = {}
 
     for dan in dnevno:
-        dani_po_datumu.setdefault(dan.datum, []).append((dan.pocetno_vrijeme, dan.zavrsno_vrijeme))
+        dani_po_datumu.setdefault(dan.datum, []).append((dan.pocetno_vrijeme, dan.zavrsno_vrijeme, dan.naslov))
 
-    slotovi: Dict[str, list[tuple[str, str]]] = {}
+    slotovi: Dict[str, list[RasponKalendaraPrikaz]] = {}
     d = pocetak
 
     while d <= kraj:
         key = d.isoformat()
-        raspon = []
+        raspon: List[RasponKalendaraPrikaz] = []
 
         if d in dani_po_datumu:
-            for p, k in sorted(dani_po_datumu[d]):
-                raspon.append( (minute_u_hhmm(p), minute_u_hhmm(k)) )
-       
-    
+            for p, k, n in sorted(dani_po_datumu[d]):
+                raspon.append( RasponKalendaraPrikaz(
+                    od = minute_u_hhmm(p),
+                    do = minute_u_hhmm(k),
+                    naslov = n,
+                ))
         
         if raspon:
             slotovi[key] = raspon
