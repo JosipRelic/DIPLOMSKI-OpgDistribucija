@@ -277,31 +277,98 @@
                   :style="{ background: stavka.tockaBoja }"
                 />
                 <h3 class="text-lg font-medium text-gray-600 flex-1">
-                  {{ stavka.naslov || "Termin" }}
-                </h3>
-                <button
-                  @click="obrisiTermin(stavka.id)"
-                  class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                  title="Obriši termin"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 2048 2048"
-                    class="text-red-500"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M1664 128h384v1792H0V128h384V0h128v128h1024V0h128v128zM384 256H128v256h1792V256h-256v128h-128V256H512v128H384V256zM128 1792h1792V640H128v1152zm1171-941l90 90l-274 275l274 275l-90 90l-275-275l-275 275l-90-90l274-275l-274-275l90-90l275 275l275-275z"
+                  <template v-if="urediStanje.id !== stavka.id">
+                    {{ stavka.naslov || "Termin" }}
+                  </template>
+                  <template v-else>
+                    <input
+                      type="text"
+                      v-model="urediStanje.naslov"
+                      class="px-3 py-1.5 rounded-xl bg-gray-100 shadow-sm text-gray-900 border border-gray-200 w-full max-w-sm"
+                      placeholder="Naslov (opcionalno)"
                     />
-                  </svg>
-                </button>
+                  </template>
+                </h3>
+
+                <template v-if="urediStanje.id !== stavka.id">
+                  <button
+                    @click="zapocniUredivanje(stavka)"
+                    class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                    title="Uredi termin"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    @click="obrisiTermin(stavka.id)"
+                    class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                    title="Obriši termin"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 2048 2048"
+                      class="text-red-500"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M1664 128h384v1792H0V128h384V0h128v128h1024V0h128v128zM384 256H128v256h1792V256h-256v128h-128V256H512v128H384V256zM128 1792h1792V640H128v1152zm1171-941l90 90l-274 275l274 275l-90 90l-275-275l-275 275l-90-90l274-275l-274-275l90-90l275 275l275-275z"
+                      />
+                    </svg>
+                  </button>
+                </template>
+
+                <template v-else>
+                  <button
+                    @click="spremiUredivanje"
+                    class="px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-800 shadow-lg text-white"
+                  >
+                    Spremi
+                  </button>
+                  <button
+                    @click="odustaniOdUredivanja"
+                    class="px-3 py-1.5 rounded-xl bg-red-700 hover:bg-red-900 shadow-lg text-white"
+                  >
+                    Odustani
+                  </button>
+                </template>
               </div>
-              <p class="text-gray-400">
+
+              <div v-if="urediStanje.id !== stavka.id" class="text-gray-400">
                 {{ rasponVremena(stavka) }}, {{ puniDanUTjednu(stavka.datum) }},
                 {{ formatirajDatum(stavka.datum) }}
-              </p>
+              </div>
+
+              <div v-else class="flex flex-wrap items-center gap-3 text-gray-600">
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-gray-400">Vrijeme:</span>
+                  <input
+                    type="time"
+                    v-model="urediStanje.od"
+                    class="w-28 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow"
+                  />
+                  <span>–</span>
+                  <input
+                    type="time"
+                    v-model="urediStanje.do"
+                    class="w-28 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow"
+                  />
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400">Datum:</span>
+                  <input
+                    type="date"
+                    :value="isoDatum(stavka.datum)"
+                    @input="
+                      (e) => {
+                        urediStanje.datum = new Date(e.target.value + 'T00:00:00')
+                      }
+                    "
+                    class="px-3 py-2 rounded-xl bg-white border border-gray-200 shadow"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -309,7 +376,6 @@
             Nema događaja u ovom mjesecu.
           </p>
 
-          <!-- PAGINACIJA -->
           <div v-else-if="totalPages > 1" class="flex items-center justify-between pt-2">
             <div class="text-sm text-gray-500">
               Prikazano
@@ -671,6 +737,68 @@ watch([prikazMjeseca, mjesecniDogadjaji], () => {
 watch(totalPages, () => {
   if (page.value > totalPages.value) page.value = totalPages.value
 })
+
+const urediStanje = reactive({
+  id: null,
+  datum: null,
+  od: "00:00",
+  do: "00:00",
+  naslov: "",
+})
+
+function zapocniUredivanje(stavka) {
+  urediStanje.id = stavka.id
+  urediStanje.datum = new Date(stavka.datum)
+  urediStanje.od = stavka.od || "00:00"
+  urediStanje.do = stavka.do || "00:00"
+  urediStanje.naslov = stavka.naslov || ""
+}
+
+function odustaniOdUredivanja() {
+  urediStanje.id = null
+  urediStanje.datum = null
+  urediStanje.od = "00:00"
+  urediStanje.do = "00:00"
+  urediStanje.naslov = ""
+}
+
+async function spremiUredivanje() {
+  if (!urediStanje.id || !urediStanje.datum) return
+
+  const danas00 = new Date()
+  danas00.setHours(0, 0, 0, 0)
+  const datum00 = new Date(urediStanje.datum)
+  datum00.setHours(0, 0, 0, 0)
+
+  if (datum00 < danas00) {
+    ui.obavijest({ tekst: "Odabrani datum je u prošlosti.", tip_obavijesti: "greska" })
+    return
+  }
+  if ((urediStanje.od || "") >= (urediStanje.do || "")) {
+    ui.obavijest({ tekst: "Završno vrijeme mora biti veće od početnog.", tip_obavijesti: "greska" })
+    return
+  }
+
+  try {
+    await raspolozivost.urediDatum(urediStanje.id, {
+      datum: isoDatum(urediStanje.datum),
+      pocetno_vrijeme: urediStanje.od,
+      zavrsno_vrijeme: urediStanje.do,
+      naslov: urediStanje.naslov || null,
+    })
+    await ucitajDatumeZaMjesec()
+    ui.obavijest({ tekst: "Termin ažuriran.", tip_obavijesti: "uspjeh" })
+    odustaniOdUredivanja()
+  } catch (e) {
+    const status = e?.response?.status
+    const detail = e?.response?.data?.detail
+    if (status === 409) {
+      ui.obavijest({ tekst: "Termin se preklapa s postojećim terminom.", tip_obavijesti: "greska" })
+    } else {
+      ui.obavijest({ tekst: detail || "Greška pri ažuriranju termina.", tip_obavijesti: "greska" })
+    }
+  }
+}
 </script>
 
 <style scoped>

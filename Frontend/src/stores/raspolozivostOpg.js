@@ -25,6 +25,18 @@ export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
       this.datumi.push(data)
     },
 
+    async urediDatum(id, { datum, pocetno_vrijeme, zavrsno_vrijeme, naslov }) {
+      const { data } = await api.put(`/opg/raspolozivost/dani/${id}`, {
+        datum,
+        pocetno_vrijeme,
+        zavrsno_vrijeme,
+        naslov,
+      })
+      const i = this.datumi.findIndex((d) => d.id === id)
+      if (i !== -1) this.datumi[i] = data
+      return data
+    },
+
     async obrisiDatum(id) {
       await api.delete(`/opg/raspolozivost/dani/${id}`)
       this.datumi = this.datumi.filter((d) => d.id !== id)

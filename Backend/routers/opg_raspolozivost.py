@@ -100,6 +100,59 @@ def dodaj_dan(
     
     return DatumRapolozivostiPrikaz(id = dan.id, datum = dan.datum, pocetno_vrijeme = body.pocetno_vrijeme, zavrsno_vrijeme = body.zavrsno_vrijeme, naslov = dan.naslov)
 
+
+@router.put("/dani/{id}", response_model=DatumRapolozivostiPrikaz)
+def uredi_dan(
+    id: int,
+    body: DatumRaspolozivosti,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
+    db: Session = Depends(get_db)
+):
+    opg = opg_ili_404(db, id_korisnika)
+    dan = db.query(OpgRaspolozivostPoDatumu).filter_by(id=id, opg_id=opg.id).first()
+
+    if not dan:
+        raise HTTPException(status_code=404, detail="Termin nije pronađen")
+    
+    pocetak = hhmm_u_minute(body.pocetno_vrijeme)
+    zavrsetak = hhmm_u_minute(body.zavrsno_vrijeme)
+    if pocetak >= zavrsetak:
+        raise HTTPException(status_code=400, detail="Završno vrijeme mora biti veće od početnog")
+    
+    if datetime.combine(body.datum, datetime.min.time()) < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+        raise HTTPException(status_code=400, detail="Datum je u prošlosti")
+    
+    preklapanje = (
+        db.query(OpgRaspolozivostPoDatumu)
+        .filter(
+            OpgRaspolozivostPoDatumu.opg_id == opg.id,
+            OpgRaspolozivostPoDatumu.datum == body.datum,
+            OpgRaspolozivostPoDatumu.id != id,
+            OpgRaspolozivostPoDatumu.pocetno_vrijeme < zavrsetak,
+            OpgRaspolozivostPoDatumu.zavrsno_vrijeme > pocetak
+        ).first()
+    )
+
+    if preklapanje:
+        raise HTTPException(status_code=409, detail="Termin se preklapa s postojećim terminom")
+    
+    dan.datum = body.datum
+    dan.pocetno_vrijeme = pocetak
+    dan.zavrsno_vrijeme = zavrsetak
+    dan.naslov = body.naslov
+    db.commit()
+    db.refresh(dan)
+
+    return DatumRapolozivostiPrikaz(
+        id = dan.id,
+        datum = dan.datum,
+        pocetno_vrijeme = minute_u_hhmm(dan.pocetno_vrijeme),
+        zavrsno_vrijeme = minute_u_hhmm(dan.zavrsno_vrijeme),
+        naslov = dan.naslov,
+    )
+
+
+
 @router.delete("/dani/{id}", status_code=204)
 def obrisi_dan(
     id: int,
