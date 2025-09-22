@@ -2,16 +2,17 @@
   <header class="bg-[#223c2f]">
     <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
-        <div class="flex items-center gap-2">
-          <router-link :to="{ name: 'pocetna' }" class="block text-teal-600 group">
+        <router-link :to="{ name: 'pocetna' }" class="block text-teal-600 group">
+          <div class="flex items-center gap-2">
             <img
               :src="slikeLogo"
               alt="logo"
               class="w-10 h-auto transition duration-500 group-hover:scale-105"
             />
-          </router-link>
-          <p class="block text-gray-100">OPG Distribucija</p>
-        </div>
+
+            <p class="block text-gray-100">OPG Distribucija</p>
+          </div>
+        </router-link>
 
         <div class="md:flex md:items-center md:gap-6">
           <nav aria-label="Global" class="hidden md:block">
@@ -20,6 +21,7 @@
                 <router-link
                   :to="{ name: 'e-trznica' }"
                   class="text-gray-100 transition hover:text-gray-500/75"
+                  :class="{ 'text-orange-600': $route.path.includes('e-trznica') }"
                 >
                   E-Tržnica
                 </router-link>
@@ -28,6 +30,7 @@
                 <router-link
                   :to="{ name: 'farmaPlus' }"
                   class="text-gray-100 transition hover:text-gray-500/75"
+                  :class="{ 'text-orange-600': $route.path.includes('farma-plus') }"
                 >
                   Farma+
                 </router-link>
@@ -167,7 +170,7 @@
 import { ref } from "vue"
 import slikeLogo from "@/assets/slike/logo.png"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const izbornikNaManjemEkranuOtvoren = ref(false)
 
@@ -177,6 +180,7 @@ function otvoriIzbornikNaManjemEkranu() {
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
+const route = useRoute()
 
 const idiNaMojProfil = () => {
   if (!autentifikacija.korisnikAutentificiran) {

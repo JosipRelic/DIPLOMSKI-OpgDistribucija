@@ -276,6 +276,7 @@
             :key="u.id"
             :usluga="u"
             :prikazi-ponudaca-usluge="false"
+            :override-ima-termina="opgImaTermina"
           />
         </template>
       </div>
@@ -294,6 +295,7 @@ import { useEtrznicaOpgDetaljiStore } from "@/stores/eTrznicaOpgDetalji"
 import KarticaProizvoda from "@/components/dijeljeno/KarticaProizvoda.vue"
 import KarticaUsluge from "@/components/dijeljeno/KarticaUsluge.vue"
 import RecenzijeOPG from "@/components/etrznica/opgovi/RecenzijeOPG.vue"
+import api from "@/services/api"
 
 const route = useRoute()
 const slug = computed(() => route.params.opgSlug)
@@ -301,10 +303,35 @@ const slug = computed(() => route.params.opgSlug)
 const detalji_opga_s = useEtrznicaOpgDetaljiStore()
 const aktivniTab = ref("proizvodi")
 
+const opgImaTermina = ref(null)
+
+async function provjeriOpgTermine(opgId, horizon = 3) {
+  if (!opgId) {
+    opgImaTermina.value = false
+    return
+  }
+  const now = new Date()
+  let found = false
+  for (let i = 0; i < horizon; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1)
+    try {
+      const { data } = await api.get("/opg/raspolozivost/kalendar", {
+        params: { opg_id: opgId, godina: d.getFullYear(), mjesec: d.getMonth() + 1 },
+      })
+      if (data?.slotovi && Object.keys(data.slotovi).length > 0) {
+        found = true
+        break
+      }
+    } catch (_) {}
+  }
+  opgImaTermina.value = found
+}
+
 onMounted(async () => {
   await detalji_opga_s.ucitajDetaljeOpga(slug.value)
   if (detalji_opga_s.nijePronadeno) return
 
+  await provjeriOpgTermine(detalji_opga_s.opg?.id)
   await Promise.all([
     detalji_opga_s.ucitajKategorijeProizvoda(slug.value),
     detalji_opga_s.ucitajKategorijeUsluga(slug.value),

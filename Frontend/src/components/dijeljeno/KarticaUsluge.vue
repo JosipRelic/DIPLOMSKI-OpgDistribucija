@@ -12,9 +12,11 @@
     <div class="flex flex-col gap-3 p-4">
       <header class="flex items-start justify-between gap-2">
         <h3 class="text-lg font-semibold leading-snug">{{ props.usluga.naziv }}</h3>
-        <span class="shrink-0 rounded-full bg-[#223c2f] px-3 py-1 text-xs font-medium text-gray-100"
-          >Datum po dogovoru / Dostupni termini</span
+        <span
+          :class="['shrink-0 rounded-full px-3 py-1 text-xs font-medium shadow-md', badgeClass]"
         >
+          {{ badgeText }}
+        </span>
       </header>
 
       <p class="text-sm text-gray-700">
@@ -75,7 +77,7 @@
         @click.stop="otvoriDetalje"
       >
         <router-link :to="linkDetalji" class="block w-full h-full text-center">
-          Rezerviraj uslugu
+          Prikaži uslugu
         </router-link>
       </button>
     </div>
@@ -83,12 +85,14 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, onMounted, ref } from "vue"
+import api from "@/services/api"
 import { useRouter } from "vue-router"
 
 const props = defineProps({
   usluga: { type: Object, required: true },
   prikaziPonudacaUsluge: { type: Boolean, default: true },
+  overrideImaTermina: { type: [Boolean, null], default: null },
 })
 
 const router = useRouter()
@@ -104,10 +108,58 @@ const uslugaSlugId = computed(() => `${props.usluga.slug}-${props.usluga.id}`)
 const linkDetalji = computed(() => ({
   name: "farmaPlusDetaljiUsluge",
   params: { uslugaSlugId: uslugaSlugId.value },
-  state: { usluga: props.usluga },
 }))
 
 function otvoriDetalje() {
   router.push(linkDetalji.value)
 }
+
+const _terminiCache = Object.create(null)
+
+const imaTermina = ref(null)
+
+const effectiveImaTermina = computed(() =>
+  props.overrideImaTermina !== null ? props.overrideImaTermina : imaTermina.value,
+)
+
+const badgeText = computed(() => {
+  if (effectiveImaTermina.value === null) return "Provjera termina…"
+  return effectiveImaTermina.value ? "Dostupni termini" : "Datum po dogovoru"
+})
+const badgeClass = computed(() => {
+  if (effectiveImaTermina.value === null) return "bg-gray-200 text-gray-700"
+  return effectiveImaTermina.value ? "bg-[#223c2f] text-gray-100" : "bg-amber-500 text-white"
+})
+
+async function provjeriImaTerminaKartica(opgId, horizon = 3) {
+  if (!opgId) {
+    imaTermina.value = false
+    return
+  }
+  if (_terminiCache[opgId] !== undefined) {
+    imaTermina.value = _terminiCache[opgId]
+    return
+  }
+
+  const now = new Date()
+  let found = false
+  for (let i = 0; i < horizon; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1)
+    try {
+      const { data } = await api.get("/opg/raspolozivost/kalendar", {
+        params: { opg_id: opgId, godina: d.getFullYear(), mjesec: d.getMonth() + 1 },
+      })
+      if (data?.slotovi && Object.keys(data.slotovi).length > 0) {
+        found = true
+        break
+      }
+    } catch (e) {}
+  }
+  _terminiCache[opgId] = found
+  imaTermina.value = found
+}
+
+onMounted(() => {
+  provjeriImaTerminaKartica(props.usluga.opg_id)
+})
 </script>

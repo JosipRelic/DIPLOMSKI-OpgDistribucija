@@ -1,371 +1,383 @@
 <template>
-  <div class="min-h-screen text-slate-100 p-8">
-    <div class="mx-auto max-w-6xl space-y-6">
-      <div class="rounded-2xl bg-white p-6 shadow-xl ring-1">
-        <div class="flex flex-wrap gap-4 justify-between">
-          <div class="p-4">
-            <nav class="text-sm text-gray-500 flex items-center space-x-2 mb-2">
-              <span class="hover:underline cursor-pointer"
-                ><router-link :to="{ name: 'farmaPlus' }">Farma+</router-link></span
-              >
-              <span>/</span>
-              <span class="font-medium">{{ usluga?.naziv || "Usluga" }}</span>
-            </nav>
+  <div class="mx-auto max-w-6xl space-y-6">
+    <div class="rounded-2xl bg-white p-6 shadow-xl mt-10" :class="{ 'mb-15': !imaTerminaGlobal }">
+      <div class="flex flex-wrap gap-4 justify-between">
+        <div class="p-4">
+          <nav class="text-sm text-gray-500 flex items-center space-x-2 mb-2">
+            <span class="hover:underline cursor-pointer"
+              ><router-link :to="{ name: 'farmaPlus' }">Farma+</router-link></span
+            >
+            <span>/</span>
+            <span class="font-medium">{{ usluga?.naziv || "Usluga" }}</span>
+          </nav>
 
-            <div>
-              <div
-                class="flex items-center space-x-2 text-sm mt-3 font-medium"
-                :class="usluga?.usluga_dostupna ? 'text-green-600' : 'text-red-500'"
-              >
-                <h1 class="text-3xl font-bold text-gray-900">
-                  {{ usluga?.naziv || "Usluga" }}
-                </h1>
-                <div class="flex pt-2 space-x-1">
-                  <svg
-                    v-if="usluga?.usluga_dostupna"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 ms-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5 ms-2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  <span>{{ usluga?.usluga_dostupna ? "Dostupno" : "Nedostupno" }}</span>
-                </div>
-              </div>
-            </div>
-
-            <p class="text-gray-600 font-normal text-base mt-2 mb-4 max-w-md">
-              {{ usluga?.opis || "Opis usluge nije dostupan." }}
-            </p>
-
-            <div class="flex items-center mt-2 space-x-2 text-sm text-gray-600 mb-4">
-              <router-link
-                v-if="usluga?.opg_slug && usluga?.opg_naziv"
-                class="hover:underline text-teal-500"
-                :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: usluga.opg_slug } }"
-              >
-                {{ usluga.opg_naziv }}
-              </router-link>
-              <span v-if="usluga?.opg_naziv" class="text-gray-400">•</span>
-              <span v-if="usluga?.grad || usluga?.zupanija">
-                {{ [usluga?.grad, usluga?.zupanija].filter(Boolean).join(", ") }}
-              </span>
-            </div>
-
-            <div class="text-2xl font-semibold text-gray-900">
-              {{ cijenaLabel }}
-              <span class="text-gray-400"> / {{ usluga?.mjerna_jedinica }}</span>
-
-              <div class="flex items-center text-sm mb-4 mt-3">
-                <span class="text-gray-600"
-                  >Trajanje usluge: 1 {{ usluga?.mjerna_jedinica }} =
-                </span>
-                <input
-                  :value="trajanjeHHMM"
-                  type="time"
-                  step="60"
-                  class="px-2 py-1.5 rounded-xl text-orange-600"
-                  disabled
-                />
-              </div>
-
-              <div>
-                <div class="rounded-sm border border-gray-200 mt-2 w-fit shadow">
-                  <button
-                    type="button"
-                    class="size-10 leading-10 text-gray-600 transition hover:text-red-600"
-                    @click="kolicina = Math.max(1, (kolicina || 1) - 1)"
-                  >
-                    &minus;
-                  </button>
-
-                  <input
-                    v-model.number="kolicina"
-                    type="number"
-                    min="1"
-                    class="h-10 text-orange-600 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m=0 [&::-webkit-outer-spin-button]:appearance-none"
+          <div>
+            <div
+              class="flex items-center space-x-2 text-sm mt-3 font-medium"
+              :class="usluga?.usluga_dostupna ? 'text-green-600' : 'text-red-500'"
+            >
+              <h1 class="text-3xl font-bold text-gray-900">
+                {{ usluga?.naziv || "Usluga" }}
+              </h1>
+              <div class="flex pt-2 space-x-1">
+                <svg
+                  v-if="usluga?.usluga_dostupna"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 ms-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
                   />
-
-                  <button
-                    type="button"
-                    class="size-10 leading-10 text-gray-600 transition hover:text-green-600"
-                    @click="kolicina = (kolicina || 1) + 1"
-                  >
-                    &plus;
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center mt-2">
-                <div class="flex items-center text-lg">
-                  <span class="text-orange-600">Ukupno trajanje usluge:</span>
-                  <span class="px-3 py-1.5 rounded-xl text-orange-600">{{
-                    ukupnoTrajanjeLabel
-                  }}</span>
-                </div>
+                </svg>
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 ms-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                <span>{{ usluga?.usluga_dostupna ? "Dostupno" : "Nedostupno" }}</span>
               </div>
             </div>
           </div>
 
-          <img
-            :src="
-              usluga?.slika_usluge ||
-              'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
-            "
-            :alt="usluga?.naziv || 'Usluga'"
-            class="rounded-md object-cover"
-          />
+          <p class="text-gray-600 font-normal text-base mt-2 mb-4 max-w-md">
+            {{ usluga?.opis || "Opis usluge nije dostupan." }}
+          </p>
+
+          <div class="flex items-center mt-2 space-x-2 text-sm text-gray-600 mb-4">
+            <router-link
+              v-if="usluga?.opg_slug && usluga?.opg_naziv"
+              class="hover:underline text-teal-500"
+              :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: usluga.opg_slug } }"
+            >
+              {{ usluga.opg_naziv }}
+            </router-link>
+            <span v-if="usluga?.opg_naziv" class="text-gray-400">•</span>
+            <span v-if="usluga?.grad || usluga?.zupanija">
+              {{ [usluga?.grad, usluga?.zupanija].filter(Boolean).join(", ") }}
+            </span>
+          </div>
+
+          <div class="text-2xl font-semibold text-gray-900">
+            {{ cijenaLabel }}
+            <span class="text-gray-400"> / {{ usluga?.mjerna_jedinica }}</span>
+
+            <div class="flex items-center text-sm mb-4 mt-3">
+              <span class="text-gray-600">Trajanje usluge: 1 {{ usluga?.mjerna_jedinica }} = </span>
+              <input
+                :value="trajanjeHHMM"
+                type="time"
+                step="60"
+                class="px-2 py-1.5 rounded-xl text-orange-600"
+                disabled
+              />
+            </div>
+
+            <div>
+              <div class="rounded-sm border border-gray-200 mt-2 w-fit shadow">
+                <button
+                  type="button"
+                  class="size-10 leading-10 text-gray-600 transition hover:text-red-600"
+                  @click="kolicina = Math.max(1, (kolicina || 1) - 1)"
+                >
+                  &minus;
+                </button>
+
+                <input
+                  v-model.number="kolicina"
+                  type="number"
+                  min="1"
+                  class="h-10 text-orange-600 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m=0 [&::-webkit-outer-spin-button]:appearance-none"
+                />
+
+                <button
+                  type="button"
+                  class="size-10 leading-10 text-gray-600 transition hover:text-green-600"
+                  @click="kolicina = (kolicina || 1) + 1"
+                >
+                  &plus;
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center mt-2">
+              <div class="flex items-center text-lg">
+                <span class="text-orange-600">Ukupno trajanje usluge:</span>
+                <span class="px-3 py-1.5 rounded-xl text-orange-600">{{
+                  ukupnoTrajanjeLabel
+                }}</span>
+              </div>
+            </div>
+
+            <div v-if="imaTerminaGlobal === false">
+              <div
+                class="rounded-xl text-sm border-s-4 max-w-xs border-amber-200 bg-amber-50 p-4 mb-2 mt-1 text-amber-700"
+              >
+                Ovaj OPG nema definiranih termina. Dogovor oko obavljanja usluge ostvarujete izravno
+                s OPG-om nakon narudžbe.
+              </div>
+              <div class="pt-2">
+                <button
+                  class="px-3 py-2 text-md rounded-lg w-full text-base text-white bg-orange-600 hover:bg-orange-900 shadow-lg"
+                >
+                  Dodaj u košaricu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <img
+          :src="
+            usluga?.slika_usluge ||
+            'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
+          "
+          :alt="usluga?.naziv || 'Usluga'"
+          class="rounded-md object-cover aspect-video"
+        />
+      </div>
+    </div>
+
+    <div v-if="imaTerminaGlobal === true" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+      <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5">
+        <div class="flex items-center justify-between mb-4">
+          <button
+            class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
+            @click="pomakniMjesec(-1)"
+          >
+            &lt;
+          </button>
+          <div class="text-lg font-semibold text-orange-600">{{ naslovMjeseca }}</div>
+          <button
+            class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
+            @click="pomakniMjesec(1)"
+          >
+            &gt;
+          </button>
+        </div>
+
+        <div class="grid grid-cols-7 text-center text-sm text-orange-600 mb-2 select-none">
+          <div v-for="(d, i) in kratkiDani" :key="i" class="py-1">{{ d }}</div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-2">
+          <button
+            v-for="dan in daniMreza"
+            :key="dan.key"
+            class="relative aspect-square rounded-xl flex items-center justify-center border border-white/5"
+            :class="[
+              dan.uMjesecu
+                ? 'text-gray-600 font-semibold hover:text-white hover:bg-[#223c2f] shadow-sm'
+                : 'bg-white text-gray-300',
+              jednakiDatumi(dan.datum, odabraniDatum) && 'shadow-lg bg-[#223c2f] text-white',
+              jeProsliDan(dan.datum) && 'opacity-30 cursor-not-allowed',
+            ]"
+            :disabled="!dan.uMjesecu || jeProsliDan(dan.datum)"
+            @click="odaberiDatum(dan.datum)"
+          >
+            {{ dan.datum.getDate() }}
+
+            <span
+              v-if="tipZaDatum(dan.datum) === 'green'"
+              class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-green-600"
+            />
+            <span
+              v-else-if="tipZaDatum(dan.datum) === 'yellow'"
+              class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-yellow-400"
+            />
+          </button>
+        </div>
+
+        <div class="flex gap-3 mt-4">
+          <button
+            class="px-3 py-1.5 rounded-xl text-orange-600 hover:text-orange-900"
+            @click="idiDanas"
+          >
+            Danas
+          </button>
+          <button
+            class="px-3 py-1.5 rounded-xl text-gray-600 hover:text-gray-900"
+            @click="ocistiDatum"
+          >
+            Očisti
+          </button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5">
+      <div class="space-y-4">
+        <div class="rounded-2xl bg-white p-6 shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <button
-              class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
-              @click="pomakniMjesec(-1)"
-            >
-              &lt;
-            </button>
-            <div class="text-lg font-semibold text-orange-600">{{ naslovMjeseca }}</div>
-            <button
-              class="p-2 rounded-xl font-bold text-orange-600 hover:text-orange-900"
-              @click="pomakniMjesec(1)"
-            >
-              &gt;
-            </button>
+            <div>
+              <h2 class="text-xl text-orange-600">{{ naslovOdabranogDatuma }}</h2>
+              <div class="text-teal-500">
+                <template v-if="rasponiLabel">
+                  <span class="font-medium">{{ rasponiLabel }}</span>
+                </template>
+                <span v-else class="text-gray-500">nema dostupnog raspona</span>
+              </div>
+            </div>
+            <div class="text-gray-500">
+              <div>
+                • Ukupno potrebno:
+                <span class="text-teal-500">{{ ukupnoTrajanjeLabel }}</span>
+              </div>
+
+              <template v-if="preostaloMinuta > 0">
+                • Preostalo:
+                <span class="text-red-500">{{ preostaloLabel }}</span>
+              </template>
+              <template v-else>
+                • <span class="text-green-600 font-medium">pokriveno ✓</span>
+              </template>
+            </div>
           </div>
 
-          <div class="grid grid-cols-7 text-center text-sm text-orange-600 mb-2 select-none">
-            <div v-for="(d, i) in kratkiDani" :key="i" class="py-1">{{ d }}</div>
+          <div v-if="!odabraniDatum" class="text-slate-400">Odaberite datum u kalendaru.</div>
+          <div v-else-if="rasponiZaOdabrani.length === 0" class="text-slate-400">
+            OPG nije raspoloživ za obavljanje usluga na odabrani datum.
           </div>
+          <div v-else>
+            <div v-if="preostaloMinuta === 0" class="text-green-600">
+              Pokrili ste ukupno trajanje usluge.
+            </div>
 
-          <div class="grid grid-cols-7 gap-2">
-            <button
-              v-for="dan in daniMreza"
-              :key="dan.key"
-              class="relative aspect-square rounded-xl flex items-center justify-center border border-white/5"
-              :class="[
-                dan.uMjesecu
-                  ? 'text-gray-600 font-semibold hover:text-white hover:bg-[#223c2f] shadow-sm'
-                  : 'bg-white text-gray-300',
-                jednakiDatumi(dan.datum, odabraniDatum) && 'shadow-lg bg-[#223c2f] text-white',
-                jeProsliDan(dan.datum) && 'opacity-30 cursor-not-allowed',
-              ]"
-              :disabled="!dan.uMjesecu || jeProsliDan(dan.datum)"
-              @click="odaberiDatum(dan.datum)"
+            <div
+              v-else-if="tipOdabranogDana === 'green'"
+              class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t-1 border-gray-100 pt-2"
             >
-              {{ dan.datum.getDate() }}
+              <div
+                v-for="opt in prijedlozi"
+                :key="opt.key"
+                class="flex items-center justify-between rounded-xl shadow-xl text-gray-600 border-gray-100 bg-white px-4 py-3"
+              >
+                <div class="font-medium">
+                  {{ formatHM(opt.startMin) }} – {{ formatHM(opt.endMin) }}
+                </div>
+                <button
+                  class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:opacity-40"
+                  @click="dodajURezervaciju(opt)"
+                  :disabled="preostaloMinuta === 0"
+                >
+                  Dodaj u rezervaciju
+                </button>
+              </div>
+            </div>
 
-              <span
-                v-if="tipZaDatum(dan.datum) === 'green'"
-                class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-green-600"
-              />
-              <span
-                v-else-if="tipZaDatum(dan.datum) === 'yellow'"
-                class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-yellow-400"
-              />
-            </button>
-          </div>
+            <div v-else-if="tipOdabranogDana === 'yellow'">
+              <h3 class="text-lg font-semibold text-orange-600 border-t-1 border-gray-100 pt-3">
+                Kombiniraj termine
+              </h3>
+              <p class="text-gray-500 mb-3">
+                Ukupno trajanje usluge premašuje rasploživost OPG-a za odabrani datum, predlažemo
+                kombinaciju termina ispod:
+              </p>
 
-          <div class="flex gap-3 mt-4">
-            <button
-              class="px-3 py-1.5 rounded-xl text-orange-600 hover:text-orange-900"
-              @click="idiDanas"
-            >
-              Danas
-            </button>
-            <button
-              class="px-3 py-1.5 rounded-xl text-gray-600 hover:text-gray-900"
-              @click="ocistiDatum"
-            >
-              Očisti
-            </button>
+              <div v-if="!kombinacijaMultiDan">
+                <p class="text-red-400">
+                  Nije moguće pokriti preostalih {{ preostaloLabel }} kombiniranjem od ovog datuma
+                  jer nadalje više nemamo termina.
+                </p>
+              </div>
+
+              <div v-else class="space-y-2">
+                <div
+                  v-for="(s, i) in kombinacijaMultiDan.stavke"
+                  :key="i"
+                  class="flex items-center justify-between rounded-xl bg-white shadow border border-gray-100 px-4 py-2"
+                >
+                  <div class="text-gray-600">
+                    <div class="font-medium text-orange-600">{{ labelDatuma(s.dateKey) }}</div>
+                    <div class="text-teal-500 text-sm">
+                      {{ formatHM(s.startMin) }} – {{ formatHM(s.endMin) }}
+                    </div>
+                  </div>
+                  <span class="text-gray-500 text-md font-semibold">{{
+                    trajanjeLabel(s.endMin - s.startMin)
+                  }}</span>
+                </div>
+
+                <button
+                  class="mt-2 px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
+                  @click="dodajKombinacijuMultiDan"
+                  :disabled="!kombinacijaMultiDan || preostaloMinuta === 0"
+                >
+                  Dodaj kombinaciju u rezervaciju
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="rounded-2xl bg-white p-6 shadow-xl">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h2 class="text-xl text-orange-600">{{ naslovOdabranogDatuma }}</h2>
-                <div class="text-teal-500">
-                  <template v-if="rasponiLabel">
-                    <span class="font-medium">{{ rasponiLabel }}</span>
-                  </template>
-                  <span v-else class="text-gray-500">nema dostupnog raspona</span>
-                </div>
-              </div>
-              <div class="text-gray-500">
-                <div>
-                  • Ukupno potrebno:
-                  <span class="text-teal-500">{{ ukupnoTrajanjeLabel }}</span>
-                </div>
-
-                <template v-if="preostaloMinuta > 0">
-                  • Preostalo:
-                  <span class="text-red-500">{{ preostaloLabel }}</span>
-                </template>
-                <template v-else>
-                  • <span class="text-green-600 font-medium">pokriveno ✓</span>
-                </template>
-              </div>
-            </div>
-
-            <div v-if="!odabraniDatum" class="text-slate-400">Odaberite datum u kalendaru.</div>
-            <div v-else-if="rasponiZaOdabrani.length === 0" class="text-slate-400">
-              OPG nije raspoloživ za obavljanje usluga na odabrani datum.
-            </div>
-            <div v-else>
-              <div v-if="preostaloMinuta === 0" class="text-green-600">
-                Pokrili ste ukupno trajanje usluge.
-              </div>
-
-              <div
-                v-else-if="tipOdabranogDana === 'green'"
-                class="grid grid-cols-1 md:grid-cols-2 gap-3 border-t-1 border-gray-100 pt-2"
-              >
-                <div
-                  v-for="opt in prijedlozi"
-                  :key="opt.key"
-                  class="flex items-center justify-between rounded-xl shadow-xl text-gray-600 border-gray-100 bg-white px-4 py-3"
-                >
-                  <div class="font-medium">
-                    {{ formatHM(opt.startMin) }} – {{ formatHM(opt.endMin) }}
-                  </div>
-                  <button
-                    class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:opacity-40"
-                    @click="dodajURezervaciju(opt)"
-                    :disabled="preostaloMinuta === 0"
-                  >
-                    Dodaj u rezervaciju
-                  </button>
-                </div>
-              </div>
-
-              <div v-else-if="tipOdabranogDana === 'yellow'">
-                <h3 class="text-lg font-semibold text-orange-600 border-t-1 border-gray-100 pt-3">
-                  Kombiniraj termine
-                </h3>
-                <p class="text-gray-500 mb-3">
-                  Ukupno trajanje usluge premašuje rasploživost OPG-a za odabrani datum, predlažemo
-                  kombinaciju termina ispod:
-                </p>
-
-                <div v-if="!kombinacijaMultiDan">
-                  <p class="text-red-400">
-                    Nije moguće pokriti preostalih {{ preostaloLabel }} kombiniranjem od ovog datuma
-                    jer nadalje više nemamo termina.
-                  </p>
-                </div>
-
-                <div v-else class="space-y-2">
-                  <div
-                    v-for="(s, i) in kombinacijaMultiDan.stavke"
-                    :key="i"
-                    class="flex items-center justify-between rounded-xl bg-white shadow border border-gray-100 px-4 py-2"
-                  >
-                    <div class="text-gray-600">
-                      <div class="font-medium text-orange-600">{{ labelDatuma(s.dateKey) }}</div>
-                      <div class="text-teal-500 text-sm">
-                        {{ formatHM(s.startMin) }} – {{ formatHM(s.endMin) }}
-                      </div>
-                    </div>
-                    <span class="text-gray-500 text-md font-semibold">{{
-                      trajanjeLabel(s.endMin - s.startMin)
-                    }}</span>
-                  </div>
-
-                  <button
-                    class="mt-2 px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
-                    @click="dodajKombinacijuMultiDan"
-                    :disabled="!kombinacijaMultiDan || preostaloMinuta === 0"
-                  >
-                    Dodaj kombinaciju u rezervaciju
-                  </button>
-                </div>
-              </div>
-            </div>
+        <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-orange-600">Rezervirat ćete:</h3>
+            <button
+              v-if="rezervacije.length"
+              class="px-3 py-1.5 rounded-xl text-red-500"
+              @click="isprazniRezervacije"
+            >
+              Isprazni
+            </button>
           </div>
 
-          <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-orange-600">Rezervirat ćete:</h3>
+          <div v-if="!rezervacije.length" class="text-gray-400">
+            Niste odabrali niti jedan termin.
+          </div>
+
+          <div v-else class="space-y-3">
+            <div
+              v-for="(stavka, idx) in rezervacije"
+              :key="stavka.key"
+              class="flex items-center justify-between rounded-xl bg-white shadow-lg border border-gray-100 px-4 py-3"
+            >
+              <div>
+                <div class="font-medium text-orange-600">{{ stavka.title }}</div>
+                <div class="text-teal-500 text-sm">
+                  {{ stavka.dateLabel }} • {{ stavka.timeLabel }} • Količina {{ stavka.quantity }}
+                </div>
+              </div>
               <button
-                v-if="rezervacije.length"
-                class="px-3 py-1.5 rounded-xl text-red-500"
-                @click="isprazniRezervacije"
+                class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
+                @click="rezervacije.splice(idx, 1)"
               >
-                Isprazni
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 2048 2048"
+                  class="text-red-500"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M1664 128h384v1792H0V128h384V0h128v128h1024V0h128v128zM384 256H128v256h1792V256h-256v128h-128V256H512v128H384V256zM128 1792h1792V640H128v1152zm1171-941l90 90l-274 275l274 275l-90 90l-275-275l-275 275l-90-90l274-275l-274-275l90-90l275 275l275-275z"
+                  />
+                </svg>
               </button>
             </div>
 
-            <div v-if="!rezervacije.length" class="text-gray-400">
-              Niste odabrali niti jedan termin.
-            </div>
-
-            <div v-else class="space-y-3">
-              <div
-                v-for="(stavka, idx) in rezervacije"
-                :key="stavka.key"
-                class="flex items-center justify-between rounded-xl bg-white shadow-lg border border-gray-100 px-4 py-3"
+            <div class="pt-2">
+              <button
+                class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
+                @click="dodajSveUKosaricu"
+                :disabled="preostaloMinuta > 0 || !rezervacije.length"
               >
-                <div>
-                  <div class="font-medium text-orange-600">{{ stavka.title }}</div>
-                  <div class="text-teal-500 text-sm">
-                    {{ stavka.dateLabel }} • {{ stavka.timeLabel }} • Količina {{ stavka.quantity }}
-                  </div>
-                </div>
-                <button
-                  class="p-2 rounded-lg bg-white/5 hover:bg-white/10"
-                  @click="rezervacije.splice(idx, 1)"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 2048 2048"
-                    class="text-red-500"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M1664 128h384v1792H0V128h384V0h128v128h1024V0h128v128zM384 256H128v256h1792V256h-256v128h-128V256H512v128H384V256zM128 1792h1792V640H128v1152zm1171-941l90 90l-274 275l274 275l-90 90l-275-275l-275 275l-90-90l274-275l-274-275l90-90l275 275l275-275z"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div class="pt-2">
-                <button
-                  class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
-                  @click="dodajSveUKosaricu"
-                  :disabled="preostaloMinuta > 0 || !rezervacije.length"
-                >
-                  Dodaj u košaricu sve termine
-                </button>
-              </div>
+                Dodaj u košaricu sve termine
+              </button>
             </div>
           </div>
         </div>
@@ -688,6 +700,37 @@ function dodajSveUKosaricu() {
 function isprazniRezervacije() {
   rezervacije.splice(0, rezervacije.length)
 }
+
+const imaTerminaGlobal = ref(null)
+
+async function provjeriImaTerminaOPGa(opgId, horizon = 3) {
+  if (!opgId) {
+    imaTerminaGlobal.value = false
+    return
+  }
+  const now = new Date()
+  for (let i = 0; i < horizon; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1)
+    try {
+      const { data } = await api.get("/opg/raspolozivost/kalendar", {
+        params: { opg_id: opgId, godina: d.getFullYear(), mjesec: d.getMonth() + 1 },
+      })
+      if (data?.slotovi && Object.keys(data.slotovi).length > 0) {
+        imaTerminaGlobal.value = true
+        return
+      }
+    } catch (e) {}
+  }
+  imaTerminaGlobal.value = false
+}
+
+watch(
+  () => usluga.value?.opg_id,
+  (opgId) => {
+    if (opgId) provjeriImaTerminaOPGa(opgId)
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>
