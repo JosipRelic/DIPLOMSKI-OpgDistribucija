@@ -259,7 +259,7 @@
 
         <div class="space-y-4 mt-6">
           <div
-            v-for="stavka in mjesecniDogadjaji"
+            v-for="stavka in paginiraniDogadjaji"
             :key="stavka.id"
             class="flex gap-4 items-stretch"
           >
@@ -308,6 +308,32 @@
           <p v-if="!mjesecniDogadjaji.length" class="text-slate-400">
             Nema događaja u ovom mjesecu.
           </p>
+
+          <!-- PAGINACIJA -->
+          <div v-else-if="totalPages > 1" class="flex items-center justify-between pt-2">
+            <div class="text-sm text-gray-500">
+              Prikazano
+              <strong>{{ prikazOd }}–{{ prikazDo }}</strong>
+              od <strong>{{ totalItems }}</strong>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-orange-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                :disabled="!hasPrev"
+                @click="prethodnaStranica"
+              >
+                ◀︎ Prethodna
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-orange-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                :disabled="!hasNext"
+                @click="sljedecaStranica"
+              >
+                Sljedeća ▶︎
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -612,6 +638,38 @@ watch(prikazMjeseca, () => {
 
 onMounted(async () => {
   await ucitajDatumeZaMjesec()
+})
+
+const PAGE_SIZE = 4
+const page = ref(1)
+
+const totalItems = computed(() => mjesecniDogadjaji.value.length)
+const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / PAGE_SIZE)))
+
+const paginiraniDogadjaji = computed(() => {
+  const start = (page.value - 1) * PAGE_SIZE
+  return mjesecniDogadjaji.value.slice(start, start + PAGE_SIZE)
+})
+
+const hasPrev = computed(() => page.value > 1)
+const hasNext = computed(() => page.value < totalPages.value)
+
+function prethodnaStranica() {
+  if (hasPrev.value) page.value -= 1
+}
+function sljedecaStranica() {
+  if (hasNext.value) page.value += 1
+}
+
+const prikazOd = computed(() => (totalItems.value === 0 ? 0 : (page.value - 1) * PAGE_SIZE + 1))
+const prikazDo = computed(() => Math.min(page.value * PAGE_SIZE, totalItems.value))
+
+watch([prikazMjeseca, mjesecniDogadjaji], () => {
+  page.value = 1
+})
+
+watch(totalPages, () => {
+  if (page.value > totalPages.value) page.value = totalPages.value
 })
 </script>
 
