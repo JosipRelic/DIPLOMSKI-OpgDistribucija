@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import api from "@/services/api"
 import { useUiStore } from "./ui"
+import { useKosaricaStore } from "./kosarica"
 
 function postaviAutentifikacijskiHeader(token) {
   if (token) {
@@ -54,6 +55,10 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
             this.odjava("expired")
           } else {
             this._scheduleAutoLogout(expMs - Date.now())
+
+            try {
+              useKosaricaStore().osvjezi()
+            } catch {}
           }
         }
       }
@@ -101,6 +106,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         }
 
         await this.dohvatiProfil()
+        await useKosaricaStore().osvjezi()
         useUiStore().obavijest({
           tekst: "Registacija uspješna. Dobrodošli!",
           tip_obavijesti: "uspjeh",
@@ -133,6 +139,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         }
 
         await this.dohvatiProfil()
+        await useKosaricaStore().osvjezi()
         useUiStore().obavijest({
           tekst: "Registacija uspješna. Dobrodošli!",
           tip_obavijesti: "uspjeh",
@@ -168,6 +175,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
         }
 
         await this.dohvatiProfil()
+        await useKosaricaStore().osvjezi()
         useUiStore().obavijest({
           tekst: "Prijava uspješna. Dobrodošli!",
           tip_obavijesti: "uspjeh",
@@ -195,6 +203,10 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
       localStorage.removeItem("tip_korisnika")
       localStorage.removeItem("expires_at")
       postaviAutentifikacijskiHeader(null)
+
+      try {
+        useKosaricaStore().reset()
+      } catch {}
 
       const ui = useUiStore()
       if (reason === "expired") {
@@ -276,6 +288,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
     async obrisiProfil() {
       try {
         await api.delete("/profil")
+        useKosaricaStore().reset()
         this.korisnicki_profil = null
         this.token = null
         localStorage.removeItem("token")

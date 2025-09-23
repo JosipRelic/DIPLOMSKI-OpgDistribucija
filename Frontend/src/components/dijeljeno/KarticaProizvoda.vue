@@ -50,17 +50,21 @@
             <button
               type="button"
               class="size-10 leading-10 text-gray-600 transition hover:text-red-600"
+              @click.stop.prevent="minus"
             >
               &minus;
             </button>
             <input
               type="number"
-              value="1"
+              v-model.number="kolicina"
+              min="1"
               class="h-10 w-16 text-orange-600 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+              @click.stop
             />
             <button
               type="button"
               class="size-10 leading-10 text-gray-600 transition hover:text-green-600"
+              @click.stop.prevent="plus"
             >
               &plus;
             </button>
@@ -68,7 +72,9 @@
         </div>
 
         <button
+          type="button"
           class="mt-auto shadow-md block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-white uppercase transition-colors hover:bg-orange-900 hover:border-orange-900"
+          @click.stop.prevent="dodajUKosaricu"
         >
           Dodaj u košaricu
         </button>
@@ -78,14 +84,26 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useKosaricaStore } from "@/stores/kosarica"
+import { useUiStore } from "@/stores/ui"
+import { useRoute, useRouter } from "vue-router"
+
+const route = useRoute()
+const router = useRouter()
+const autentifikacija = useAutentifikacijskiStore()
+const kosarica = useKosaricaStore()
+const ui = useUiStore()
 
 const props = defineProps({
   proizvod: { type: Object, required: true },
   katSlug: { type: String, required: true },
   prikaziLinkPremaOpgu: { type: Boolean, default: true },
 })
+
 const defaultSlika = "https://placehold.co/600x600?text=Proizvod"
+
 const cijena = computed(() => {
   const n = Number(props.proizvod.cijena || 0)
   return `${n.toFixed(2)} €`
@@ -97,4 +115,28 @@ const proizvodSlugId = computed(() => {
 })
 
 const opgProfilSlug = computed(() => props.proizvod.opg_slug || null)
+
+const kolicina = ref(1)
+function minus() {
+  kolicina.value = Math.max(1, (kolicina.value || 1) - 1)
+}
+function plus() {
+  kolicina.value = (kolicina.value || 1) + 1
+}
+
+async function dodajUKosaricu(e) {
+  e?.preventDefault()
+  e?.stopPropagation()
+  if (!autentifikacija.korisnikAutentificiran) {
+    ui.obavijest({
+      tekst: "Za kupovinu je potrebna prijava",
+      tip_obavijesti: "informacija",
+    })
+    return router.push({ name: "prijava", query: { redirect: route.fullPath } })
+  }
+  await kosarica.dodajProizvod({
+    proizvod_id: props.proizvod.id,
+    kolicina: Number(kolicina.value || 1),
+  })
+}
 </script>

@@ -85,7 +85,8 @@
                 Odjava
               </button>
             </template>
-            <div class="relative inline-block">
+
+            <div v-if="autentifikacija.korisnikAutentificiran" class="relative inline-block">
               <router-link :to="{ name: 'kosarica' }">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -102,9 +103,10 @@
                   />
                 </svg>
                 <span
-                  class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-orange-600 rounded-full"
+                  class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white rounded-full"
+                  :class="brojKosarice == 0 ? 'bg-gray-500' : 'bg-orange-600'"
                 >
-                  3
+                  {{ brojKosarice }}
                 </span>
               </router-link>
             </div>
@@ -167,20 +169,30 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import slikeLogo from "@/assets/slike/logo.png"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useRoute, useRouter } from "vue-router"
+import { useKosaricaStore } from "@/stores/kosarica"
+
+const autentifikacija = useAutentifikacijskiStore()
+const kosarica = useKosaricaStore()
+const router = useRouter()
+const route = useRoute()
+
+onMounted(() => {
+  if (autentifikacija.korisnikAutentificiran) {
+    kosarica.osvjezi()
+  }
+})
+
+const brojKosarice = computed(() => kosarica.brojArtikala)
 
 const izbornikNaManjemEkranuOtvoren = ref(false)
 
 function otvoriIzbornikNaManjemEkranu() {
   izbornikNaManjemEkranuOtvoren.value = !izbornikNaManjemEkranuOtvoren.value
 }
-
-const autentifikacija = useAutentifikacijskiStore()
-const router = useRouter()
-const route = useRoute()
 
 const idiNaMojProfil = () => {
   if (!autentifikacija.korisnikAutentificiran) {

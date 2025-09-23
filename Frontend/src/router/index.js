@@ -160,6 +160,7 @@ const routes = [
     name: "kosarica",
     path: "/kosarica",
     component: KosaricaView,
+    meta: { requiresAuth: true },
   },
   {
     name: "pregledNarudzbe",

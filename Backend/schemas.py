@@ -173,6 +173,39 @@ class RasponKalendaraPrikaz(BaseModel):
 class MjeseciKalendaraPrikaz(BaseModel):
     slotovi: dict[str, list[RasponKalendaraPrikaz]]
 
+
+class KosaricaDodajProizvod(BaseModel):
+    proizvod_id: int
+    kolicina: int = Field(..., ge=1)
+
+class KosaricaDodajUslugu(BaseModel):
+    usluga_id: int
+    kolicina: int = Field(..., ge=1)
+    termin_od: Optional[str] = None
+    termin_do: Optional[str] = None
+
+class KosaricaPromijeniKolicinu(BaseModel):
+    kolicina: int = Field(..., ge=1)
+
+class KosaricaStavkaPrikaz(BaseModel):
+    id: int
+    tip: Literal["proizvod", "usluga"]
+    proizvod_id: Optional[int] = None
+    usluga_id: Optional[int] = None
+    naziv: str
+    slika: Optional[str] = None
+    opg_naziv: Optional[str] = None
+    opg_slug: Optional[str] = None
+    cijena: Decimal
+    mjerna_jedinica: str
+    kolicina: int
+    termin_od: Optional[str] = None
+    termin_do: Optional[str] = None
+
+class KosaricaPrikaz(BaseModel):
+    stavke: list[KosaricaStavkaPrikaz]
+
+
 class Token(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"

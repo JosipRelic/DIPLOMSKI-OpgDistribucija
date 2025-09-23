@@ -134,6 +134,7 @@
               <div class="pt-2">
                 <button
                   class="px-3 py-2 text-md rounded-lg w-full text-base text-white bg-orange-600 hover:bg-orange-900 shadow-lg"
+                  @click="dodajUsluguBezTermina"
                 >
                   Dodaj u košaricu
                 </button>
@@ -388,9 +389,15 @@
 
 <script setup>
 import { computed, reactive, ref, onMounted, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import api from "@/services/api"
 import { useRaspolozivostOpgStore } from "@/stores/raspolozivostOpg"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useKosaricaStore } from "@/stores/kosarica"
+
+const autentifikacija = useAutentifikacijskiStore()
+const kosarica_s = useKosaricaStore()
+const router = useRouter()
 
 const pad = (n) => String(n).padStart(2, "0")
 const HM = (h, m) => `${pad(h)}:${pad(m)}`
@@ -537,7 +544,6 @@ const ukupnoMinuta = computed(() =>
 const ukupnoTrajanjeLabel = computed(() => trajanjeLabel(ukupnoMinuta.value))
 
 let rezervacije = reactive([])
-let kosarica = reactive([])
 
 const rezerviranoMinuta = computed(() =>
   rezervacije.reduce((s, r) => s + Math.max(0, r.endMin - r.startMin), 0),
@@ -692,11 +698,6 @@ function dodajKombinacijuMultiDan() {
   }
 }
 
-function dodajSveUKosaricu() {
-  if (preostaloMinuta.value > 0 || !rezervacije.length) return
-  kosarica.push(...rezervacije.map((r) => ({ ...r, basketKey: r.key + "-b" })))
-}
-
 function isprazniRezervacije() {
   rezervacije.splice(0, rezervacije.length)
 }
@@ -722,6 +723,48 @@ async function provjeriImaTerminaOPGa(opgId, horizon = 3) {
     } catch (e) {}
   }
   imaTerminaGlobal.value = false
+}
+
+function SM(m) {
+  const s = String(Math.floor(m / 60)).padStart(2, "0")
+  const mm = String(m % 60).padStart(2, "0")
+  return `${s}:${mm}`
+}
+
+const kosaricaTermin = (k) =>
+  new Date(k + "T00:00:00").toLocaleDateString("hr-HR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  })
+
+function DT(datum, minute) {
+  return `${kosaricaTermin(datum)} ${SM(minute)}`
+}
+
+async function dodajUsluguBezTermina() {
+  if (!autentifikacija.korisnikAutentificiran)
+    return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
+  await kosarica_s.dodajUslugu({
+    usluga_id: usluga.value.id,
+    kolicina: Number(kolicina.value || 1),
+  })
+}
+
+async function dodajSveUKosaricu() {
+  if (!autentifikacija.korisnikAutentificiran)
+    return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
+  if (preostaloMinuta.value > 0 || !rezervacije.length) return
+  for (const r of rezervacije) {
+    const datum_od = DT(r.dateKey, r.startMin)
+    const datum_do = DT(r.dateKey, r.endMin)
+    await kosarica_s.dodajUsluguSTerminom({
+      usluga_id: usluga.value.id,
+      kolicina: r.quantity || 1,
+      termin_od: datum_od,
+      termin_do: datum_do,
+    })
+  }
 }
 
 watch(

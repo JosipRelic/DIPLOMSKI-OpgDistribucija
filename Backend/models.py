@@ -246,3 +246,33 @@ class OpgRaspolozivostPoDatumu(Base):
 
         Index("ix_raspolozivost_opg_datum", "opg_id", "datum"),
     )
+
+
+class KosaricaStavka(Base):
+    __tablename__ = "kosarica_stavke"
+
+    id = Column(Integer, primary_key=True)
+    kolicina = Column(Integer, nullable=False)
+    termin_od = Column(String(50), nullable=True)
+    termin_do = Column(String(50), nullable=True)
+    cijena = Column(Numeric(12,2), nullable=False)
+    mjerna_jedinica = Column(String(50), nullable=False)
+    datum_izrade = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False, index=True)
+    proizvod_id = Column(Integer, ForeignKey("proizvodi.id", ondelete="CASCADE"), nullable=True, index=True)
+    usluga_id = Column(Integer, ForeignKey("usluge.id", ondelete="CASCADE"), nullable=True, index=True)
+
+    proizvod = relationship("Proizvod")
+    usluga = relationship("Usluga")
+
+    __table_args__=(
+        CheckConstraint(
+            "(proizvod_id IS NOT NULL AND usluga_id IS NULL) OR (proizvod_id IS NULL AND usluga_id IS NOT NULL)",
+            name="ck_kos_xor_proizvod_usluga"
+            ),
+        UniqueConstraint("korisnik_id", "proizvod_id", name="uq_kos_proizvod_po_korisniku"),
+        UniqueConstraint("korisnik_id", "usluga_id", "termin_od", "termin_do", name="uq_kos_usluga_termin_po_korisniku"),
+        Index("ix_kos_korisnik_tip", "korisnik_id", "proizvod_id", "usluga_id"),
+    )

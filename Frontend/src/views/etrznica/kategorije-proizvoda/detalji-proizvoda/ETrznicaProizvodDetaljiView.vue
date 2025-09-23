@@ -43,24 +43,27 @@
           {{ formatiranjeCijena(proizvod.cijena) }}
           <span class="text-gray-400"> / {{ proizvod.mjerna_jedinica }}</span>
           <div>
-            <div class="rounded-sm border border-gray-200 mt-2 w-fit shadow">
+            <div
+              class="flex shadow items-center justify-center mx-auto rounded-sm border border-gray-200 mb-3 w-fit"
+            >
               <button
                 type="button"
                 class="size-10 leading-10 text-gray-600 transition hover:text-red-600"
+                @click.stop.prevent="minus"
               >
                 &minus;
               </button>
-
               <input
                 type="number"
-                id="Kolicina"
-                value="1"
-                class="h-10 text-orange-600 w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                v-model.number="kolicina"
+                min="1"
+                class="h-10 w-16 text-orange-600 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+                @click.stop
               />
-
               <button
                 type="button"
                 class="size-10 leading-10 text-gray-600 transition hover:text-green-600"
+                @click.stop.prevent="plus"
               >
                 &plus;
               </button>
@@ -102,7 +105,9 @@
         </div>
 
         <button
+          type="button"
           class="w-full bg-orange-600 shadow-md border border-orange-600 cursor-pointer hover:bg-orange-900 hover:border-orange-900 text-gray-100 py-3 px-6 rounded-lg text-sm font-medium transition"
+          @click.stop.prevent="dodajUKosaricu"
         >
           Dodaj u košaricu
         </button>
@@ -120,10 +125,18 @@
 </template>
 <script setup>
 import { ref, onMounted, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useKosaricaStore } from "@/stores/kosarica"
+import { useUiStore } from "@/stores/ui"
 import api from "@/services/api"
 
 const route = useRoute()
+const router = useRouter()
+const autentifikacija = useAutentifikacijskiStore()
+const kosarica = useKosaricaStore()
+const ui = useUiStore()
+
 const loading = ref(false)
 const proizvod = ref(null)
 const defaultSlika = "https://placehold.co/800x800?text=Proizvod"
@@ -149,6 +162,31 @@ async function dohvatiProizvod() {
 function formatiranjeCijena(c) {
   const cijena = Number(c || 0)
   return `${cijena.toFixed(2)} €`
+}
+
+const kolicina = ref(1)
+
+function minus() {
+  kolicina.value = Math.max(1, (kolicina.value || 1) - 1)
+}
+function plus() {
+  kolicina.value = (kolicina.value || 1) + 1
+}
+
+async function dodajUKosaricu(e) {
+  e?.preventDefault()
+  e?.stopPropagation()
+  if (!autentifikacija.korisnikAutentificiran) {
+    ui.obavijest({
+      tekst: "Za kupovinu je potrebna prijava",
+      tip_obavijesti: "informacija",
+    })
+    return router.push({ name: "prijava", query: { redirect: route.fullPath } })
+  }
+  await kosarica.dodajProizvod({
+    proizvod_id: proizvod.value.id,
+    kolicina: Number(kolicina.value || 1),
+  })
 }
 
 onMounted(dohvatiProizvod)
