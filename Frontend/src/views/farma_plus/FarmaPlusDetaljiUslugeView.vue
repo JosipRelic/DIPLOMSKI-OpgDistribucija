@@ -394,10 +394,12 @@ import api from "@/services/api"
 import { useRaspolozivostOpgStore } from "@/stores/raspolozivostOpg"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useKosaricaStore } from "@/stores/kosarica"
+import { useUiStore } from "@/stores/ui"
 
 const autentifikacija = useAutentifikacijskiStore()
 const kosarica_s = useKosaricaStore()
 const router = useRouter()
+const ui = useUiStore()
 
 const pad = (n) => String(n).padStart(2, "0")
 const HM = (h, m) => `${pad(h)}:${pad(m)}`
@@ -743,8 +745,13 @@ function DT(datum, minute) {
 }
 
 async function dodajUsluguBezTermina() {
-  if (!autentifikacija.korisnikAutentificiran)
+  if (!autentifikacija.korisnikAutentificiran) {
+    ui.obavijest({
+      tekst: "Za kupovinu je potrebna prijava",
+      tip_obavijesti: "informacija",
+    })
     return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
+  }
   await kosarica_s.dodajUslugu({
     usluga_id: usluga.value.id,
     kolicina: Number(kolicina.value || 1),
@@ -752,8 +759,13 @@ async function dodajUsluguBezTermina() {
 }
 
 async function dodajSveUKosaricu() {
-  if (!autentifikacija.korisnikAutentificiran)
+  if (!autentifikacija.korisnikAutentificiran) {
+    ui.obavijest({
+      tekst: "Za kupovinu je potrebna prijava",
+      tip_obavijesti: "informacija",
+    })
     return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
+  }
   if (preostaloMinuta.value > 0 || !rezervacije.length) return
   for (const r of rezervacije) {
     const datum_od = DT(r.dateKey, r.startMin)
