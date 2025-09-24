@@ -27,6 +27,7 @@
       <div class="flex flex-col items-center">
         <button
           class="w-full max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-3 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+          type="button"
         >
           <div class="bg-white p-2 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 text-red-600">
@@ -38,11 +39,12 @@
           </div>
           <span class="ml-4"> Ispunite glasovno pomoću AI </span>
         </button>
-        <small class="pt-2 w-full max-w-xs text-xs"
-          >Pritisnite gumb i popunite obrazac glasom npr. "Zovem se Ivan Horvat. Moja email adresa
-          je ihorvat@gmail.com itd..."</small
-        >
+        <small class="pt-2 w-full max-w-xs text-xs">
+          Pritisnite gumb i popunite obrazac glasom npr. "Zovem se Ivan Horvat. Moja email adresa je
+          ..."
+        </small>
       </div>
+
       <div class="my-8 border-b text-center">
         <div
           class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2"
@@ -50,11 +52,13 @@
           ili unesite podatke ručno
         </div>
       </div>
-      <form class="space-y-5">
+
+      <form class="space-y-5" @submit.prevent>
         <div class="flex gap-4">
           <div class="w-1/2">
             <label class="block mb-1 text-sm text-gray-600">Ime</label>
             <input
+              v-model="forma.ime"
               type="text"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
@@ -62,50 +66,63 @@
           <div class="w-1/2">
             <label class="block mb-1 text-sm text-gray-600">Prezime</label>
             <input
+              v-model="forma.prezime"
               type="text"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
           </div>
         </div>
+
         <div>
           <label class="block mb-1 text-sm text-gray-600">Email</label>
           <input
-            type="text"
+            v-model="forma.email"
+            type="email"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
+
         <div>
           <label class="block mb-1 text-sm text-gray-600">Broj telefona</label>
           <input
+            v-model="forma.telefon"
             type="text"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
+
         <div>
           <label class="block mb-1 text-sm text-gray-600">Adresa</label>
           <input
+            v-model="forma.adresa"
             type="text"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
+
         <div>
           <label class="block mb-1 text-sm text-gray-600">Država</label>
           <input
+            v-model="forma.drzava"
             type="text"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
+
         <div>
           <label class="block mb-1 text-sm text-gray-600">Županija</label>
           <input
+            v-model="forma.zupanija"
             type="text"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
+
         <div class="flex gap-4">
           <div class="w-1/2">
             <label class="block mb-1 text-sm text-gray-600">Grad</label>
             <input
+              v-model="forma.grad"
               type="text"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
@@ -113,6 +130,7 @@
           <div class="w-1/2">
             <label class="block mb-1 text-sm text-gray-600">Poštanski broj</label>
             <input
+              v-model="forma.postanski_broj"
               type="text"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
@@ -130,6 +148,7 @@
       <button
         type="button"
         class="flex items-center border p-2 mt-4 rounded-lg mx-auto border-gray-200 shadow-md hover:text-teal-500 hover:border-teal-500"
+        @click="ucitajIzProfila"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
           <defs>
@@ -172,93 +191,64 @@
 
     <div class="bg-gray-50 p-8 border-l border-gray-200">
       <h3 class="text-xl font-semibold text-gray-700 mb-2">Naručit ćete</h3>
+
       <div class="mb-1 text-orange-400 border-b border-orange-200 mb-2">Proizvodi</div>
       <ul class="space-y-4 mb-4">
-        <li class="flex items-center gap-4">
-          <img
-            src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt=""
-            class="size-20 rounded-sm object-cover"
-          />
-
+        <li v-for="p in proizvodi" :key="p.kljuc" class="flex items-center gap-4">
+          <img :src="p.slika || defaultProizvod" alt="" class="size-20 rounded-sm object-cover" />
           <div>
-            <h3 class="text-lg text-gray-900">Krastavci</h3>
-
+            <h3 class="text-lg text-gray-900">{{ p.naziv }}</h3>
             <dl class="mt-0.5 space-y-px text-sm text-gray-600">
               <div>
                 <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">2.99 €</dd>
+                <dd class="inline ml-1 font-bold">{{ formatCijena(p.cijena) }}</dd>
               </div>
               <div>
                 <dt class="inline">Količina:</dt>
-                <dd class="inline ml-1 font-bold">1 / kg</dd>
+                <dd class="inline ml-1 font-bold">{{ p.kolicina }} / {{ p.mjerna_jedinica }}</dd>
               </div>
             </dl>
           </div>
         </li>
-        <li class="flex items-center gap-4">
-          <img
-            src="https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt=""
-            class="size-20 rounded-sm object-cover"
-          />
-
-          <div>
-            <h3 class="text-lg text-gray-900">Luk</h3>
-
-            <dl class="mt-0.5 space-y-px text-sm text-gray-600">
-              <div>
-                <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">0.99 €</dd>
-              </div>
-              <div>
-                <dt class="inline">Količina:</dt>
-                <dd class="inline ml-1 font-bold">1 / kg</dd>
-              </div>
-            </dl>
-          </div>
-        </li>
+        <li v-if="!proizvodi.length" class="text-sm text-gray-400">Nema proizvoda.</li>
       </ul>
 
       <div class="text-orange-400 border-b border-orange-200 mb-2">Usluge</div>
       <ul class="space-y-4 mb-4">
-        <li class="flex items-center gap-4">
-          <img
-            src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZhcm1pbmd8ZW58MHx8MHx8fDI%3D"
-            alt=""
-            class="size-20 rounded-sm object-cover"
-          />
-
+        <li v-for="u in usluge" :key="u.kljuc" class="flex items-center gap-4">
+          <img :src="u.slika || defaultUsluga" alt="" class="size-20 rounded-sm object-cover" />
           <div>
-            <h3 class="text-lg text-gray-900">Oranje</h3>
-
+            <h3 class="text-lg text-gray-900">{{ u.naziv }}</h3>
             <dl class="mt-0.5 space-y-px text-sm text-gray-600">
               <div class="text-xs">
                 <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">200.00 €</dd>
+                <dd class="inline ml-1 font-bold">{{ formatCijena(u.cijena) }}</dd>
               </div>
               <div class="text-xs">
                 <dt class="inline">Količina:</dt>
-                <dd class="inline ml-1 font-bold">1 / hektar</dd>
+                <dd class="inline ml-1 font-bold">{{ u.kolicina }} / {{ u.mjerna_jedinica }}</dd>
               </div>
-
-              <div class="text-xs">
+              <div class="text-xs" v-if="u.termin_od && u.termin_do">
                 <dt class="inline">Termin:</dt>
                 <dd class="inline ml-1 font-bold">
-                  26. rujna 2025. 11:00 -> 26. rujna 2025. 13:00
+                  {{ fmtHR(u.termin_od) }} → {{ fmtHR(u.termin_do) }}
                 </dd>
               </div>
             </dl>
           </div>
         </li>
+        <li v-if="!usluge.length" class="text-sm text-gray-400">Nema usluga.</li>
       </ul>
+
       <h3 class="text-xl font-semibold text-gray-700 mb-6 mt-10 border-t pt-6">
         Odaberite način plaćanja
       </h3>
-
       <div class="space-y-4">
-        <div
-          class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition"
+        <button
+          type="button"
+          class="flex items-center w-full text-left p-4 bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition"
+          :class="nacinPlacanja === 'pouzece' ? 'ring-2 ring-teal-500' : ''"
+          @click="nacinPlacanja = 'pouzece'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -283,55 +273,37 @@
             <path fill="#CFD8DC" d="M40 41H8c-2.2 0-4-1.8-4-4V17l20 13l20-13v20c0 2.2-1.8 4-4 4z" />
           </svg>
           <p class="text-gray-700 font-medium">Pouzećem</p>
-        </div>
-
-        <div
-          class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="25"
-            viewBox="0 0 256 302"
-            class="mr-4"
-          >
-            <path
-              fill="#27346A"
-              d="M217.168 23.507C203.234 7.625 178.046.816 145.823.816h-93.52A13.393 13.393 0 0 0 39.076 12.11L.136 259.077c-.774 4.87 2.997 9.28 7.933 9.28h57.736l14.5-91.971l-.45 2.88c1.033-6.501 6.593-11.296 13.177-11.296h27.436c53.898 0 96.101-21.892 108.429-85.221c.366-1.873.683-3.696.957-5.477c-1.556-.824-1.556-.824 0 0c3.671-23.407-.025-39.34-12.686-53.765"
-            />
-            <path
-              fill="#27346A"
-              d="M102.397 68.84a11.737 11.737 0 0 1 5.053-1.14h73.318c8.682 0 16.78.565 24.18 1.756a101.6 101.6 0 0 1 6.177 1.182a89.928 89.928 0 0 1 8.59 2.347c3.638 1.215 7.026 2.63 10.14 4.287c3.67-23.416-.026-39.34-12.687-53.765C203.226 7.625 178.046.816 145.823.816H52.295C45.71.816 40.108 5.61 39.076 12.11L.136 259.068c-.774 4.878 2.997 9.282 7.925 9.282h57.744L95.888 77.58a11.717 11.717 0 0 1 6.509-8.74Z"
-            />
-            <path
-              fill="#2790C3"
-              d="M228.897 82.749c-12.328 63.32-54.53 85.221-108.429 85.221H93.024c-6.584 0-12.145 4.795-13.168 11.296L61.817 293.621c-.674 4.262 2.622 8.124 6.934 8.124h48.67a11.71 11.71 0 0 0 11.563-9.88l.474-2.48l9.173-58.136l.591-3.213a11.71 11.71 0 0 1 11.562-9.88h7.284c47.147 0 84.064-19.154 94.852-74.55c4.503-23.15 2.173-42.478-9.739-56.054c-3.613-4.112-8.1-7.508-13.327-10.28c-.283 1.79-.59 3.604-.957 5.477Z"
-            />
-            <path
-              fill="#1F264F"
-              d="M216.952 72.128a89.928 89.928 0 0 0-5.818-1.49a109.904 109.904 0 0 0-6.177-1.174c-7.408-1.199-15.5-1.765-24.19-1.765h-73.309a11.57 11.57 0 0 0-5.053 1.149a11.683 11.683 0 0 0-6.51 8.74l-15.582 98.798l-.45 2.88c1.025-6.501 6.585-11.296 13.17-11.296h27.444c53.898 0 96.1-21.892 108.428-85.221c.367-1.873.675-3.688.958-5.477c-3.122-1.648-6.501-3.072-10.14-4.279a83.26 83.26 0 0 0-2.77-.865"
-            />
-          </svg>
-          <p class="text-gray-700 font-medium">PayPal</p>
-        </div>
+        </button>
       </div>
 
       <h3 class="text-xl font-semibold text-gray-700 mb-6 mt-10 border-t pt-6">
         Odaberite način dostave
       </h3>
-
       <div class="space-y-4">
         <div
           class="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-300 hover:shadow-md transition"
         >
-          <input id="bordered-radio-1" type="radio" value="" name="bordered-radio" />
-
-          <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900"
+          <input
+            id="dostava-da"
+            name="nacin-dostave"
+            type="radio"
+            class="mr-2"
+            value="dostava"
+            v-model="nacinDostave"
+          />
+          <label for="dostava-da" class="w-full py-1 ms-2 text-sm font-medium text-gray-900"
             >Dostava na adresu (5€)</label
           >
 
-          <input checked id="bordered-radio-2" type="radio" value="" name="bordered-radio" />
-          <label for="bordered-radio-2" class="w-full py-4 ms-2 text-sm font-medium text-gray-900"
+          <input
+            id="dostava-ne"
+            name="nacin-dostave"
+            type="radio"
+            class="ml-4 mr-2"
+            value="osobno"
+            v-model="nacinDostave"
+          />
+          <label for="dostava-ne" class="w-full py-1 ms-2 text-sm font-medium text-gray-900"
             >Osobno preuzimanje (Besplatno)</label
           >
         </div>
@@ -341,28 +313,223 @@
         <h4 class="text-gray-700 font-semibold mb-2">Za platiti</h4>
         <div class="flex justify-between text-gray-600">
           <span>Ukupan iznos bez PDV-a</span>
-          <span>4.18 €</span>
+          <span>{{ formatCijena(iznosBezPDVa) }}</span>
         </div>
         <div class="flex justify-between text-gray-600 mt-1">
           <span>PDV (25%)</span>
-          <span>1.39 €</span>
+          <span>{{ formatCijena(pdv) }}</span>
         </div>
         <div class="flex justify-between text-gray-600 mt-1">
           <span>Dostava</span>
-          <span>Besplatna (osobno preuzimanje)</span>
+          <span>
+            <template v-if="nacinDostave === 'dostava'">{{ formatCijena(iznosDostave) }}</template>
+            <template v-else>Besplatna (osobno preuzimanje)</template>
+          </span>
         </div>
         <div class="flex justify-between text-lg font-bold text-gray-800 mt-4">
           <span>Ukupan iznos s PDV-om</span>
-          <span>5.57 €</span>
+          <span>{{ formatCijena(ukupnoBruto) }}</span>
         </div>
       </div>
-      <router-link :to="{ name: 'potvrdaNarudzbe' }"
-        ><button
-          class="w-full mt-4 bg-teal-600 hover:bg-teal-900 text-gray-100 text-lg py-3 rounded-lg transition"
-        >
-          Naruči
-        </button></router-link
+
+      <button
+        class="w-full mt-4 bg-teal-600 hover:bg-teal-900 text-gray-100 text-lg py-3 rounded-lg transition disabled:opacity-50"
+        :disabled="narudzbe.loading || !mozeNaruciti"
+        @click="naruci"
       >
+        {{ narudzbe.loading ? "Slanje…" : "Naruči" }}
+      </button>
     </div>
   </div>
 </template>
+<script setup>
+import { computed, reactive, ref } from "vue"
+import { useRouter } from "vue-router"
+import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import { useKosaricaStore } from "@/stores/kosarica"
+import { useNarudzbaStore } from "@/stores/narudzba"
+
+const router = useRouter()
+const autentifikacija = useAutentifikacijskiStore()
+const kosarica = useKosaricaStore()
+const narudzbe = useNarudzbaStore()
+
+const defaultProizvod = "https://placehold.co/160x160?text=Proizvod"
+const defaultUsluga = "https://placehold.co/160x160?text=Usluga"
+
+const forma = reactive({
+  ime: "",
+  prezime: "",
+  email: "",
+  telefon: "",
+  adresa: "",
+  drzava: "",
+  zupanija: "",
+  grad: "",
+  postanski_broj: "",
+})
+
+const nacinPlacanja = ref("pouzece")
+const nacinDostave = ref("osobno")
+const iznosDostave = computed(() => (nacinDostave.value === "dostava" ? 5 : 0))
+
+const proizvodi = computed(() =>
+  kosarica.stavke
+    .filter((s) => s.tip === "proizvod" || (!!s.proizvod_id && !s.termin_od))
+    .map((s) => ({
+      kljuc: `p-${s.proizvod_id || s.id}`,
+      naziv: s.naziv,
+      kolicina: s.kolicina,
+      mjerna_jedinica: s.mjerna_jedinica,
+      cijena: Number(s.cijena || 0),
+      slika: s.slika,
+    })),
+)
+
+const usluge = computed(() =>
+  kosarica.stavke
+    .filter((s) => s.tip === "usluga" || (!!s.usluga_id && !!s.termin_od))
+    .map((s) => ({
+      kljuc: `u-${s.usluga_id || s.id}-${s.termin_od || "x"}`,
+      naziv: s.naziv,
+      kolicina: s.kolicina,
+      mjerna_jedinica: s.mjerna_jedinica,
+      cijena: Number(s.cijena || 0),
+      slika: s.slika,
+      termin_od: s.termin_od,
+      termin_do: s.termin_do,
+    })),
+)
+
+function pad(n) {
+  return String(n).padStart(2, "0")
+}
+function fmtHR(iso) {
+  const d = new Date(iso)
+  if (isNaN(d)) return iso
+  const dd = pad(d.getDate())
+  const mm = pad(d.getMonth() + 1)
+  const yyyy = d.getFullYear()
+  const hh = pad(d.getHours())
+  const mi = pad(d.getMinutes())
+  return `${dd}-${mm}-${yyyy} ${hh}:${mi}`
+}
+
+function bruto(x) {
+  return Number(x || 0)
+}
+function neto(x) {
+  return bruto(x) / 1.25
+}
+
+function zaokruziDva(x) {
+  return Math.round((Number(x || 0) + Number.EPSILON) * 100) / 100
+}
+
+const iznosBezPDVa = computed(() => {
+  const ukupnoP = proizvodi.value.reduce((a, x) => a + neto(x.cijena) * (x.kolicina || 0), 0)
+  const ukupnoU = usluge.value.reduce((a, x) => a + neto(x.cijena) * (x.kolicina || 0), 0)
+  return zaokruziDva(ukupnoP + ukupnoU)
+})
+
+const pdv = computed(() => zaokruziDva(iznosBezPDVa.value * 0.25))
+
+const ukupnoBrutoBezDostave = computed(() => {
+  const ukupnoP = proizvodi.value.reduce((a, x) => a + bruto(x.cijena) * (x.kolicina || 0), 0)
+  const ukupnoU = usluge.value.reduce((a, x) => a + bruto(x.cijena) * (x.kolicina || 0), 0)
+  return zaokruziDva(ukupnoP + ukupnoU)
+})
+
+const ukupnoBruto = computed(() => zaokruziDva(ukupnoBrutoBezDostave.value + iznosDostave.value))
+
+const mozeNaruciti = computed(() => {
+  const imaStavki = kosarica.stavke?.length > 0
+  const ispunjeno =
+    forma.ime &&
+    forma.prezime &&
+    forma.email &&
+    forma.telefon &&
+    forma.adresa &&
+    forma.grad &&
+    forma.postanski_broj &&
+    forma.zupanija &&
+    forma.drzava
+  return autentifikacija.korisnikAutentificiran && imaStavki && !!ispunjeno
+})
+
+function formatCijena(v) {
+  const n = Number(v || 0)
+  return `${n.toFixed(2)} €`
+}
+
+async function ucitajIzProfila() {
+  if (!autentifikacija.korisnicki_profil && autentifikacija.korisnikAutentificiran) {
+    try {
+      await autentifikacija.dohvatiProfil()
+    } catch {}
+  }
+  const p = autentifikacija.korisnicki_profil
+  if (!p) return
+
+  const k = p.korisnik || p
+  const prof = p.korisnicki_profil || p
+
+  forma.ime = k.ime || forma.ime
+  forma.prezime = k.prezime || forma.prezime
+  forma.email = k.email || forma.email
+  forma.telefon = k.broj_telefona || forma.telefon
+  forma.adresa = prof.adresa || forma.adresa
+  forma.grad = prof.grad || forma.grad
+  forma.postanski_broj = prof.postanski_broj || forma.postanski_broj
+  forma.zupanija = prof.zupanija || forma.zupanija
+  forma.drzava = prof.drzava || forma.drzava
+}
+
+async function naruci() {
+  if (!mozeNaruciti.value) return
+
+  const stavkePayload = [
+    ...proizvodi.value.map((p) => ({
+      tip: "proizvod",
+      naziv: p.naziv,
+      kolicina: p.kolicina,
+      mjerna_jedinica: p.mjerna_jedinica,
+      cijena: p.cijena,
+      slika: p.slika || null,
+      termin_od: null,
+      termin_do: null,
+    })),
+    ...usluge.value.map((u) => ({
+      tip: "usluga",
+      naziv: u.naziv,
+      kolicina: u.kolicina,
+      mjerna_jedinica: u.mjerna_jedinica,
+      cijena: u.cijena,
+      slika: u.slika || null,
+      termin_od: u.termin_od || null,
+      termin_do: u.termin_do || null,
+    })),
+  ]
+
+  const payload = {
+    ime: forma.ime,
+    prezime: forma.prezime,
+    email: forma.email,
+    telefon: forma.telefon,
+    adresa: forma.adresa,
+    grad: forma.grad,
+    postanski_broj: forma.postanski_broj,
+    zupanija: forma.zupanija,
+    drzava: forma.drzava,
+    nacin_placanja: "pouzece",
+    nacin_dostave: nacinDostave.value,
+    stavke: stavkePayload,
+  }
+
+  const nar = await narudzbe.kreirajNarudzbu(payload)
+
+  kosarica.reset()
+
+  router.push({ name: "potvrdaNarudzbe" })
+}
+</script>

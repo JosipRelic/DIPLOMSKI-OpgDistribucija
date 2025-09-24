@@ -733,21 +733,12 @@ async function provjeriImaTerminaOPGa(opgId, horizon = 3) {
   imaTerminaGlobal.value = false
 }
 
-function SM(m) {
-  const s = String(Math.floor(m / 60)).padStart(2, "0")
-  const mm = String(m % 60).padStart(2, "0")
-  return `${s}:${mm}`
-}
+function dtISO(dateKey, minute) {
+  const [y, m, d] = dateKey.split("-").map(Number)
+  const hh = String(Math.floor(minute / 60)).padStart(2, "0")
+  const mm = String(minute % 60).padStart(2, "0")
 
-const kosaricaTermin = (k) =>
-  new Date(k + "T00:00:00").toLocaleDateString("hr-HR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
-
-function DT(datum, minute) {
-  return `${kosaricaTermin(datum)} ${SM(minute)}`
+  return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}T${hh}:${mm}:00`
 }
 
 async function dodajUsluguBezTermina() {
@@ -790,8 +781,8 @@ async function dodajSveUKosaricu() {
   }
 
   for (const r of rezervacije) {
-    const datum_od = DT(r.dateKey, r.startMin)
-    const datum_do = DT(r.dateKey, r.endMin)
+    const datum_od = dtISO(r.dateKey, r.startMin)
+    const datum_do = dtISO(r.dateKey, r.endMin)
     await kosarica_s.dodajUsluguSTerminom({
       usluga_id: usluga.value.id,
       kolicina: jedanTerminPokrivaSve ? r.quantity || 1 : 1,

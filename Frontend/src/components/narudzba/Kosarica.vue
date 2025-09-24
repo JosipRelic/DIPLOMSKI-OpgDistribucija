@@ -101,8 +101,8 @@
                     <div v-if="st.termin_od && st.termin_do">
                       <dt class="inline">Termin:</dt>
                       <dd class="inline ml-1 text-teal-500">
-                        {{ st.termin_od }} <span class="text-gray-600">-></span>
-                        {{ st.termin_do }}
+                        {{ fmtHR(st.termin_od) }} <span class="text-gray-600">-></span>
+                        {{ fmtHR(st.termin_do) }}
                       </dd>
                     </div>
                     <div v-if="st.opg_slug" class="mt-1">
@@ -223,6 +223,20 @@ const ukupno_s_pdvom = computed(() => kosarica.ukupno_s_pdvom)
 
 function fmt(n) {
   return `${Number(n || 0).toFixed(2)} €`
+}
+
+function pad(n) {
+  return String(n).padStart(2, "0")
+}
+function fmtHR(iso) {
+  const d = new Date(iso)
+  if (isNaN(d)) return iso
+  const dd = pad(d.getDate())
+  const mm = pad(d.getMonth() + 1)
+  const yyyy = d.getFullYear()
+  const hh = pad(d.getHours())
+  const mi = pad(d.getMinutes())
+  return `${dd}-${mm}-${yyyy} ${hh}:${mi}`
 }
 
 function mozeMijenjatiKolicinu(st) {

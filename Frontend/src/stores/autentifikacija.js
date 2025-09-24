@@ -55,6 +55,7 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
             this.odjava("expired")
           } else {
             this._scheduleAutoLogout(expMs - Date.now())
+            this.dohvatiProfil().catch(() => {})
 
             try {
               useKosaricaStore().osvjezi()

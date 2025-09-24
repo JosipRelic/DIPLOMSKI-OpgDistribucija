@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from decimal import Decimal
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 from datetime import datetime, date
 
 
@@ -203,8 +203,56 @@ class KosaricaStavkaPrikaz(BaseModel):
     termin_do: Optional[str] = None
 
 class KosaricaPrikaz(BaseModel):
-    stavke: list[KosaricaStavkaPrikaz]
+    stavke: List[KosaricaStavkaPrikaz]
 
+
+class NarudzbaStavkaKreiranje(BaseModel):
+    tip: str
+    naziv: str
+    kolicina: int
+    mjerna_jedinica: Optional[str]
+    cijena: float
+    slika: Optional[str]
+    termin_od: Optional[datetime]
+    termin_do: Optional[datetime]
+
+class NarudzbaKreiranje(BaseModel):
+    ime: str
+    prezime: str
+    email: EmailStr
+    telefon: str
+    adresa: str
+    grad: str
+    postanski_broj: str
+    zupanija: str
+    drzava: str
+    nacin_placanja: str
+    nacin_dostave: str
+    stavke: List[NarudzbaStavkaKreiranje]
+
+class NarudzbaPrikaz(BaseModel):
+    id: int
+    broj_narudzbe: str
+    datum_izrade: datetime
+    ime: str
+    prezime: str
+    email: str
+    telefon: str
+    adresa: str
+    grad: str
+    postanski_broj: str
+    zupanija: str
+    drzava: str
+    nacin_placanja: str
+    nacin_dostave: str
+    iznos_bez_pdva: float
+    pdv: float
+    dostava: float
+    ukupno: float
+    stavke: List[NarudzbaStavkaKreiranje]
+
+    class Config:
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str

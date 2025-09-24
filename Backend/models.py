@@ -276,3 +276,53 @@ class KosaricaStavka(Base):
         UniqueConstraint("korisnik_id", "usluga_id", "termin_od", "termin_do", name="uq_kos_usluga_termin_po_korisniku"),
         Index("ix_kos_korisnik_tip", "korisnik_id", "proizvod_id", "usluga_id"),
     )
+
+
+class Narudzba(Base):
+    __tablename__ = "narudzbe"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    broj_narudzbe = Column(String, unique=True, index=True)
+    ime = Column(String, nullable=False)
+    prezime = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    telefon = Column(String, nullable=False)
+    adresa = Column(String, nullable=False)
+    grad = Column(String, nullable=False)
+    postanski_broj = Column(String, nullable=False)
+    zupanija = Column(String, nullable=False)
+    drzava = Column(String, nullable=False)
+    nacin_placanja = Column(String, default="pouzece")
+    nacin_dostave = Column(String, default="osobno")
+    iznos_bez_pdva = Column(Numeric(10,2))
+    pdv = Column(Numeric(10,2))
+    dostava = Column(Numeric(10,2))
+    ukupno = Column(Numeric(10,2))
+    datum_izrade = Column(DateTime, server_default=func.now()) 
+
+    korisnik_id = Column(
+        Integer,
+        ForeignKey("korisnici.id", ondelete="SET NULL"),
+        nullable=True,  
+        index=True
+    )
+
+    stavke = relationship("NarudzbaStavka", back_populates="narudzba", cascade="all, delete-orphan")
+
+
+class NarudzbaStavka(Base):
+    __tablename__ = "narudzba_stavke"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tip = Column(String, nullable=False) #proizvod ili usluga
+    naziv = Column(String, nullable=False)
+    kolicina = Column(Integer, nullable=False)
+    mjerna_jedinica = Column(String, nullable=True)
+    cijena = Column(Numeric(10,2), nullable=False)
+    slika = Column(String, nullable=True)
+    termin_od = Column(DateTime, nullable=True)
+    termin_do = Column(DateTime, nullable=True)
+
+    narudzba_id = Column(Integer, ForeignKey("narudzbe.id"))
+
+    narudzba = relationship("Narudzba", back_populates="stavke")

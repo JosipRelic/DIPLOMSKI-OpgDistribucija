@@ -195,3 +195,4 @@ def ukloni_stavku(
     db.delete(s)
     db.commit()
     return dohvati_kosaricu(db, korisnik_id)
+

@@ -166,11 +166,13 @@ const routes = [
     name: "pregledNarudzbe",
     path: "/pregled-narudzbe",
     component: PregledNarudzbeView,
+    meta: { requiresAuth: true },
   },
   {
     name: "potvrdaNarudzbe",
     path: "/potvrda-narudzbe",
     component: PotvrdaNarudzbeView,
+    meta: { requiresAuth: true },
   },
   {
     name: "registracija",

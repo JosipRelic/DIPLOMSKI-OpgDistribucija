@@ -2,7 +2,7 @@ import os
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika
+from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika, KosaricaStavka, Narudzba
 from security import dohvati_id_trenutnog_korisnika
 import schemas
 from typing import Annotated
@@ -213,6 +213,9 @@ def obrisi_profil(
     if korisnik.korisnicki_profil and korisnik.korisnicki_profil.slika_profila:
         obrisi_uploadanu_sliku(korisnik.korisnicki_profil.slika_profila)
     
+
+    db.query(KosaricaStavka).filter(KosaricaStavka.korisnik_id == id_trenutnog_korisnika).delete(synchronize_session=False)
+
     db.delete(korisnik)
     db.flush()
 
