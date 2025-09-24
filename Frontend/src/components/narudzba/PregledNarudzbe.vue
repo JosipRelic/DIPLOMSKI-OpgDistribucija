@@ -3,8 +3,25 @@
     class="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 my-20"
   >
     <div class="p-8">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="100"
+        height="100"
+        viewBox="0 0 32 32"
+        class="mx-auto"
+      >
+        <path
+          class="fill-orange-600"
+          d="M29.755 21.345A1 1 0 0 0 29 21h-2v-2c0-1.102-.897-2-2-2h-4c-1.103 0-2 .898-2 2v2h-2a1.001 1.001 0 0 0-.99 1.142l1 7A1 1 0 0 0 18 30h10a1 1 0 0 0 .99-.858l1-7a1.001 1.001 0 0 0-.235-.797M21 19h4v2h-4zm6.133 9h-8.266l-.714-5h9.694zM10 20h2v10h-2z"
+        />
+        <path
+          class="fill-gray-900"
+          d="m16.78 17.875l-1.906-2.384l-1.442-3.605A2.986 2.986 0 0 0 10.646 10H5c-1.654 0-3 1.346-3 3v7c0 1.103.897 2 2 2h1v8h2V20H4v-7a1 1 0 0 1 1-1h5.646c.411 0 .776.247.928.629l1.645 3.996l2 2.5zM4 5c0-2.206 1.794-4 4-4s4 1.794 4 4s-1.794 4-4 4s-4-1.794-4-4m2 0c0 1.103.897 2 2 2s2-.897 2-2s-.897-2-2-2s-2 .897-2 2"
+        />
+      </svg>
+
       <h2 class="text-2xl xl:text-3xl font-extrabold text-gray-800 mb-6 flex flex-col items-center">
-        Podaci za dostavu
+        Podaci o kupcu
       </h2>
 
       <div class="flex flex-col items-center">
@@ -110,18 +127,12 @@
             />
           </div>
         </div>
-        <router-link :to="{ name: 'potvrdaNarudzbe' }"
-          ><button
-            class="w-full mt-4 bg-teal-600 hover:bg-teal-900 text-gray-100 text-lg py-3 rounded-lg transition"
-          >
-            Naruči
-          </button></router-link
-        >
       </form>
     </div>
 
     <div class="bg-gray-50 p-8 border-l border-gray-200">
-      <h3 class="text-xl font-semibold text-gray-700 mb-6">Naručit ćete</h3>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">Naručit ćete</h3>
+      <div class="mb-1 text-orange-400 border-b border-orange-200 mb-2">Proizvodi</div>
       <ul class="space-y-4 mb-4">
         <li class="flex items-center gap-4">
           <img
@@ -138,20 +149,11 @@
                 <dt class="inline">Cijena:</dt>
                 <dd class="inline ml-1 font-bold">2.99 €</dd>
               </div>
+              <div>
+                <dt class="inline">Količina:</dt>
+                <dd class="inline ml-1 font-bold">1 / kg</dd>
+              </div>
             </dl>
-          </div>
-
-          <div class="flex flex-1 items-center justify-end gap-2">
-            <form>
-              <input
-                type="number"
-                min="1"
-                value="1"
-                id="Line3Qty"
-                disabled
-                class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </form>
           </div>
         </li>
         <li class="flex items-center gap-4">
@@ -169,52 +171,44 @@
                 <dt class="inline">Cijena:</dt>
                 <dd class="inline ml-1 font-bold">0.99 €</dd>
               </div>
+              <div>
+                <dt class="inline">Količina:</dt>
+                <dd class="inline ml-1 font-bold">1 / kg</dd>
+              </div>
             </dl>
           </div>
-
-          <div class="flex flex-1 items-center justify-end gap-2">
-            <form>
-              <input
-                type="number"
-                min="1"
-                value="1"
-                id="Line3Qty"
-                disabled
-                class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </form>
-          </div>
         </li>
+      </ul>
 
+      <div class="text-orange-400 border-b border-orange-200 mb-2">Usluge</div>
+      <ul class="space-y-4 mb-4">
         <li class="flex items-center gap-4">
           <img
-            src="https://images.unsplash.com/photo-1669863347362-1630fe821708?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZhcm1pbmd8ZW58MHx8MHx8fDI%3D"
             alt=""
             class="size-20 rounded-sm object-cover"
           />
 
           <div>
-            <h3 class="text-lg text-gray-900">Paprika</h3>
+            <h3 class="text-lg text-gray-900">Oranje</h3>
 
             <dl class="mt-0.5 space-y-px text-sm text-gray-600">
-              <div>
+              <div class="text-xs">
                 <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">1.59 €</dd>
+                <dd class="inline ml-1 font-bold">200.00 €</dd>
+              </div>
+              <div class="text-xs">
+                <dt class="inline">Količina:</dt>
+                <dd class="inline ml-1 font-bold">1 / hektar</dd>
+              </div>
+
+              <div class="text-xs">
+                <dt class="inline">Termin:</dt>
+                <dd class="inline ml-1 font-bold">
+                  26. rujna 2025. 11:00 -> 26. rujna 2025. 13:00
+                </dd>
               </div>
             </dl>
-          </div>
-
-          <div class="flex flex-1 items-center justify-end gap-2">
-            <form>
-              <input
-                type="number"
-                min="1"
-                value="1"
-                id="Line3Qty"
-                disabled
-                class="h-8 w-12 rounded-sm border-gray-200 bg-white p-0 text-center text-xs text-gray-600 [-moz-appearance:_textfield] focus:outline-hidden [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </form>
           </div>
         </li>
       </ul>
@@ -293,7 +287,7 @@
           <input id="bordered-radio-1" type="radio" value="" name="bordered-radio" />
 
           <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900"
-            >Kurirska služba (5€)</label
+            >Dostava na adresu (5€)</label
           >
 
           <input checked id="bordered-radio-2" type="radio" value="" name="bordered-radio" />
@@ -322,6 +316,13 @@
           <span>5.57 €</span>
         </div>
       </div>
+      <router-link :to="{ name: 'potvrdaNarudzbe' }"
+        ><button
+          class="w-full mt-4 bg-teal-600 hover:bg-teal-900 text-gray-100 text-lg py-3 rounded-lg transition"
+        >
+          Naruči
+        </button></router-link
+      >
     </div>
   </div>
 </template>

@@ -375,9 +375,15 @@
               <button
                 class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
                 @click="dodajSveUKosaricu"
-                :disabled="preostaloMinuta > 0 || !rezervacije.length"
+                :disabled="uslugaVecUKosarici || preostaloMinuta > 0 || !rezervacije.length"
               >
-                Dodaj u košaricu sve termine
+                {{
+                  uslugaVecUKosarici
+                    ? "Već imate odabran termin za ovu uslugu u košarici"
+                    : preostaloMinuta > 0
+                      ? `Dodajte još termina da biste pokrili preostalo vrijeme (${preostaloLabel})`
+                      : "Dodaj u košaricu sve termine"
+                }}
               </button>
             </div>
           </div>
@@ -676,8 +682,8 @@ function dodajURezervaciju(opt) {
     key: opt.key + "-" + Math.random().toString(36).slice(2),
     title: usluga.value?.naziv || "Rezervacija",
     dateLabel: labelDatuma(opt.dateKey),
-    timeLabel: `${formatHM(opt.startMin)} – ${formatHM(opt.endMin)}`,
-    quantity: kolicina.value,
+    timeLabel: `${formatHM(opt.startMin)} - ${formatHM(opt.endMin)}`,
+    quantity: 1,
     dateKey: opt.dateKey,
     startMin: opt.startMin,
     endMin: opt.endMin,
@@ -692,7 +698,7 @@ function dodajKombinacijuMultiDan() {
       title: usluga.value?.naziv || "Rezervacija",
       dateLabel: labelDatuma(s.dateKey),
       timeLabel: `${formatHM(s.startMin)} – ${formatHM(s.endMin)}`,
-      quantity: kolicina.value,
+      quantity: 1,
       dateKey: s.dateKey,
       startMin: s.startMin,
       endMin: s.endMin,
@@ -758,6 +764,10 @@ async function dodajUsluguBezTermina() {
   })
 }
 
+const uslugaVecUKosarici = computed(() =>
+  kosarica_s.stavke.some((s) => s.usluga_id === usluga.value?.id),
+)
+
 async function dodajSveUKosaricu() {
   if (!autentifikacija.korisnikAutentificiran) {
     ui.obavijest({
@@ -767,16 +777,31 @@ async function dodajSveUKosaricu() {
     return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
   }
   if (preostaloMinuta.value > 0 || !rezervacije.length) return
+
+  await kosarica_s.osvjezi()
+
+  const jedanTerminPokrivaSve =
+    rezervacije.length === 1 &&
+    rezervacije[0].endMin - rezervacije[0].startMin >= ukupnoMinuta.value
+
+  const vecImaUslugu = kosarica_s.stavke.some((s) => s.usluga_id === usluga.value?.id)
+  if (vecImaUslugu) {
+    return router.push({ name: "kosarica" })
+  }
+
   for (const r of rezervacije) {
     const datum_od = DT(r.dateKey, r.startMin)
     const datum_do = DT(r.dateKey, r.endMin)
     await kosarica_s.dodajUsluguSTerminom({
       usluga_id: usluga.value.id,
-      kolicina: r.quantity || 1,
+      kolicina: jedanTerminPokrivaSve ? r.quantity || 1 : 1,
       termin_od: datum_od,
       termin_do: datum_do,
     })
   }
+
+  await kosarica_s.osvjezi()
+  router.push({ name: "kosarica" })
 }
 
 watch(
