@@ -21,7 +21,7 @@
       </svg>
 
       <h2 class="text-2xl xl:text-3xl font-extrabold text-gray-800 mb-6 flex flex-col items-center">
-        Podaci o kupcu
+        Podaci za dostavu
       </h2>
 
       <div class="flex flex-col items-center">
@@ -56,7 +56,6 @@
             <label class="block mb-1 text-sm text-gray-600">Ime</label>
             <input
               type="text"
-              placeholder="Ivan"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
           </div>
@@ -64,7 +63,6 @@
             <label class="block mb-1 text-sm text-gray-600">Prezime</label>
             <input
               type="text"
-              placeholder="Horvat"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
           </div>
@@ -73,7 +71,6 @@
           <label class="block mb-1 text-sm text-gray-600">Email</label>
           <input
             type="text"
-            placeholder="ihorvat@gmail.com"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
@@ -81,7 +78,6 @@
           <label class="block mb-1 text-sm text-gray-600">Broj telefona</label>
           <input
             type="text"
-            placeholder="0998765432"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
@@ -89,7 +85,6 @@
           <label class="block mb-1 text-sm text-gray-600">Adresa</label>
           <input
             type="text"
-            placeholder="Preradovićeva 99"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
@@ -97,7 +92,6 @@
           <label class="block mb-1 text-sm text-gray-600">Država</label>
           <input
             type="text"
-            placeholder="Hrvatska"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
@@ -105,7 +99,6 @@
           <label class="block mb-1 text-sm text-gray-600">Županija</label>
           <input
             type="text"
-            placeholder="Sisačko-Moslavačka"
             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
           />
         </div>
@@ -114,7 +107,6 @@
             <label class="block mb-1 text-sm text-gray-600">Grad</label>
             <input
               type="text"
-              placeholder="Sisak"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
           </div>
@@ -122,12 +114,60 @@
             <label class="block mb-1 text-sm text-gray-600">Poštanski broj</label>
             <input
               type="text"
-              placeholder="44000"
               class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
             />
           </div>
         </div>
       </form>
+
+      <div class="mt-4 border-b text-center">
+        <div
+          class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2"
+        >
+          ili učitajte podatke s vašeg profila
+        </div>
+      </div>
+      <button
+        type="button"
+        class="flex items-center border p-2 mt-4 rounded-lg mx-auto border-gray-200 shadow-md hover:text-teal-500 hover:border-teal-500"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+          <defs>
+            <mask id="letsIconsLoadCircleDuotoneLine0">
+              <g fill="none">
+                <circle
+                  cx="5"
+                  cy="5"
+                  r="5"
+                  fill="#fff"
+                  fill-opacity=".25"
+                  transform="matrix(0 -1 -1 0 17 20)"
+                />
+                <circle
+                  cx="5"
+                  cy="5"
+                  r="5.3"
+                  stroke="silver"
+                  stroke-opacity=".25"
+                  stroke-width=".6"
+                  transform="matrix(0 -1 -1 0 17 20)"
+                />
+                <path stroke="#fff" stroke-width="1.2" d="M5.239 14.812a7 7 0 0 0 13.523 0" />
+                <path
+                  fill="#fff"
+                  d="m12 13l-.375.469l.375.3l.375-.3zm.6-9a.6.6 0 1 0-1.2 0zM6.625 9.469l5 4l.75-.937l-5-4zm5.75 4l5-4l-.75-.938l-5 4zM12.6 13V4h-1.2v9z"
+                />
+              </g>
+            </mask>
+          </defs>
+          <path
+            fill="currentColor"
+            d="M0 0h24v24H0z"
+            mask="url(#letsIconsLoadCircleDuotoneLine0)"
+          />
+        </svg>
+        Učitaj podatke
+      </button>
     </div>
 
     <div class="bg-gray-50 p-8 border-l border-gray-200">
