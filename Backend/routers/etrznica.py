@@ -170,16 +170,17 @@ def opgovi(
     else:
         podaci_opgova = podaci_opgova.order_by(Opg.naziv.asc())
     
+    subq = podaci_opgova.subquery()
 
-    ukupno = db.query(func.count(distinct(Opg.id))).select_from(podaci_opgova.subquery()).scalar()
+    ukupno = db.query(func.count(func.distinct(subq.c.id))).scalar()
     ukupno_stranica = math.ceil(ukupno / velicina_stranice) if velicina_stranice else 0
 
     opg_ids = (
-    db.query(distinct(Opg.id))
-      .select_from(podaci_opgova.subquery())
-      .offset((stranica - 1) * velicina_stranice)
-      .limit(velicina_stranice)
-      .all()
+        db.query(subq.c.id)
+        .distinct()
+        .offset((stranica - 1) * velicina_stranice)
+        .limit(velicina_stranice)
+        .all()
     )
     ids = [oid[0] for oid in opg_ids]
     prikaz_opgova = podaci_opgova.filter(Opg.id.in_(ids)).all()
