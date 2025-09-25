@@ -192,53 +192,55 @@
     <div class="bg-gray-50 p-8 border-l border-gray-200">
       <h3 class="text-xl font-semibold text-gray-700 mb-2">Naručit ćete</h3>
 
-      <div class="mb-1 text-orange-400 border-b border-orange-200 mb-2">Proizvodi</div>
-      <ul class="space-y-4 mb-4">
-        <li v-for="p in proizvodi" :key="p.kljuc" class="flex items-center gap-4">
-          <img :src="p.slika || defaultProizvod" alt="" class="size-20 rounded-sm object-cover" />
-          <div>
-            <h3 class="text-lg text-gray-900">{{ p.naziv }}</h3>
-            <dl class="mt-0.5 space-y-px text-sm text-gray-600">
-              <div>
-                <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">{{ formatCijena(p.cijena) }}</dd>
-              </div>
-              <div>
-                <dt class="inline">Količina:</dt>
-                <dd class="inline ml-1 font-bold">{{ p.kolicina }} / {{ p.mjerna_jedinica }}</dd>
-              </div>
-            </dl>
-          </div>
-        </li>
-        <li v-if="!proizvodi.length" class="text-sm text-gray-400">Nema proizvoda.</li>
-      </ul>
+      <div :class="{ hidden: !proizvodi.length }">
+        <div class="mb-1 text-orange-400 border-b border-orange-200 mb-2">Proizvodi</div>
+        <ul class="space-y-4 mb-4">
+          <li v-for="p in proizvodi" :key="p.kljuc" class="flex items-center gap-4">
+            <img :src="p.slika || defaultProizvod" alt="" class="size-20 rounded-sm object-cover" />
+            <div>
+              <h3 class="text-lg text-gray-900">{{ p.naziv }}</h3>
+              <dl class="mt-0.5 space-y-px text-sm text-gray-600">
+                <div>
+                  <dt class="inline">Cijena:</dt>
+                  <dd class="inline ml-1 font-bold">{{ formatCijena(p.cijena) }}</dd>
+                </div>
+                <div>
+                  <dt class="inline">Količina:</dt>
+                  <dd class="inline ml-1 font-bold">{{ p.kolicina }} / {{ p.mjerna_jedinica }}</dd>
+                </div>
+              </dl>
+            </div>
+          </li>
+        </ul>
+      </div>
 
-      <div class="text-orange-400 border-b border-orange-200 mb-2">Usluge</div>
-      <ul class="space-y-4 mb-4">
-        <li v-for="u in usluge" :key="u.kljuc" class="flex items-center gap-4">
-          <img :src="u.slika || defaultUsluga" alt="" class="size-20 rounded-sm object-cover" />
-          <div>
-            <h3 class="text-lg text-gray-900">{{ u.naziv }}</h3>
-            <dl class="mt-0.5 space-y-px text-sm text-gray-600">
-              <div class="text-xs">
-                <dt class="inline">Cijena:</dt>
-                <dd class="inline ml-1 font-bold">{{ formatCijena(u.cijena) }}</dd>
-              </div>
-              <div class="text-xs">
-                <dt class="inline">Količina:</dt>
-                <dd class="inline ml-1 font-bold">{{ u.kolicina }} / {{ u.mjerna_jedinica }}</dd>
-              </div>
-              <div class="text-xs" v-if="u.termin_od && u.termin_do">
-                <dt class="inline">Termin:</dt>
-                <dd class="inline ml-1 font-bold">
-                  {{ fmtHR(u.termin_od) }} → {{ fmtHR(u.termin_do) }}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </li>
-        <li v-if="!usluge.length" class="text-sm text-gray-400">Nema usluga.</li>
-      </ul>
+      <div :class="{ hidden: !usluge.length }">
+        <div class="text-orange-400 border-b border-orange-200 mb-2">Usluge</div>
+        <ul class="space-y-4 mb-4">
+          <li v-for="u in usluge" :key="u.kljuc" class="flex items-center gap-4">
+            <img :src="u.slika || defaultUsluga" alt="" class="size-20 rounded-sm object-cover" />
+            <div>
+              <h3 class="text-lg text-gray-900">{{ u.naziv }}</h3>
+              <dl class="mt-0.5 space-y-px text-sm text-gray-600">
+                <div class="text-xs">
+                  <dt class="inline">Cijena:</dt>
+                  <dd class="inline ml-1 font-bold">{{ formatCijena(u.cijena) }}</dd>
+                </div>
+                <div class="text-xs">
+                  <dt class="inline">Količina:</dt>
+                  <dd class="inline ml-1 font-bold">{{ u.kolicina }} / {{ u.mjerna_jedinica }}</dd>
+                </div>
+                <div class="text-xs" v-if="u.termin_od && u.termin_do">
+                  <dt class="inline">Termin:</dt>
+                  <dd class="inline ml-1 font-bold">
+                    {{ fmtHR(u.termin_od) }} → {{ fmtHR(u.termin_do) }}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </li>
+        </ul>
+      </div>
 
       <h3 class="text-xl font-semibold text-gray-700 mb-6 mt-10 border-t pt-6">
         Odaberite način plaćanja
