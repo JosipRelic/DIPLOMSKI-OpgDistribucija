@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-10">
-    <h1 class="text-2xl font-bold mb-3">Nadolazeće rezervacije usluga</h1>
+  <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-10 mt-6">
+    <h1 class="text-3xl font-bold mb-3">Nadolazeće rezervacije usluga</h1>
     <div class="mx-auto mb-12">
       <label for="pretragaBrojNarudzbe">
         <div class="relative">
@@ -54,7 +54,7 @@
           </svg>
         </span>
         <h3 class="flex items-center mb-1 text-lg font-semibold text-orange-600">
-          26. siječnja 2025.
+          26. siječnja 2025.<span class="inline-block h-3 w-3 rounded-full bg-red-600 ms-2" />
         </h3>
         <ol class="mt-3 divide-y divide-gray-200">
           <li>
@@ -77,11 +77,15 @@
                 <div class="inline-flex items-center text-sm font-normal">
                   <div class="text-gray-900 mr-2">
                     Narudžba br:
-                    <span class="text-orange-600 hover:underline font-semibold">#223c2f</span>
+                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
+                      <span class="text-orange-600 hover:underline font-semibold">#223c2f</span>
+                    </router-link>
                   </div>
                   <div class="text-gray-900 mr-2">
                     | Kupac:
-                    <span class="text-orange-600 hover:underline font-semibold">Josip Relić</span>
+                    <router-link :to="{ name: 'profilOpgDetaljiKupca' }">
+                      <span class="text-orange-600 hover:underline font-semibold">Josip Relić</span>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -105,7 +109,9 @@
             />
           </svg>
         </span>
-        <h3 class="mb-1 text-lg font-semibold text-orange-600">25. siječnja 2025.</h3>
+        <h3 class="mb-1 text-lg font-semibold text-orange-600">
+          25. siječnja 2025.<span class="inline-block h-3 w-3 rounded-full bg-red-600 ms-2" />
+        </h3>
         <ol class="mt-3 divide-y divide-gray-200">
           <li>
             <a href="#" class="items-center block p-3 ps-0 sm:flex">
@@ -127,11 +133,15 @@
                 <div class="inline-flex items-center text-sm font-normal">
                   <div class="text-gray-900 mr-2">
                     Narudžba br:
-                    <span class="text-orange-600 hover:underline font-semibold">#223c2f</span>
+                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
+                      <span class="text-orange-600 hover:underline font-semibold">#223c2f</span>
+                    </router-link>
                   </div>
                   <div class="text-gray-900 mr-2">
                     | Kupac:
-                    <span class="text-orange-600 hover:underline font-semibold">Josip Relić</span>
+                    <router-link :to="{ name: 'profilOpgDetaljiKupca' }">
+                      <span class="text-orange-600 hover:underline font-semibold">Josip Relić</span>
+                    </router-link>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,7 @@
       <div class="p-4 min-w-full">
         <div class="flex justify-between items-center">
           <div>
-            <p class="text-2xl font-bold ps-4">Sve narudžbe</p>
+            <p class="text-3xl font-bold ps-4">Sve narudžbe</p>
           </div>
         </div>
       </div>
@@ -48,7 +48,7 @@
       <table class="w-full text-left">
         <thead>
           <tr>
-            <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Ime i Prezime</th>
+            <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Naručitelj</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Broj narudžbe</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[15%]">Ukupan iznos</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Datum i vrijeme narudžbe</th>

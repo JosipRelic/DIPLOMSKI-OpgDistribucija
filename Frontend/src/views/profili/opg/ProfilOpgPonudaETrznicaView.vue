@@ -1,11 +1,11 @@
 <template>
   <div class="relative overflow-x-auto m-4 shadow-md rounded-lg">
-    <div class="bg-white pt-2 px-4 flex flex-items justify-center">
+    <div class="bg-white pt-2 px-4 flex flex-items justify-center pt-5">
       <p class="text-green-600 pe-2">(Dostupno proizvoda)</p>
       <p class="text-red-400 pe-2">(Nema dostupnih proizvoda)</p>
-      <p class="text-yellow-500 pe-2">(Proizvod postoji, ali je nedostupan)</p>
+      <p class="text-yellow-500 pe-2">(Proizvod postoji, ali je javno nedostupan)</p>
     </div>
-    <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white">
+    <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white shadow-md">
       <button
         type="button"
         class="border border-gray-200 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"

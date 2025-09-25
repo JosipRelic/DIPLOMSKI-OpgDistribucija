@@ -92,7 +92,7 @@
           </div>
           <div class="flex gap-2">
             <button
-              class="px-3 py-2 rounded-xl bg-orange-600 hover:bg-orange-900"
+              class="px-3 py-2 rounded-xl bg-orange-600 hover:bg-orange-900 shadow-md"
               @click="otvoriTjedniObrazac"
             >
               <span class="flex items-center">
@@ -112,7 +112,7 @@
               </span>
             </button>
             <button
-              class="px-3 py-2 rounded-xl bg-orange-600 hover:bg-orange-900"
+              class="px-3 py-2 rounded-xl bg-orange-600 hover:bg-orange-900 shadow-md"
               @click="otvoriDnevniObrazac"
             >
               <span class="flex items-center">
@@ -401,6 +401,178 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div
+      class="mx-auto max-w-6xl grid grid-cols-1gap-8 mt-5 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5"
+    >
+      <div>
+        <div class="flex mb-6">
+          <h2 class="text-3xl text-orange-600 font-semibold">Zadnje rezervacije</h2>
+          <router-link
+            :to="{ name: 'profilOpgPrimljeneRezervacije' }"
+            class="text-white flex items-center bg-orange-600 px-3 py-2 ms-4 rounded-xl hover:bg-orange-900 shadow-md"
+          >
+            <span>Pogledaj sve</span>
+            <span>
+              <svg
+                class="ms-2"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 2048 2048"
+              >
+                <path
+                  fill="currentColor"
+                  d="M0 1408v-384h384v384H0zm128-256v128h128v-128H128zM0 896V512h384v384H0zm128-256v128h128V640H128zM0 384V0h384v384H0zm128-256v128h128V128H128zm512 640V640h1152v128H640zm896 384v128H640v-128h896zM640 128h1408v128H640V128zM0 1920v-384h384v384H0zm128-256v128h128v-128H128zm512 128v-128h1152v128H640z"
+                />
+              </svg>
+            </span>
+          </router-link>
+        </div>
+
+        <ol class="items-center sm:flex p-6 w-full">
+          <li class="relative mb-6 sm:mb-0 sm:flex-1">
+            <div class="flex items-center mb-5">
+              <div
+                class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                  />
+                </svg>
+              </div>
+              <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
+            </div>
+            <div class="mt-3 sm:pe-8 h-full">
+              <div class="flex items-start gap-3">
+                <img
+                  class="w-20 h-20 rounded-xl shrink-0"
+                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
+                  alt="Oranje"
+                />
+                <div class="flex flex-col justify-between">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Oranje | 1
+                    hektar
+                  </h3>
+                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
+                    >26. siječnja 2025. 12:00-13:00</time
+                  >
+                  <p class="text-sm font-normal text-gray-500">
+                    Broj narudžbe:
+                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
+                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
+                        >#2196F3</span
+                      >
+                    </router-link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative mb-6 sm:mb-0 sm:flex-1">
+            <div class="flex items-center mb-5">
+              <div
+                class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                  />
+                </svg>
+              </div>
+              <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
+            </div>
+            <div class="mt-3 sm:pe-8 h-full">
+              <div class="flex items-start gap-3">
+                <img
+                  class="w-20 h-20 rounded-xl shrink-0"
+                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
+                  alt="Oranje"
+                />
+                <div class="flex flex-col justify-between">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Špricanje | 1
+                    hektar
+                  </h3>
+                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
+                    >25. siječnja 2025. 12:00-17:00</time
+                  >
+                  <p class="text-sm font-normal text-gray-500">
+                    Broj narudžbe:
+                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
+                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
+                        >#2196F3</span
+                      >
+                    </router-link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative mb-6 sm:mb-0 sm:flex-1">
+            <div class="flex items-center mb-5">
+              <div
+                class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                  />
+                </svg>
+              </div>
+              <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
+            </div>
+            <div class="mt-3 sm:pe-8 h-full">
+              <div class="flex items-start gap-3">
+                <img
+                  class="w-20 h-20 rounded-xl shrink-0"
+                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
+                  alt="Oranje"
+                />
+                <div class="flex flex-col justify-between">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Tanjuranje | 1
+                    hektar
+                  </h3>
+                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
+                    >24. siječnja 2025. 12:00-13:00</time
+                  >
+                  <p class="text-sm font-normal text-gray-500">
+                    Broj narudžbe:
+                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
+                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
+                        >#2196F3</span
+                      >
+                    </router-link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
       </div>
     </div>
   </div>

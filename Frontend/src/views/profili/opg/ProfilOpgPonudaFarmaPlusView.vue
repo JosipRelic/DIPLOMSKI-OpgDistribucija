@@ -1,12 +1,12 @@
 <template>
   <div class="relative overflow-x-auto m-4 shadow-md rounded-lg">
     <ProfilOpgPonudaFarmaPlusKalendar />
-    <div class="bg-white pt-2 px-4 flex flex-items justify-center">
+    <div class="bg-white pt-2 px-4 flex flex-items justify-center border-t border-gray-100 pt-5">
       <p class="text-green-600 pe-2">(Dostupno usluga)</p>
       <p class="text-red-400 pe-2">(Nema dostupnih usluga)</p>
-      <p class="text-yellow-500 pe-2">(Usluga postoji, ali je nedostupna)</p>
+      <p class="text-yellow-500 pe-2">(Usluga postoji, ali je javno nedostupna)</p>
     </div>
-    <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white">
+    <div class="flex items-center justify-center p-20 py-4 md:py-8 flex-wrap bg-white shadow-md">
       <button
         type="button"
         class="border border-gray-200 shadow-md rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3"
