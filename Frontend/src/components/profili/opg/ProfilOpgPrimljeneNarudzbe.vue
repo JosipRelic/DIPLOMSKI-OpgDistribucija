@@ -13,7 +13,7 @@
         <label for="pretragaBrojNarudzbe">
           <div class="relative">
             <input
-              type="number"
+              type="text"
               id="pretragaBrojNarudzbe"
               placeholder="Pretraži po broju narudžbe"
               class="mt-0.5 w-full rounded border-gray-300 pe-10 shadow-sm sm:text-sm p-3 h-10"

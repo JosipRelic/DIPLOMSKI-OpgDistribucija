@@ -28,6 +28,7 @@ import ETrznicaProizvodDetaljiView from "@/views/etrznica/kategorije-proizvoda/d
 import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vue"
 import FarmaPlusDetaljiUslugeView from "@/views/farma_plus/FarmaPlusDetaljiUslugeView.vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
+import ProfilOpgPrimljeneRezervacijeView from "@/views/profili/opg/ProfilOpgPrimljeneRezervacijeView.vue"
 
 const routes = [
   {
@@ -89,6 +90,12 @@ const routes = [
         path: "primljene-narudzbe",
         name: "profilOpgPrimljeneNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeView,
+        meta: { requiresAuth: true, roles: ["Opg"] },
+      },
+      {
+        path: "primljene-rezervacije",
+        name: "profilOpgPrimljeneRezervacije",
+        component: ProfilOpgPrimljeneRezervacijeView,
         meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
