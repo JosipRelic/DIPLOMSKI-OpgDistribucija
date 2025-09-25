@@ -52,7 +52,10 @@
             <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Broj narudžbe</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[15%]">Ukupan iznos</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Datum i vrijeme narudžbe</th>
-            <th class="px-8 py-3 border-b border-gray-300 w-[10%]">Status</th>
+            <th class="px-8 py-3 border-b border-gray-300 w-[10%]">
+              Status
+              <button type="button" class="ms-1 cursor-pointer" title="Promijeni status">✏️</button>
+            </th>
             <th class="px-8 py-3 border-b border-gray-300 w-[10%]"></th>
           </tr>
         </thead>

@@ -3,9 +3,19 @@
     class="mx-auto max-w-screen-lg my-6 bg-white flex flex-col md:flex-row rounded-2xl shadow-lg overflow-hidden"
   >
     <div class="w-full p-8 space-y-6">
-      <h2 class="text-sm font-medium text-amber-600">U tijeku</h2>
       <h1 class="text-3xl font-bold text-gray-900">Detalji narudžbe</h1>
-
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="-ms-1 me-1.5 size-4">
+          <path
+            fill="none"
+            class="stroke-amber-600"
+            stroke-width="2"
+            d="M1 1h22M10 4.5h4V6c0 1-2 2-2 2s-2-1-2-2V4.5ZM5 1v5c0 3 5 3.235 5 6s-5 3-5 6v5M19 1v5c0 3-5 3.235-5 6s5 3 5 6v5M1 23h22M8 21c0-2 4-4 4-4s4 2 4 4v2H8v-2Z"
+          />
+        </svg>
+        <h2 class="text-lg font-medium text-amber-600">U tijeku</h2>
+        <button type="button" class="ms-2 cursor-pointer" title="Promijeni status">✏️</button>
+      </div>
       <div>
         <p class="text-sm font-medium text-gray-700">Broj narudžbe:</p>
         <p class="text-orange-600 font-semibold">#234521</p>
