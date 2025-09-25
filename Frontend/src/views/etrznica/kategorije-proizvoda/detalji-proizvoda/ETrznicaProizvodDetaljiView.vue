@@ -44,7 +44,7 @@
           <span class="text-gray-400"> / {{ proizvod.mjerna_jedinica }}</span>
           <div>
             <div
-              class="flex shadow items-center justify-center mx-auto rounded-sm border border-gray-200 mb-3 w-fit"
+              class="flex shadow items-center justify-center mt-4 rounded-sm border border-gray-200 mb-3 w-fit"
             >
               <button
                 type="button"
