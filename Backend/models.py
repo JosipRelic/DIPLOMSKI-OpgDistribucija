@@ -323,6 +323,7 @@ class NarudzbaStavka(Base):
     termin_od = Column(DateTime, nullable=True)
     termin_do = Column(DateTime, nullable=True)
 
+    usluga_id = Column(Integer, ForeignKey("usluge.id", ondelete="SET NULL"), nullable=True, index=True)
     narudzba_id = Column(Integer, ForeignKey("narudzbe.id"))
 
     narudzba = relationship("Narudzba", back_populates="stavke")

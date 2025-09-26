@@ -267,7 +267,7 @@
                 class="flex items-center justify-between rounded-xl shadow-xl text-gray-600 border-gray-100 bg-white px-4 py-3"
               >
                 <div class="font-medium">
-                  {{ formatHM(opt.startMin) }} – {{ formatHM(opt.endMin) }}
+                  {{ formatHM(opt.startMin) }} - {{ formatHM(opt.endMin) }}
                 </div>
                 <button
                   class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:opacity-40"
@@ -304,7 +304,7 @@
                   <div class="text-gray-600">
                     <div class="font-medium text-orange-600">{{ labelDatuma(s.dateKey) }}</div>
                     <div class="text-teal-500 text-sm">
-                      {{ formatHM(s.startMin) }} – {{ formatHM(s.endMin) }}
+                      {{ formatHM(s.startMin) }} - {{ formatHM(s.endMin) }}
                     </div>
                   </div>
                   <span class="text-gray-500 text-md font-semibold">{{
@@ -697,7 +697,7 @@ function dodajKombinacijuMultiDan() {
       key: `${s.dateKey}-${s.startMin}-${Math.random().toString(36).slice(2)}`,
       title: usluga.value?.naziv || "Rezervacija",
       dateLabel: labelDatuma(s.dateKey),
-      timeLabel: `${formatHM(s.startMin)} – ${formatHM(s.endMin)}`,
+      timeLabel: `${formatHM(s.startMin)} - ${formatHM(s.endMin)}`,
       quantity: 1,
       dateKey: s.dateKey,
       startMin: s.startMin,

@@ -396,6 +396,7 @@ const usluge = computed(() =>
     .filter((s) => s.tip === "usluga" || (!!s.usluga_id && !!s.termin_od))
     .map((s) => ({
       kljuc: `u-${s.usluga_id || s.id}-${s.termin_od || "x"}`,
+      usluga_id: s.usluga_id,
       naziv: s.naziv,
       kolicina: s.kolicina,
       mjerna_jedinica: s.mjerna_jedinica,
@@ -506,6 +507,7 @@ async function naruci() {
     })),
     ...usluge.value.map((u) => ({
       tip: "usluga",
+      usluga_id: u.usluga_id,
       naziv: u.naziv,
       kolicina: u.kolicina,
       mjerna_jedinica: u.mjerna_jedinica,

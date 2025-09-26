@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import Date, cast, func
 from typing import List, Dict, Optional
 from datetime import date, datetime, timedelta
-from models import Opg, OpgRaspolozivostPoDatumu
+from models import Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
 from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz, RasponKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
 from database import SessionLocal
@@ -231,3 +232,145 @@ def kalendar_mjesec(
 
     return MjeseciKalendaraPrikaz(slotovi=slotovi)
 
+
+def _oduzmi_rezervaciju_od_raspolozivosti(db: Session, opg_id: int, d: date, pocetno_vrijeme: int, zavrsno_vrijeme: int):
+
+    if pocetno_vrijeme >= zavrsno_vrijeme:
+        return
+    
+    termini = (
+        db.query(OpgRaspolozivostPoDatumu)
+        .filter(
+            OpgRaspolozivostPoDatumu.opg_id == opg_id,
+            OpgRaspolozivostPoDatumu.datum == d,
+            OpgRaspolozivostPoDatumu.pocetno_vrijeme < zavrsno_vrijeme,
+            OpgRaspolozivostPoDatumu.zavrsno_vrijeme > pocetno_vrijeme,
+        )
+        .order_by(OpgRaspolozivostPoDatumu.pocetno_vrijeme.asc())
+        .all()
+    )
+
+    for t in termini:
+        p = t.pocetno_vrijeme
+        z = t.zavrsno_vrijeme
+
+        if zavrsno_vrijeme <= p or pocetno_vrijeme >= z:
+            continue
+
+        if pocetno_vrijeme <= p and zavrsno_vrijeme >= z:
+            db.delete(t)
+            continue
+
+        if pocetno_vrijeme > p and zavrsno_vrijeme < z:
+            lijevi_raspon = OpgRaspolozivostPoDatumu(
+                opg_id = opg_id, datum = d, pocetno_vrijeme = p, zavrsno_vrijeme = pocetno_vrijeme, naslov = t.naslov
+            )
+            desni_raspon = OpgRaspolozivostPoDatumu(
+                opg_id = opg_id, datum = d, pocetno_vrijeme = zavrsno_vrijeme, zavrsno_vrijeme = z, naslov = t.naslov
+            )
+            
+            db.delete(t)
+            db.add(lijevi_raspon)
+            db.add(desni_raspon)
+            continue
+        
+        if pocetno_vrijeme <= p < zavrsno_vrijeme < z:
+            t.pocetno_vrijeme = zavrsno_vrijeme
+            continue
+
+        if p < pocetno_vrijeme < z <= zavrsno_vrijeme:
+            t.zavrsno_vrijeme = pocetno_vrijeme
+            continue
+
+
+def _opg_id_iz_korisnika(db: Session, korisnik_id: int) -> int:
+    opg = db.query(Opg).filter(Opg.korisnik_id == korisnik_id).first()
+    if not opg:
+        raise HTTPException(status_code=404, detail="OPG nije pronađen")
+    return opg.id
+
+@router.get("/po-danu")
+def rezervacije_po_danu(
+    opg_id: int = Query(..., ge=1),
+    godina: int = Query(..., ge=2000, le=2100),
+    mjesec: int = Query(..., ge=1, le=12),
+    db: Session = Depends(get_db),
+):
+   
+    start = date(godina, mjesec, 1)
+    if mjesec == 12:
+        end = date(godina + 1, 1, 1)
+    else:
+        end = date(godina, mjesec + 1, 1)
+
+    rezervacije = (
+        db.query(func.date(NarudzbaStavka.termin_od).label("d"), func.count())
+        .join(Usluga, Usluga.id == NarudzbaStavka.usluga_id)
+        .filter(
+            NarudzbaStavka.tip == "usluga",
+            NarudzbaStavka.termin_od.isnot(None),
+            NarudzbaStavka.termin_od >= start,
+            NarudzbaStavka.termin_od <  end,
+            Usluga.opg_id == opg_id,
+        )
+        .group_by("d")
+        .order_by("d")
+    )
+
+    datumi = {}
+    for d, cnt in rezervacije.all():
+        datumi[d.isoformat()] = int(cnt)
+    
+
+    return {"datumi": datumi}
+
+
+@router.get("")
+def sve_rezervacije(
+    limit: int = Query(0, ge=0, le=200),
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
+    db: Session = Depends(get_db),
+):
+    opg_id = _opg_id_iz_korisnika(db, id_korisnika)
+
+    termini_stavke_narudzbe = (
+        db.query(
+            Usluga.slika_usluge.label("slika"),
+            NarudzbaStavka.naziv.label("usluga"),
+            NarudzbaStavka.kolicina,
+            NarudzbaStavka.mjerna_jedinica,
+            NarudzbaStavka.termin_od,
+            NarudzbaStavka.termin_do,
+            Narudzba.broj_narudzbe,
+            Narudzba.ime,
+            Narudzba.prezime,
+            
+        )
+        .join(Narudzba, NarudzbaStavka.narudzba_id == Narudzba.id)
+        .join(Usluga, Usluga.id == NarudzbaStavka.usluga_id)
+        .filter(
+            NarudzbaStavka.tip == "usluga",
+            NarudzbaStavka.termin_od != None,
+            Usluga.opg_id == opg_id,
+            NarudzbaStavka.termin_do >= datetime.now()
+        )
+        .order_by(NarudzbaStavka.termin_od.asc())
+    )
+
+    if limit > 0:
+        termini_stavke_narudzbe = termini_stavke_narudzbe.limit(limit)
+    
+    termini = [
+        {
+            "usluga": termin.usluga,
+            "slika": termin.slika,
+            "kolicina": termin.kolicina,
+            "mjerna_jedinica": termin.mjerna_jedinica,
+            "termin_od": termin.termin_od.isoformat(),
+            "termin_do": termin.termin_do.isoformat(),
+            "broj_narudzbe": termin.broj_narudzbe,
+            "kupac": f"{termin.ime} {termin.prezime}"
+        } for termin in termini_stavke_narudzbe.all()
+    ]
+
+    return {"termini": termini}

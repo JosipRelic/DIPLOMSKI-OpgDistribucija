@@ -5,6 +5,7 @@ export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
   state: () => ({
     datumi: [],
     kalendar: {},
+    rezerviraniDani: {},
     loading: false,
     error: null,
   }),
@@ -47,6 +48,36 @@ export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
         params: { opg_id, godina, mjesec },
       })
       this.kalendar = data.slotovi || {}
+    },
+
+    async dohvatiRezerviraneDane({ opg_id, godina, mjesec }) {
+      try {
+        const { data } = await api.get("/opg/raspolozivost/po-danu", {
+          params: { opg_id, godina, mjesec },
+        })
+        this.rezerviraniDani = data?.datumi || {}
+      } catch {
+        this.rezerviraniDani = {}
+      }
+      return this.rezerviraniDani
+    },
+
+    async dohvatiZadnjeRezervacije(limit = 3) {
+      try {
+        const { data } = await api.get("/opg/raspolozivost", { params: { limit } })
+        return data.termini || []
+      } catch (e) {
+        return []
+      }
+    },
+
+    async dohvatiSveRezervacije() {
+      try {
+        const { data } = await api.get("/opg/raspolozivost")
+        return data.termini || []
+      } catch (e) {
+        return []
+      }
     },
   },
 })

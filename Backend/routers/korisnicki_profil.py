@@ -52,18 +52,23 @@ def _serialize_me(korisnik: Korisnik) -> schemas.PrikazKorisnickogProfila:
         slug = None,
         naziv = None,
         opis = None,
-        identifikacijski_broj_mibpg = None,           
+        identifikacijski_broj_mibpg = None,    
+
+        opg_id = None,
+        kupac_id = None       
     )
 
     if korisnik.tip_korisnika == TipKorisnika.kupac:
         kupac = korisnik.kupac
         if kupac:
+            base["kupac_id"] = kupac.id
             base["slug"] = kupac.slug
 
     if korisnik.tip_korisnika == TipKorisnika.opg:
         opg = korisnik.opg
         if opg:
             base.update(
+                opg_id = opg.id,
                 naziv = opg.naziv,
                 opis = opg.opis,
                 identifikacijski_broj_mibpg = opg.identifikacijski_broj_mibpg,

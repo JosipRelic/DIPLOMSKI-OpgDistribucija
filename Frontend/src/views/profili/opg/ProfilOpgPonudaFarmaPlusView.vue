@@ -1,6 +1,6 @@
 <template>
   <div class="relative overflow-x-auto m-4 shadow-md rounded-lg">
-    <ProfilOpgPonudaFarmaPlusKalendar />
+    <ProfilOpgPonudaFarmaPlusKalendar :opg-id="opgId" />
     <div class="bg-white pt-2 px-4 flex flex-items justify-center border-t border-gray-100 pt-5">
       <p class="text-green-600 pe-2">(Dostupno usluga)</p>
       <p class="text-red-400 pe-2">(Nema dostupnih usluga)</p>
@@ -463,6 +463,8 @@ const ponudaFarmaPlus = usePonudaFarmaPlusStore()
 const ui = useUiStore()
 
 const formaZaDodavanjeUslugeOtvorena = ref(false)
+
+const opgId = computed(() => autentifikacija.korisnicki_profil?.opg_id ?? null)
 
 const trajanje_s = ref(0)
 const trajanje_m = ref(0)

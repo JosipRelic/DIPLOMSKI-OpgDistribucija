@@ -43,6 +43,8 @@ class PrikazKorisnickogProfila(BaseModel):
     adresa: Optional[str] = Field(default=None)
     slug: Optional[str] = Field(default=None)
 
+    opg_id: Optional[int] = None
+    kupac_id: Optional[int] = None
     naziv: Optional[str] = Field(default=None)
     opis: Optional[str] = Field(default=None)
     identifikacijski_broj_mibpg: Optional[str] = Field(default=None)
@@ -208,6 +210,7 @@ class KosaricaPrikaz(BaseModel):
 
 class NarudzbaStavkaKreiranje(BaseModel):
     tip: str
+    usluga_id: Optional[int] = None
     naziv: str
     kolicina: int
     mjerna_jedinica: Optional[str]

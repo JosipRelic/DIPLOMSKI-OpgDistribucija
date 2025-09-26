@@ -75,9 +75,23 @@
             </span>
 
             <span
-              v-if="imaDostupnostiZaDatum(dan.datum)"
-              class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-green-600"
+              v-if="imaDostupnostiZaDatum(dan.datum) && !imaRezervacijaZaDatum(dan.datum)"
+              class="absolute top-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-green-600"
             />
+
+            <span
+              v-else-if="!imaDostupnostiZaDatum(dan.datum) && imaRezervacijaZaDatum(dan.datum)"
+              class="absolute bottom-2 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-red-600"
+            />
+
+            <template
+              v-else-if="imaDostupnostiZaDatum(dan.datum) && imaRezervacijaZaDatum(dan.datum)"
+            >
+              <span class="absolute top-2 left-[calc(50%-6px)] h-2 w-2 rounded-full bg-green-600" />
+              <span
+                class="absolute bottom-2 left-[calc(50%-6px)] h-2 w-2 rounded-full bg-red-600"
+              />
+            </template>
           </button>
         </div>
       </div>
@@ -347,7 +361,7 @@
                     v-model="urediStanje.od"
                     class="w-28 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow"
                   />
-                  <span>–</span>
+                  <span>-</span>
                   <input
                     type="time"
                     v-model="urediStanje.do"
@@ -379,7 +393,7 @@
           <div v-else-if="totalPages > 1" class="flex items-center justify-between pt-2">
             <div class="text-sm text-gray-500">
               Prikazano
-              <strong>{{ prikazOd }}–{{ prikazDo }}</strong>
+              <strong>{{ prikazOd }}-{{ prikazDo }}</strong>
               od <strong>{{ totalItems }}</strong>
             </div>
 
@@ -408,7 +422,7 @@
     >
       <div>
         <div class="flex mb-6">
-          <h2 class="text-3xl text-orange-600 font-semibold">Zadnje rezervacije</h2>
+          <h2 class="text-3xl text-orange-600 font-semibold">Nadolazeće rezervacije</h2>
           <router-link
             :to="{ name: 'profilOpgPrimljeneRezervacije' }"
             class="text-white flex items-center bg-orange-600 px-3 py-2 ms-4 rounded-xl hover:bg-orange-900 shadow-md"
@@ -431,8 +445,8 @@
           </router-link>
         </div>
 
-        <ol class="items-center sm:flex p-6 w-full">
-          <li class="relative mb-6 sm:mb-0 sm:flex-1">
+        <ol class="items-center sm:flex p-6 w-full" v-if="zadnjeRezervacije.length">
+          <li v-for="(r, i) in zadnjeRezervacije" :key="i" class="relative mb-6 sm:mb-0 sm:flex-1">
             <div class="flex items-center mb-5">
               <div
                 class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
@@ -455,124 +469,46 @@
               <div class="flex items-start gap-3">
                 <img
                   class="w-20 h-20 rounded-xl shrink-0"
-                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
-                  alt="Oranje"
+                  :src="r.slika || defaultSlikaUsluge"
+                  :alt="r.usluga"
                 />
                 <div class="flex flex-col justify-between">
                   <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Oranje | 1
-                    hektar
+                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />
+                    {{ r.usluga }} | {{ r.kolicina }} {{ r.mjerna_jedinica }}
                   </h3>
-                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
-                    >26. siječnja 2025. 12:00-13:00</time
-                  >
+                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500">
+                    {{
+                      new Date(r.termin_od).toLocaleDateString("hr-HR", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    }}
+                    {{
+                      new Date(r.termin_od).toLocaleTimeString("hr-HR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    }}-
+                    {{
+                      new Date(r.termin_do).toLocaleTimeString("hr-HR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    }}
+                  </time>
                   <p class="text-sm font-normal text-gray-500">
                     Broj narudžbe:
-                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
-                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
-                        >#2196F3</span
-                      >
-                    </router-link>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="relative mb-6 sm:mb-0 sm:flex-1">
-            <div class="flex items-center mb-5">
-              <div
-                class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
-              >
-                <svg
-                  class="w-4 h-4 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                  />
-                </svg>
-              </div>
-              <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
-            </div>
-            <div class="mt-3 sm:pe-8 h-full">
-              <div class="flex items-start gap-3">
-                <img
-                  class="w-20 h-20 rounded-xl shrink-0"
-                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
-                  alt="Oranje"
-                />
-                <div class="flex flex-col justify-between">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Špricanje | 1
-                    hektar
-                  </h3>
-                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
-                    >25. siječnja 2025. 12:00-17:00</time
-                  >
-                  <p class="text-sm font-normal text-gray-500">
-                    Broj narudžbe:
-                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
-                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
-                        >#2196F3</span
-                      >
-                    </router-link>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li class="relative mb-6 sm:mb-0 sm:flex-1">
-            <div class="flex items-center mb-5">
-              <div
-                class="z-10 flex items-center justify-center w-6 h-6 bg-orange-600 rounded-full ring-0 ring-orange-600 sm:ring-8 shrink-0"
-              >
-                <svg
-                  class="w-4 h-4 text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                  />
-                </svg>
-              </div>
-              <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
-            </div>
-            <div class="mt-3 sm:pe-8 h-full">
-              <div class="flex items-start gap-3">
-                <img
-                  class="w-20 h-20 rounded-xl shrink-0"
-                  src="https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1548&auto=format&fit=crop"
-                  alt="Oranje"
-                />
-                <div class="flex flex-col justify-between">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                    <span class="inline-block h-3 w-3 rounded-full bg-red-600 me-2" />Tanjuranje | 1
-                    hektar
-                  </h3>
-                  <time class="block mb-1 text-sm font-bold leading-none text-teal-500"
-                    >24. siječnja 2025. 12:00-13:00</time
-                  >
-                  <p class="text-sm font-normal text-gray-500">
-                    Broj narudžbe:
-                    <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }">
-                      <span class="text-orange-600 font-semibold hover:underline cursor-pointer"
-                        >#2196F3</span
-                      >
-                    </router-link>
+                    <span class="text-orange-600 font-semibold">#{{ r.broj_narudzbe }}</span>
+                    | Kupac: <span class="text-orange-600 font-semibold">{{ r.kupac }}</span>
                   </p>
                 </div>
               </div>
             </div>
           </li>
         </ol>
+        <p v-else class="text-slate-400">Nema rezervacija.</p>
       </div>
     </div>
   </div>
@@ -645,6 +581,7 @@ const prebaciUrediNaslov = () => (urediNaslov.value = !urediNaslov.value)
 const rezim = ref("none")
 const naCekanjuDatum = ref(null)
 const jedan = reactive({ od: "00:00", do: "00:00" })
+const zadnjeRezervacije = ref([])
 
 const redoviTjedna = reactive([
   { kljuc: "mon", naziv: "Pon", offset: 0, ukljuceno: false, od: "00:00", do: "00:00" },
@@ -656,11 +593,25 @@ const redoviTjedna = reactive([
   { kljuc: "sun", naziv: "Ned", offset: 6, ukljuceno: false, od: "00:00", do: "00:00" },
 ])
 
+const props = defineProps({ opgId: { type: [Number, String], required: false } })
 async function ucitajDatumeZaMjesec() {
   const g = prikazMjeseca.value.getFullYear()
   const m = prikazMjeseca.value.getMonth() + 1
+
   await raspolozivost.dohvatiMjesecneDatume({ godina: g, mjesec: m })
+
+  if (props.opgId != null && props.opgId !== "") {
+    await raspolozivost.dohvatiRezerviraneDane({
+      opg_id: Number(props.opgId),
+      godina: g,
+      mjesec: m,
+    })
+  } else {
+    raspolozivost.rezerviraniDani = {}
+  }
 }
+
+const imaRezervacijaZaDatum = (d) => !!raspolozivost.rezerviraniDani?.[isoDatum(d)]
 
 const oznakaMjeseca = computed(() =>
   hrFmt.format(prikazMjeseca.value).replace(/^./, (c) => c.toUpperCase()),
@@ -764,7 +715,7 @@ const oznakaRasponaTjedna = computed(() => {
   const base = dohvatiPonedjeljak(odabraniDatum.value || danas)
   const sun = dodajDane(base, 6)
   const fmt = (d) => d.toLocaleDateString("hr-HR", { day: "2-digit", month: "2-digit" })
-  return `${fmt(base)} – ${fmt(sun)}`
+  return `${fmt(base)} - ${fmt(sun)}`
 })
 
 async function spremiTjedniRaspored() {
@@ -887,7 +838,12 @@ watch(prikazMjeseca, () => {
 
 onMounted(async () => {
   await ucitajDatumeZaMjesec()
+  zadnjeRezervacije.value = await raspolozivost.dohvatiZadnjeRezervacije(3)
 })
+watch(
+  () => props.opgId,
+  () => ucitajDatumeZaMjesec(),
+)
 
 const PAGE_SIZE = 4
 const page = ref(1)
