@@ -111,11 +111,13 @@
 
         <div>
           <label class="block mb-1 text-sm text-gray-600">Županija</label>
-          <input
+          <select
             v-model="forma.zupanija"
-            type="text"
-            class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-          />
+            class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+          >
+            <option disabled value="">Odaberite županiju</option>
+            <option v-for="z in hr_zupanije" :key="z" :value="z">{{ z }}</option>
+          </select>
         </div>
 
         <div class="flex gap-4">
@@ -350,6 +352,7 @@ import { useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useKosaricaStore } from "@/stores/kosarica"
 import { useNarudzbaStore } from "@/stores/narudzba"
+import { hr_zupanije } from "@/constants/zupanije"
 
 const router = useRouter()
 const autentifikacija = useAutentifikacijskiStore()

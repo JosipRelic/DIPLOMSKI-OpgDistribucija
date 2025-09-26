@@ -154,13 +154,14 @@
                 >Županija</label
               >
               <div class="mt-2">
-                <input
-                  type="text"
+                <select
                   id="zupanija"
-                  class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
                   v-model.trim="forma.zupanija"
-                  placeholder="Unesite županiju..."
-                />
+                  class="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 sm:text-sm/6"
+                >
+                  <option disabled value="">Odaberite županiju</option>
+                  <option v-for="z in hr_zupanije" :key="z" :value="z">{{ z }}</option>
+                </select>
               </div>
             </div>
             <div class="sm:col-span-3">
@@ -248,6 +249,7 @@ import { ref, onMounted, computed, watchEffect, reactive, watch } from "vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useRouter } from "vue-router"
 import { useUiStore } from "@/stores/ui"
+import { hr_zupanije } from "@/constants/zupanije"
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
