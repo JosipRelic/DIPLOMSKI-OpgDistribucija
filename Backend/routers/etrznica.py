@@ -232,6 +232,7 @@ def proizvodi_po_kategoriji(
         db.query(
             Proizvod.id, Proizvod.naziv, Proizvod.opis, Proizvod.cijena,
             Proizvod.mjerna_jedinica, Proizvod.slika_proizvoda, Proizvod.slug,
+            Opg.id.label("opg_id"),
             Opg.naziv.label("opg_naziv"),
             Opg.slug.label("opg_slug"),
             KorisnickiProfil.grad, KorisnickiProfil.zupanija
@@ -271,7 +272,7 @@ def proizvodi_po_kategoriji(
             dict(
                 id=proizvod.id, naziv=proizvod.naziv, opis=proizvod.opis,
                 cijena=float(proizvod.cijena), mjerna_jedinica=proizvod.mjerna_jedinica,
-                slika_proizvoda=proizvod.slika_proizvoda, slug=proizvod.slug, opg_slug = proizvod.opg_slug,
+                slika_proizvoda=proizvod.slika_proizvoda, slug=proizvod.slug, opg_id=proizvod.opg_id, opg_slug = proizvod.opg_slug,
                 opg_naziv=proizvod.opg_naziv, grad=proizvod.grad, zupanija=proizvod.zupanija
             ) for proizvod in proizvodi
         ],
@@ -479,7 +480,8 @@ def opg_proizvodi(slug: str, db: Session = Depends(get_db), stranica: int = 1, v
                 mjerna_jedinica = proizvod.mjerna_jedinica,
                 slika_proizvoda = proizvod.slika_proizvoda,
                 slug = proizvod.slug,
-                kategorija_slug = proizvod.kategorija_slug
+                kategorija_slug = proizvod.kategorija_slug,
+                opg_id=opg.id,
             ) for proizvod in lista_proizvoda
         ]
     }

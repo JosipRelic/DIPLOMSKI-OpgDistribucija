@@ -57,23 +57,45 @@ export const useKosaricaStore = defineStore("kosarica", {
     },
 
     async dodajProizvod({ proizvod_id, kolicina = 1 }) {
-      const { data } = await api.post("/kosarica/proizvodi", { proizvod_id, kolicina })
-      this.stavke = data.stavke || []
+      try {
+        const { data } = await api.post("/kosarica/proizvodi", { proizvod_id, kolicina })
+        this.stavke = data.stavke || []
+      } catch (e) {
+        if (e?.response?.status === 403) {
+          throw new Error(e.response.data?.detail || "Ne možete naručivati vlastite proizvode.")
+        }
+        throw e
+      }
     },
 
     async dodajUslugu({ usluga_id, kolicina = 1 }) {
-      const { data } = await api.post("/kosarica/usluge", { usluga_id, kolicina })
-      this.stavke = data.stavke || []
+      try {
+        const { data } = await api.post("/kosarica/usluge", { usluga_id, kolicina })
+        this.stavke = data.stavke || []
+      } catch (e) {
+        if (e?.response?.status === 403) {
+          throw new Error(e.response.data?.detail || "Ne možete rezervirati vlastite usluge.")
+        }
+        throw e
+      }
     },
 
     async dodajUsluguSTerminom({ usluga_id, kolicina = 1, termin_od, termin_do }) {
-      const { data } = await api.post("/kosarica/usluge", {
-        usluga_id,
-        kolicina,
-        termin_od,
-        termin_do,
-      })
-      this.stavke = data.stavke || []
+      try {
+        const { data } = await api.post("/kosarica/usluge", {
+          usluga_id,
+          kolicina,
+          termin_od,
+          termin_do,
+        })
+        this.stavke = data.stavke || []
+      } catch (e) {
+        if (e?.response?.status === 403) {
+          throw new Error(e.response.data?.detail || "Ne možete rezervirati vlastitu uslugu.")
+        }
+
+        throw e
+      }
     },
 
     async promijeniKolicinu(stavkaId, kolicina) {

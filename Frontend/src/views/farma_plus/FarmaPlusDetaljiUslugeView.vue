@@ -2,7 +2,7 @@
   <div class="mx-auto max-w-6xl space-y-6">
     <div class="rounded-2xl bg-white p-6 shadow-xl mt-10" :class="{ 'mb-15': !imaTerminaGlobal }">
       <div class="flex flex-wrap gap-4 justify-between">
-        <div class="p-4">
+        <div class="p-4 max-w-sm">
           <nav class="text-sm text-gray-500 flex items-center space-x-2 mb-2">
             <span class="hover:underline cursor-pointer"
               ><router-link :to="{ name: 'farmaPlus' }">Farma+</router-link></span
@@ -13,7 +13,7 @@
 
           <div>
             <div
-              class="flex items-center space-x-2 text-sm mt-3 font-medium"
+              class="items-center space-x-2 text-sm mt-3 font-medium"
               :class="usluga?.usluga_dostupna ? 'text-green-600' : 'text-red-500'"
             >
               <h1 class="text-3xl font-bold text-gray-900">
@@ -23,7 +23,7 @@
                 <svg
                   v-if="usluga?.usluga_dostupna"
                   xmlns="http://www.w3.org/2000/svg"
-                  class="w-5 h-5 ms-2"
+                  class="w-5 h-5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -38,7 +38,7 @@
                 <svg
                   v-else
                   xmlns="http://www.w3.org/2000/svg"
-                  class="w-5 h-5 ms-2"
+                  class="w-5 h-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -133,10 +133,11 @@
               </div>
               <div class="pt-2">
                 <button
-                  class="px-3 py-2 text-md rounded-lg w-full text-base text-white bg-orange-600 hover:bg-orange-900 shadow-lg"
+                  class="px-3 py-2 text-md rounded-lg w-full text-base text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:bg-gray-400"
+                  :disabled="jeVlasnikUsluge"
                   @click="dodajUsluguBezTermina"
                 >
-                  Dodaj u košaricu
+                  {{ jeVlasnikUsluge ? "Vaša usluga" : "Dodaj u košaricu" }}
                 </button>
               </div>
             </div>
@@ -270,11 +271,11 @@
                   {{ formatHM(opt.startMin) }} - {{ formatHM(opt.endMin) }}
                 </div>
                 <button
-                  class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:opacity-40"
+                  class="px-3 py-1.5 rounded-lg text-white bg-teal-500 hover:bg-teal-800 shadow-lg disabled:bg-gray-400"
                   @click="dodajURezervaciju(opt)"
-                  :disabled="preostaloMinuta === 0"
+                  :disabled="jeVlasnikUsluge || preostaloMinuta === 0"
                 >
-                  Dodaj u rezervaciju
+                  {{ jeVlasnikUsluge ? "Vaša usluga" : "Dodaj u rezervaciju" }}
                 </button>
               </div>
             </div>
@@ -313,11 +314,11 @@
                 </div>
 
                 <button
-                  class="mt-2 px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
+                  class="mt-2 px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:bg-gray-400"
                   @click="dodajKombinacijuMultiDan"
-                  :disabled="!kombinacijaMultiDan || preostaloMinuta === 0"
+                  :disabled="jeVlasnikUsluge || !kombinacijaMultiDan || preostaloMinuta === 0"
                 >
-                  Dodaj kombinaciju u rezervaciju
+                  {{ jeVlasnikUsluge ? "Vaša usluga" : "Dodaj kombinaciju u rezervaciju" }}
                 </button>
               </div>
             </div>
@@ -375,14 +376,21 @@
               <button
                 class="px-3 py-2 rounded-lg text-white bg-orange-600 hover:bg-orange-900 shadow-lg disabled:opacity-40"
                 @click="dodajSveUKosaricu"
-                :disabled="uslugaVecUKosarici || preostaloMinuta > 0 || !rezervacije.length"
+                :disabled="
+                  jeVlasnikUsluge ||
+                  uslugaVecUKosarici ||
+                  preostaloMinuta > 0 ||
+                  !rezervacije.length
+                "
               >
                 {{
-                  uslugaVecUKosarici
-                    ? "Već imate odabran termin za ovu uslugu u košarici"
-                    : preostaloMinuta > 0
-                      ? `Dodajte još termina da biste pokrili preostalo vrijeme (${preostaloLabel})`
-                      : "Dodaj u košaricu sve termine"
+                  jeVlasnikUsluge
+                    ? "Vaša usluga"
+                    : uslugaVecUKosarici
+                      ? "Već imate odabran termin za ovu uslugu u košarici"
+                      : preostaloMinuta > 0
+                        ? `Dodajte još termina da biste pokrili preostalo vrijeme (${preostaloLabel})`
+                        : "Dodaj u košaricu sve termine"
                 }}
               </button>
             </div>
@@ -406,6 +414,10 @@ const autentifikacija = useAutentifikacijskiStore()
 const kosarica_s = useKosaricaStore()
 const router = useRouter()
 const ui = useUiStore()
+
+const mojOpgId = computed(() => autentifikacija.korisnicki_profil?.opg_id ?? null)
+
+const jeVlasnikUsluge = computed(() => !!mojOpgId.value && usluga.value?.opg_id === mojOpgId.value)
 
 const pad = (n) => String(n).padStart(2, "0")
 const HM = (h, m) => `${pad(h)}:${pad(m)}`
@@ -743,6 +755,7 @@ function dtISO(dateKey, minute) {
 }
 
 async function dodajUsluguBezTermina() {
+  if (jeVlasnikUsluge.value) return
   if (!autentifikacija.korisnikAutentificiran) {
     ui.obavijest({
       tekst: "Za kupovinu je potrebna prijava",
@@ -750,10 +763,15 @@ async function dodajUsluguBezTermina() {
     })
     return router.push({ name: "prijava", query: { redirect: ruta.fullPath } })
   }
-  await kosarica_s.dodajUslugu({
-    usluga_id: usluga.value.id,
-    kolicina: Number(kolicina.value || 1),
-  })
+  try {
+    await kosarica_s.dodajUslugu({
+      usluga_id: usluga.value.id,
+      kolicina: Number(kolicina.value || 1),
+    })
+    ui.obavijest({ tekst: "Usluga je dodana u košaricu.", tip_obavijesti: "uspjeh" })
+  } catch (err) {
+    ui.obavijest({ tekst: err.message, tip_obavijesti: "upozorenje" })
+  }
 }
 
 const uslugaVecUKosarici = computed(() =>
@@ -761,6 +779,7 @@ const uslugaVecUKosarici = computed(() =>
 )
 
 async function dodajSveUKosaricu() {
+  if (jeVlasnikUsluge.value) return
   if (!autentifikacija.korisnikAutentificiran) {
     ui.obavijest({
       tekst: "Za kupovinu je potrebna prijava",
@@ -781,19 +800,28 @@ async function dodajSveUKosaricu() {
     return router.push({ name: "kosarica" })
   }
 
+  let e = null
   for (const r of rezervacije) {
     const datum_od = dtISO(r.dateKey, r.startMin)
     const datum_do = dtISO(r.dateKey, r.endMin)
-    await kosarica_s.dodajUsluguSTerminom({
-      usluga_id: usluga.value.id,
-      kolicina: jedanTerminPokrivaSve ? r.quantity || 1 : 1,
-      termin_od: datum_od,
-      termin_do: datum_do,
-    })
+    try {
+      await kosarica_s.dodajUsluguSTerminom({
+        usluga_id: usluga.value.id,
+        kolicina: jedanTerminPokrivaSve ? r.quantity || 1 : 1,
+        termin_od: datum_od,
+        termin_do: datum_do,
+      })
+      ui.obavijest({ tekst: "Usluga je dodana u košaricu.", tip_obavijesti: "uspjeh" })
+    } catch (err) {
+      e = err
+      ui.obavijest({ tekst: err.message, tip_obavijesti: "upozorenje" })
+    }
   }
 
   await kosarica_s.osvjezi()
-  router.push({ name: "kosarica" })
+  if (e === null) {
+    router.push({ name: "kosarica" })
+  }
 }
 
 watch(

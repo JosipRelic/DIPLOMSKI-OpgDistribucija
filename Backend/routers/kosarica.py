@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from database import SessionLocal
-from models import KosaricaStavka, Proizvod, Usluga, Opg
+from models import Korisnik, KosaricaStavka, Proizvod, TipKorisnika, Usluga, Opg
 from schemas import KosaricaDodajProizvod, KosaricaDodajUslugu, KosaricaPromijeniKolicinu, KosaricaStavkaPrikaz, KosaricaPrikaz
 from security import dohvati_id_trenutnog_korisnika
 
@@ -51,19 +51,25 @@ def dohvati_kosaricu(db: Session = Depends(get_db), korisnik_id: int = Depends(d
     )
     return {"stavke": [_map_stavka(s) for s in kosarica]}
 
+def _moj_proizvod_ili_usluga(db, korisnik_id: int) -> Korisnik:
+    return db.query(Korisnik).get(korisnik_id)
 
 @router.post("/proizvodi", response_model=KosaricaPrikaz)
 def dodaj_proizvod(
     body: KosaricaDodajProizvod,
     db: Session = Depends(get_db),
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
-):
+):   
     p = db.query(Proizvod).filter(Proizvod.id == body.proizvod_id).first()
     if not p:
         raise HTTPException(404, "Proizvod nije pronađen")
     if not p.proizvod_dostupan:
         raise HTTPException(400, "Proizvod nije dostupan")
     
+    moj = _moj_proizvod_ili_usluga(db, korisnik_id)
+    if moj and moj.tip_korisnika == TipKorisnika.opg and moj.opg and p.opg_id == moj.opg.id:
+        raise HTTPException(403, "Ne možete naručivati vlastite proizvode.")
+
     s = (
         db.query(KosaricaStavka)
         .filter(
@@ -105,6 +111,10 @@ def dodaj_uslugu(
     if not u.usluga_dostupna:
         raise HTTPException(400, "Usluga nije dostupna")
     
+    moj = _moj_proizvod_ili_usluga(db, korisnik_id)
+    if moj and moj.tip_korisnika == TipKorisnika.opg and moj.opg and u.opg_id == moj.opg.id:
+        raise HTTPException(403, "Ne možete naručivati vlastite usluge.")
+
     s = (
         db.query(KosaricaStavka)
         .filter(

@@ -106,10 +106,11 @@
 
         <button
           type="button"
-          class="w-full bg-orange-600 shadow-md border border-orange-600 cursor-pointer hover:bg-orange-900 hover:border-orange-900 text-gray-100 py-3 px-6 rounded-lg text-sm font-medium transition"
+          class="w-full bg-orange-600 shadow-md border border-orange-600 cursor-pointer hover:bg-orange-900 hover:border-orange-900 text-gray-100 py-3 px-6 rounded-lg text-sm font-medium transition disabled:bg-gray-400 disabled:border-gray-400"
+          :disabled="jeVlasnikProizvoda"
           @click.stop.prevent="dodajUKosaricu"
         >
-          Dodaj u košaricu
+          {{ tekstGumba }}
         </button>
       </div>
 
@@ -124,7 +125,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useKosaricaStore } from "@/stores/kosarica"
@@ -145,6 +146,15 @@ function dohvatiId(slugId) {
   const m = String(slugId || "").match(/-(\d+)$/)
   return m ? Number(m[1]) : NaN
 }
+
+const mojOpgId = computed(() => autentifikacija.korisnicki_profil?.opg_id ?? null)
+
+const jeVlasnikProizvoda = computed(() => {
+  const proizvodOpgId = proizvod.value?.opg?.id ?? proizvod.value?.opg_id ?? null
+  return !!mojOpgId.value && proizvodOpgId === mojOpgId.value
+})
+
+const tekstGumba = computed(() => (jeVlasnikProizvoda.value ? "Vaš proizvod" : "Dodaj u košaricu"))
 
 async function dohvatiProizvod() {
   loading.value = true
@@ -176,6 +186,7 @@ function plus() {
 async function dodajUKosaricu(e) {
   e?.preventDefault()
   e?.stopPropagation()
+  if (jeVlasnikProizvoda.value) return
   if (!autentifikacija.korisnikAutentificiran) {
     ui.obavijest({
       tekst: "Za kupovinu je potrebna prijava",
@@ -183,10 +194,15 @@ async function dodajUKosaricu(e) {
     })
     return router.push({ name: "prijava", query: { redirect: route.fullPath } })
   }
-  await kosarica.dodajProizvod({
-    proizvod_id: proizvod.value.id,
-    kolicina: Number(kolicina.value || 1),
-  })
+  try {
+    await kosarica.dodajProizvod({
+      proizvod_id: proizvod.value.id,
+      kolicina: Number(kolicina.value || 1),
+    })
+    ui.obavijest({ tekst: "Proizvod dodan u košaricu.", tip_obavijesti: "uspjeh" })
+  } catch (err) {
+    ui.obavijest({ tekst: err.message, tip_obavijesti: "upozorenje" })
+  }
 }
 
 onMounted(dohvatiProizvod)

@@ -73,10 +73,11 @@
 
         <button
           type="button"
-          class="mt-auto shadow-md block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-white uppercase transition-colors hover:bg-orange-900 hover:border-orange-900"
+          class="mt-auto shadow-md block rounded-xl border border-orange-600 bg-orange-600 px-5 py-3 text-sm font-medium tracking-widest text-white uppercase transition-colors hover:bg-orange-900 hover:border-orange-900 disabled:bg-gray-400 disabled:border-gray-400"
+          :disabled="jeVlasnikProizvoda"
           @click.stop.prevent="dodajUKosaricu"
         >
-          Dodaj u košaricu
+          {{ jeVlasnikProizvoda ? "Vaš proizvod" : "Dodaj u košaricu" }}
         </button>
       </div>
     </div>
@@ -116,6 +117,12 @@ const proizvodSlugId = computed(() => {
 
 const opgProfilSlug = computed(() => props.proizvod.opg_slug || null)
 
+const mojOpgId = computed(() => autentifikacija.korisnicki_profil?.opg_id ?? null)
+const proizvodOpgId = computed(() => props.proizvod.opg_id ?? props.proizvod.opg?.id ?? null)
+const jeVlasnikProizvoda = computed(
+  () => !!mojOpgId.value && !!proizvodOpgId.value && mojOpgId.value === proizvodOpgId.value,
+)
+
 const kolicina = ref(1)
 function minus() {
   kolicina.value = Math.max(1, (kolicina.value || 1) - 1)
@@ -134,9 +141,14 @@ async function dodajUKosaricu(e) {
     })
     return router.push({ name: "prijava", query: { redirect: route.fullPath } })
   }
-  await kosarica.dodajProizvod({
-    proizvod_id: props.proizvod.id,
-    kolicina: Number(kolicina.value || 1),
-  })
+  try {
+    await kosarica.dodajProizvod({
+      proizvod_id: props.proizvod.id,
+      kolicina: Number(kolicina.value || 1),
+    })
+    ui.obavijest({ tekst: "Proizvod dodan u košaricu.", tip_obavijesti: "uspjeh" })
+  } catch (err) {
+    ui.obavijest({ tekst: err.message, tip_obavijesti: "upozorenje" })
+  }
 }
 </script>
