@@ -495,10 +495,11 @@ watch(
   [prikazMjeseca, () => usluga.value?.opg_id],
   async ([m, opgId]) => {
     if (!opgId || !m) return
-    await raspolozivost.dohvatiKalendar({
+    await raspolozivost.dohvatiKalendarRaspon({
       opg_id: opgId,
-      godina: m.getFullYear(),
-      mjesec: m.getMonth() + 1,
+      startGodina: m.getFullYear(),
+      startMjesec: m.getMonth() + 1,
+      brojMjeseci: 2,
     })
   },
   { immediate: true },
@@ -797,8 +798,17 @@ async function dodajSveUKosaricu() {
 
 watch(
   () => usluga.value?.opg_id,
-  (opgId) => {
-    if (opgId) provjeriImaTerminaOPGa(opgId)
+  async (opgId) => {
+    if (!opgId) return
+    raspolozivost.ocistiKalendar()
+    const m = prikazMjeseca.value
+    await raspolozivost.dohvatiKalendarRaspon({
+      opg_id: opgId,
+      startGodina: m.getFullYear(),
+      startMjesec: m.getMonth() + 1,
+      brojMjeseci: 2,
+    })
+    provjeriImaTerminaOPGa(opgId)
   },
   { immediate: true },
 )

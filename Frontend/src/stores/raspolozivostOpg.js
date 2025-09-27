@@ -43,11 +43,28 @@ export const useRaspolozivostOpgStore = defineStore("raspolozivostOpg", {
       this.datumi = this.datumi.filter((d) => d.id !== id)
     },
 
-    async dohvatiKalendar({ opg_id, godina, mjesec }) {
+    async dohvatiKalendar({ opg_id, godina, mjesec, append = true }) {
       const { data } = await api.get("/opg/raspolozivost/kalendar", {
         params: { opg_id, godina, mjesec },
       })
-      this.kalendar = data.slotovi || {}
+      const novi = data.slotovi || {}
+      this.kalendar = append ? { ...(this.kalendar || {}), ...novi } : novi
+    },
+
+    async dohvatiKalendarRaspon({ opg_id, startGodina, startMjesec, brojMjeseci = 2 }) {
+      for (let i = 0; i < brojMjeseci; i++) {
+        const d = new Date(startGodina, startMjesec - 1 + i, 1)
+        await this.dohvatiKalendar({
+          opg_id,
+          godina: d.getFullYear(),
+          mjesec: d.getMonth() + 1,
+          append: true,
+        })
+      }
+    },
+
+    ocistiKalendar() {
+      this.kalendar = {}
     },
 
     async dohvatiRezerviraneDane({ opg_id, godina, mjesec }) {
