@@ -500,7 +500,15 @@
                   </time>
                   <p class="text-sm font-normal text-gray-500">
                     Broj narudžbe:
-                    <span class="text-orange-600 font-semibold">#{{ r.broj_narudzbe }}</span>
+                    <router-link
+                      :to="{
+                        name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe',
+                        params: { id: r.narudzba_id },
+                      }"
+                      ><span class="text-orange-600 font-semibold hover:underline"
+                        >#{{ r.broj_narudzbe }}</span
+                      ></router-link
+                    >
                     | Kupac: <span class="text-orange-600 font-semibold">{{ r.kupac }}</span>
                   </p>
                 </div>

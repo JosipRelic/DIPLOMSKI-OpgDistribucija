@@ -322,8 +322,11 @@ class NarudzbaStavka(Base):
     slika = Column(String, nullable=True)
     termin_od = Column(DateTime, nullable=True)
     termin_do = Column(DateTime, nullable=True)
+    status = Column(String(20), nullable=False, default="u_tijeku", index=True)
 
+    proizvod_id = Column(Integer, ForeignKey("proizvodi.id", ondelete="SET NULL"), nullable=True, index=True)
     usluga_id = Column(Integer, ForeignKey("usluge.id", ondelete="SET NULL"), nullable=True, index=True)
+    opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), nullable=False, index=True)
     narudzba_id = Column(Integer, ForeignKey("narudzbe.id"))
 
     narudzba = relationship("Narudzba", back_populates="stavke")

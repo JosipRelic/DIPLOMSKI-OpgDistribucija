@@ -6,18 +6,18 @@
           <div>
             <p class="text-2xl font-bold mb-2 ps-4">Posljednje narudžbe</p>
           </div>
-          <router-link :to="{ name: 'profilOpgPrimljeneNarudzbe' }">
-            <button class="bg-orange-500 text-gray-100 px-8 py-3 rounded-md cursor-pointer">
-              Pogledaj sve narudžbe
-            </button>
-          </router-link>
+          <!-- <router-link :to="{ name: 'profilOpgPrimljeneNarudzbe' }"> -->
+          <button class="bg-orange-500 text-gray-100 px-8 py-3 rounded-md cursor-pointer">
+            Pogledaj sve narudžbe
+          </button>
+          <!-- </router-link> -->
         </div>
       </div>
 
       <table class="w-full text-left">
         <thead>
           <tr>
-            <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Ime i Prezime</th>
+            <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Naručitelj</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[20%]">Broj narudžbe</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[15%]">Ukupan iznos</th>
             <th class="px-8 py-3 border-b border-gray-300 w-[25%]">Datum i vrijeme narudžbe</th>
@@ -28,11 +28,11 @@
         <tbody>
           <tr>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
-              <router-link
+              <!-- <router-link
                 :to="{ name: 'profilOpgDetaljiKupca' }"
                 class="text-orange-600 hover:text-orange-900 hover:underline"
                 >Ivan Horvat</router-link
-              >
+              > -->
             </td>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
               <p class="text-gray-500">#234521</p>
@@ -66,18 +66,19 @@
             <td
               class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
             >
-              <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
-                >Detalji</router-link
-              >
+              <!--               <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
+                >
+                Detalji</router-link
+              > -->
             </td>
           </tr>
           <tr>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
-              <router-link
+              <!-- <router-link
                 :to="{ name: 'profilOpgDetaljiKupca' }"
                 class="text-orange-600 hover:text-orange-900 hover:underline"
                 >Ivan Horvat</router-link
-              >
+              > -->
             </td>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
               <p class="text-gray-500">#543621</p>
@@ -109,18 +110,18 @@
             <td
               class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
             >
-              <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
+              <!--     <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
                 >Detalji</router-link
-              >
+              > -->
             </td>
           </tr>
           <tr>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
-              <router-link
+              <!--  <router-link
                 :to="{ name: 'profilOpgDetaljiKupca' }"
                 class="text-orange-600 hover:text-orange-900 hover:underline"
                 >Ivan Horvat</router-link
-              >
+              > -->
             </td>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
               <p class="text-gray-500">#623413</p>
@@ -154,9 +155,9 @@
             <td
               class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
             >
-              <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
+              <!--          <router-link :to="{ name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' }"
                 >Detalji</router-link
-              >
+              > -->
             </td>
           </tr>
         </tbody>

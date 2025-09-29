@@ -203,6 +203,10 @@
               <h3 class="text-lg text-gray-900">{{ p.naziv }}</h3>
               <dl class="mt-0.5 space-y-px text-sm text-gray-600">
                 <div>
+                  <dt class="inline">Prodaje:</dt>
+                  <dd class="inline ml-1 font-bold text-xs">{{ p.opg_naziv }}</dd>
+                </div>
+                <div>
                   <dt class="inline">Cijena:</dt>
                   <dd class="inline ml-1 font-bold">{{ formatCijena(p.cijena) }}</dd>
                 </div>
@@ -224,6 +228,10 @@
             <div>
               <h3 class="text-lg text-gray-900">{{ u.naziv }}</h3>
               <dl class="mt-0.5 space-y-px text-sm text-gray-600">
+                <div>
+                  <dt class="inline">Nudi:</dt>
+                  <dd class="inline ml-1 font-bold text-xs">{{ u.opg_naziv }}</dd>
+                </div>
                 <div class="text-xs">
                   <dt class="inline">Cijena:</dt>
                   <dd class="inline ml-1 font-bold">{{ formatCijena(u.cijena) }}</dd>
@@ -295,9 +303,13 @@
             value="dostava"
             v-model="nacinDostave"
           />
-          <label for="dostava-da" class="w-full py-1 ms-2 text-sm font-medium text-gray-900"
-            >Dostava na adresu (5€)</label
-          >
+          <label for="dostava-da" class="w-full py-1 ms-2 text-sm font-medium text-gray-900">
+            Dostava ( 5 € po OPG-u )
+            <span v-if="nacinDostave == 'dostava'" class="flex text-xs text-red-500">
+              {{ brojRazlicitihOpgova }} OPG-a · Dostava =
+              {{ formatCijena(iznosDostave) }}
+            </span>
+          </label>
 
           <input
             id="dostava-ne"
@@ -376,14 +388,16 @@ const forma = reactive({
 
 const nacinPlacanja = ref("pouzece")
 const nacinDostave = ref("osobno")
-const iznosDostave = computed(() => (nacinDostave.value === "dostava" ? 5 : 0))
 
 const proizvodi = computed(() =>
   kosarica.stavke
     .filter((s) => s.tip === "proizvod" || (!!s.proizvod_id && !s.termin_od))
     .map((s) => ({
       kljuc: `p-${s.proizvod_id || s.id}`,
+      proizvod_id: s.proizvod_id,
       naziv: s.naziv,
+      opg_id: s.opg_id,
+      opg_naziv: s.opg_naziv,
       kolicina: s.kolicina,
       mjerna_jedinica: s.mjerna_jedinica,
       cijena: Number(s.cijena || 0),
@@ -398,6 +412,8 @@ const usluge = computed(() =>
       kljuc: `u-${s.usluga_id || s.id}-${s.termin_od || "x"}`,
       usluga_id: s.usluga_id,
       naziv: s.naziv,
+      opg_id: s.opg_id,
+      opg_naziv: s.opg_naziv,
       kolicina: s.kolicina,
       mjerna_jedinica: s.mjerna_jedinica,
       cijena: Number(s.cijena || 0),
@@ -407,6 +423,19 @@ const usluge = computed(() =>
     })),
 )
 
+const brojRazlicitihOpgova = computed(() => {
+  const ids = new Set(
+    [
+      ...proizvodi.value.map((p) => p.opg_id || p.opg_slug),
+      ...usluge.value.map((u) => u.opg_id || u.opg_slug),
+    ].filter(Boolean),
+  )
+  return ids.size
+})
+
+const iznosDostave = computed(() =>
+  nacinDostave.value === "dostava" ? 5 * brojRazlicitihOpgova.value : 0,
+)
 function pad(n) {
   return String(n).padStart(2, "0")
 }
@@ -497,6 +526,7 @@ async function naruci() {
   const stavkePayload = [
     ...proizvodi.value.map((p) => ({
       tip: "proizvod",
+      proizvod_id: p.proizvod_id,
       naziv: p.naziv,
       kolicina: p.kolicina,
       mjerna_jedinica: p.mjerna_jedinica,

@@ -63,8 +63,16 @@
               <div class="inline-flex items-center text-sm font-normal">
                 <div class="text-gray-900 mr-2">
                   Narudžba br:
-                  <span class="text-orange-600 hover:underline font-semibold"
-                    >#{{ r.broj_narudzbe }}</span
+
+                  <router-link
+                    :to="{
+                      name: 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe',
+                      params: { id: r.narudzba_id },
+                    }"
+                  >
+                    <span class="text-orange-600 hover:underline font-semibold"
+                      >#{{ r.broj_narudzbe }}</span
+                    ></router-link
                   >
                 </div>
                 <div class="text-gray-900 mr-2">

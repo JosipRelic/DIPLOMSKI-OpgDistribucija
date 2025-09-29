@@ -1,92 +1,122 @@
 <template>
   <div
     class="mx-auto max-w-screen-lg my-6 bg-white flex flex-col md:flex-row rounded-2xl shadow-lg overflow-hidden"
+    v-if="detalji"
   >
     <div class="w-full p-8 space-y-6">
       <h1 class="text-3xl font-bold text-gray-900">Detalji narudžbe</h1>
-      <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="-ms-1 me-1.5 size-4">
-          <path
-            fill="none"
-            class="stroke-amber-600"
-            stroke-width="2"
-            d="M1 1h22M10 4.5h4V6c0 1-2 2-2 2s-2-1-2-2V4.5ZM5 1v5c0 3 5 3.235 5 6s-5 3-5 6v5M19 1v5c0 3-5 3.235-5 6s5 3 5 6v5M1 23h22M8 21c0-2 4-4 4-4s4 2 4 4v2H8v-2Z"
-          />
-        </svg>
-        <h2 class="text-lg font-medium text-amber-600">U tijeku</h2>
-        <button type="button" class="ms-2 cursor-pointer" title="Promijeni status">✏️</button>
-      </div>
+
       <div>
-        <p class="text-sm font-medium text-gray-700">Broj narudžbe:</p>
-        <p class="text-orange-600 font-semibold">#234521</p>
-      </div>
-
-      <div class="divide-y divide-gray-200 border-t border-b">
-        <div class="flex py-4 items-center space-x-4">
-          <img
-            src="https://images.unsplash.com/photo-1611048661702-7b55eed346b4?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            class="w-16 h-16 object-cover rounded"
-          />
-          <div class="flex-1">
-            <p class="text-sm font-semibold text-gray-900">Krastavci</p>
-            <p class="text-sm text-gray-500">Količina: 1 KG</p>
-          </div>
-          <p class="text-sm text-gray-900">2.99 €</p>
-        </div>
-        <div class="flex py-4 items-center space-x-4">
-          <img
-            src="https://images.unsplash.com/photo-1518977956812-cd3dbadaaf31?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            class="w-16 h-16 object-cover rounded"
-            alt="Artwork Tee"
-          />
-          <div class="flex-1">
-            <p class="text-sm font-semibold text-gray-900">Luk</p>
-            <p class="text-sm text-gray-500">Količina: 1 KG</p>
-          </div>
-          <p class="text-sm text-gray-900">0.99 €</p>
-        </div>
-        <div class="flex py-4 items-center space-x-4">
-          <img
-            src="https://images.unsplash.com/photo-1669863347362-1630fe821708?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            class="w-16 h-16 object-cover rounded"
-            alt="Artwork Tee"
-          />
-          <div class="flex-1">
-            <p class="text-sm font-semibold text-gray-900">Paprika</p>
-            <p class="text-sm text-gray-500">Količina: 1 KG</p>
-          </div>
-          <p class="text-sm text-gray-900">1.59 €</p>
+        <p class="text-sm font-medium text-gray-700 mb-1">Status narudžbe</p>
+        <div class="flex items-center">
+          <h2
+            class="text-lg font-medium inline-flex items-center justify-center rounded-full px-2.5 py-0.5"
+            :class="klasaOznaka(detalji.status)"
+          >
+            {{ statusOznaka(detalji.status) }}
+          </h2>
+          <button
+            type="button"
+            class="ms-1 cursor-pointer"
+            title="Promijeni status"
+            @click="urediStatus"
+          >
+            <span v-if="uredivanjeUTijeku" title="Završi uređivanje">✅</span>
+            <span v-else title="Uredi status">✏️</span>
+          </button>
+          <select
+            v-if="uredivanjeUTijeku"
+            class="ms-2 text-sm border border-gray-300 shadow-sm text-gray-900 rounded px-2 py-1"
+            v-model="status"
+            @change="promijeniStatus"
+          >
+            <option value="u_tijeku">U tijeku</option>
+            <option value="isporuceno">Isporučeno</option>
+            <option value="otkazano">Otkazano</option>
+          </select>
         </div>
       </div>
 
-      <div class="space-y-2">
-        <div class="flex justify-between text-sm">
-          <span>Ukupan iznos bez PDV-a</span><span>4.18 €</span>
+      <div>
+        <p class="text-sm font-medium text-gray-700">Broj narudžbe</p>
+        <p class="text-orange-600 font-semibold">#{{ detalji.broj_narudzbe }}</p>
+      </div>
+
+      <div v-if="detalji.proizvodi?.length">
+        <div class="text-orange-400 border-b border-orange-200 mb-1 px-1">Proizvodi</div>
+        <div
+          v-for="s in detalji.proizvodi"
+          :key="`p-${s.id}`"
+          class="flex py-4 items-center space-x-4"
+        >
+          <img :src="s.slika || defaultProizvod" class="w-16 h-16 object-cover rounded" />
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-900">{{ s.naziv }}</p>
+            <p class="text-sm text-gray-500">Količina: {{ s.kolicina }} {{ s.mjerna_jedinica }}</p>
+          </div>
+          <p class="text-sm text-gray-900">{{ formatCijena(s.cijena) }}</p>
         </div>
-        <div class="flex justify-between text-sm"><span>PDV (25%)</span><span>1.39 €</span></div>
+      </div>
+
+      <div v-if="detalji.usluge?.length">
+        <div class="text-orange-400 border-b border-orange-200 mb-2 px-1">Usluge</div>
+        <div
+          v-for="s in detalji.usluge"
+          :key="`u-${s.id}`"
+          class="flex py-4 items-center space-x-4"
+        >
+          <img :src="s.slika || defaultUsluga" class="w-16 h-16 object-cover rounded" />
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-900">{{ s.naziv }}</p>
+            <p class="text-xs text-gray-500">Količina: {{ s.kolicina }} {{ s.mjerna_jedinica }}</p>
+            <p v-if="s.termin_od && s.termin_do" class="text-xs text-gray-500">
+              Termin:
+              <span class="text-teal-500">{{ fmtHR(s.termin_od) }} → {{ fmtHR(s.termin_do) }}</span>
+            </p>
+          </div>
+          <p class="text-sm text-gray-900">{{ formatCijena(s.cijena) }}</p>
+        </div>
+      </div>
+
+      <div class="space-y-2 border-t border-orange-200 pt-3">
         <div class="flex justify-between text-sm">
-          <span>Dostava</span><span>Besplatna (osobno preuzimanje)</span>
+          <span>Ukupan iznos bez PDV-a</span><span>{{ formatCijena(detalji.iznos_bez_pdva) }}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span>PDV (25%)</span><span>{{ formatCijena(detalji.pdv) }}</span>
+        </div>
+        <div class="flex justify-between text-sm pb-2">
+          <span>Dostava</span>
+          <span v-if="detalji.dostava > 0">{{ formatCijena(detalji.dostava) }}</span>
+          <span v-else>Besplatna (osobno preuzimanje)</span>
         </div>
         <div class="flex justify-between font-semibold text-lg border-t pt-2">
-          <span>Ukupno</span><span>5.57 €</span>
+          <span>Ukupno</span><span>{{ formatCijena(detalji.ukupno) }}</span>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700 border-t pt-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700 pt-6">
         <div>
           <p class="font-medium">Podaci dostave</p>
           <p>
-            Ivan Horvat<br />ihorvat@gmail.com<br />0998765432<br />Preradovićeva 99, Sisak 44000<br />
-            Sisačko-Moslavačka, Hrvatska
+            {{ detalji.narucitelj }}<br />
+            {{ detalji.kupac_email }}<br />
+            {{ detalji.kupac_telefon }}<br />
+            {{ detalji.adresa }}<br />
+            {{ detalji.zupanija }}, Hrvatska
           </p>
         </div>
         <div>
           <p class="font-medium">Način plaćanja</p>
-          <p class="inline">Pouzećem</p>
+          <p class="inline">
+            {{ detalji.nacin_placanja === "pouzece" ? "Pouzećem" : detalji.nacin_placanja }}
+          </p>
         </div>
         <div>
           <p class="font-medium">Način dostave</p>
-          <p class="inline">Osobno preuzimanje</p>
+          <p class="inline">
+            {{ detalji.nacin_dostave === "osobno" ? "Osobno preuzimanje" : "Dostava na adresu" }}
+          </p>
         </div>
       </div>
 
@@ -108,9 +138,9 @@
               >Automatski se dodaje kao dio predmeta prilikom slanja e-maila</span
             >
             <input
-              type="email"
+              type="text"
               class="mt-1 w-full rounded-md bg-white text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
-              value="#234521"
+              :value="'#' + detalji.broj_narudzbe"
               disabled
             />
           </div>
@@ -120,7 +150,7 @@
             <input
               type="email"
               class="mt-1 w-full rounded-md bg-white text-base text-gray-500 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
-              value="ihorvat@gmail.com"
+              :value="detalji.kupac_email"
               disabled
             />
           </div>
@@ -181,10 +211,61 @@
       </div>
     </div>
   </div>
+  <div v-else class="p-8 text-center text-gray-500">Učitavanje…</div>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted, computed } from "vue"
+import { useRoute } from "vue-router"
+import { usePrimljeneNarudzbeOpgStore } from "@/stores/primljeneNarudzbeOpg"
+
+const route = useRoute()
+const primljene_narudzbe = usePrimljeneNarudzbeOpgStore()
+const detalji = computed(() => primljene_narudzbe.detalji)
+
+const defaultProizvod = "https://placehold.co/160x160?text=Proizvod"
+const defaultUsluga = "https://placehold.co/160x160?text=Usluga"
+
+const status = ref(null)
+
+function formatCijena(v) {
+  const n = Number(v || 0)
+  return `${n.toFixed(2)} €`
+}
+function pad(n) {
+  return String(n).padStart(2, "0")
+}
+function fmtHR(iso) {
+  const d = new Date(iso)
+  if (isNaN(d)) return iso
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}. ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+function statusOznaka(s) {
+  return s === "u_tijeku" ? "U tijeku" : s === "isporuceno" ? "Isporučeno" : "Otkazano"
+}
+
+function klasaOznaka(s) {
+  if (s === "otkazano") return "bg-red-600 text-red-100"
+  if (s === "isporuceno") return "bg-emerald-100 text-emerald-700"
+  return "bg-amber-500 text-amber-100"
+}
+
+async function promijeniStatus() {
+  if (!detalji.value) return
+  await primljene_narudzbe.promijeniStatusNarudzbe(detalji.value.id, status.value)
+}
+
+onMounted(async () => {
+  const id = Number(route.params.id)
+  await primljene_narudzbe.ucitajDetaljeNarudzbe(id)
+  status.value = primljene_narudzbe.detalji?.status || "u_tijeku"
+})
+
+const uredivanjeUTijeku = ref(false)
+const urediStatus = () => {
+  uredivanjeUTijeku.value = !uredivanjeUTijeku.value
+}
+
 const formaOtvorena = ref(false)
 const otvoriFormuNarudzbe = () => {
   formaOtvorena.value = !formaOtvorena.value

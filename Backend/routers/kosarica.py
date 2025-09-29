@@ -22,6 +22,7 @@ def _map_stavka(s: KosaricaStavka) -> KosaricaStavkaPrikaz:
     opg = s.proizvod.opg if s.proizvod_id else s.usluga.opg
     opg_naziv = opg.naziv if opg else None
     opg_slug = opg.slug if opg else None
+    opg_id = opg.id if opg else None 
 
     return KosaricaStavkaPrikaz(
         id = s.id,
@@ -32,6 +33,7 @@ def _map_stavka(s: KosaricaStavka) -> KosaricaStavkaPrikaz:
         slika = slika,
         opg_naziv = opg_naziv,
         opg_slug = opg_slug,
+        opg_id = opg_id,
         cijena = s.cijena,
         mjerna_jedinica = s.mjerna_jedinica,
         kolicina = s.kolicina,

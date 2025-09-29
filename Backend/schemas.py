@@ -198,6 +198,7 @@ class KosaricaStavkaPrikaz(BaseModel):
     slika: Optional[str] = None
     opg_naziv: Optional[str] = None
     opg_slug: Optional[str] = None
+    opg_id: Optional[int] = None
     cijena: Decimal
     mjerna_jedinica: str
     kolicina: int
@@ -209,7 +210,8 @@ class KosaricaPrikaz(BaseModel):
 
 
 class NarudzbaStavkaKreiranje(BaseModel):
-    tip: str
+    tip: Literal["proizvod", "usluga"]
+    proizvod_id: Optional[int] = None
     usluga_id: Optional[int] = None
     naziv: str
     kolicina: int
@@ -256,6 +258,9 @@ class NarudzbaPrikaz(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PromjenaStatusaNarudzbe(BaseModel):
+    status: Literal["u_tijeku","isporuceno","otkazano"]
 
 class Token(BaseModel):
     access_token: str

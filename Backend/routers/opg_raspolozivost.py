@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Date, cast, func
 from typing import List, Dict, Optional
 from datetime import date, datetime, timedelta
-from models import Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
+from models import Korisnik, Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
 from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz, RasponKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
 from database import SessionLocal
@@ -343,6 +343,7 @@ def sve_rezervacije(
             NarudzbaStavka.termin_do,
             Narudzba.broj_narudzbe,
             Narudzba.ime,
+            Narudzba.id.label("narudzba_id"),
             Narudzba.prezime,
             
         )
@@ -369,6 +370,7 @@ def sve_rezervacije(
             "termin_od": termin.termin_od.isoformat(),
             "termin_do": termin.termin_do.isoformat(),
             "broj_narudzbe": termin.broj_narudzbe,
+            "narudzba_id": termin.narudzba_id,
             "kupac": f"{termin.ime} {termin.prezime}"
         } for termin in termini_stavke_narudzbe.all()
     ]

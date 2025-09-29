@@ -99,10 +99,11 @@ const routes = [
         meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
-        path: "primljene-narudzbe/detalji-narudzbe",
+        path: "primljene-narudzbe/detalji-narudzbe/:id",
         name: "profilOpgPrimljeneNarudzbeDetaljiNarudzbe",
         component: ProfilOpgPrimljeneNarudzbeDetaljiNarudzbeView,
         meta: { requiresAuth: true, roles: ["Opg"] },
+        props: true,
       },
       {
         path: "postavke-profila",
@@ -124,7 +125,7 @@ const routes = [
         meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
-        path: "detalji-kupca",
+        path: "primljene-narudzbe/detalji-kupca/:kupacSlug",
         name: "profilOpgDetaljiKupca",
         component: ProfilOpgDetaljiKupcaView,
         meta: { requiresAuth: true, roles: ["Opg"] },

@@ -48,11 +48,11 @@
           <div class="flex justify-between w-full mb-8">
             <span class="text-gray-500 font-bold">Najvjerniji kupac</span>
           </div>
-          <router-link
+          <!-- <router-link
             :to="{ name: 'profilOpgDetaljiKupca' }"
             class="text-2xl font-bold text-orange-600 hover:text-orange-900"
             >Ivan Horvat</router-link
-          >
+          > -->
         </div>
         <div
           class="p-8 bg-white rounded-md shadow-lg flex flex-col lg:items-start lg:border-b-0 items-center justify-center"

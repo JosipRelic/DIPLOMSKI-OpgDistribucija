@@ -5,7 +5,7 @@ from security import SessionLocal, dohvati_id_trenutnog_korisnika
 from datetime import datetime, date
 import time
 from uuid import uuid4
-from models import Narudzba, NarudzbaStavka, KosaricaStavka, OpgRaspolozivostPoDatumu, Usluga
+from models import Narudzba, NarudzbaStavka, KosaricaStavka, OpgRaspolozivostPoDatumu, Proizvod, Usluga
 from schemas import NarudzbaKreiranje, NarudzbaPrikaz
 
 from routers.opg_raspolozivost import _oduzmi_rezervaciju_od_raspolozivosti
@@ -33,8 +33,7 @@ def kreiraj_narudzbu(
     
     iznos_bez_pdva = sum([(s.cijena / 1.25) * s.kolicina for s in payload.stavke])
     pdv = iznos_bez_pdva * 0.25
-    dostava = 5 if payload.nacin_dostave == "dostava" else 0
-    ukupno = iznos_bez_pdva + pdv + dostava
+
 
     narudzba = Narudzba(
         broj_narudzbe = broj_narudzbe,
@@ -52,13 +51,19 @@ def kreiraj_narudzbu(
         nacin_dostave = payload.nacin_dostave,
         iznos_bez_pdva = iznos_bez_pdva,
         pdv = pdv,
-        dostava = dostava,
-        ukupno = ukupno,
+        dostava = None,
+        ukupno = None,
     )
 
+    opg_idevi = set()
+
     for s in payload.stavke:
+        opg_id_stavka = None
+        proizvod_id = None
+        usluga_id = None
         termin_od_dt = None
         termin_do_dt = None
+
         if s.tip == "usluga" and s.termin_od and s.termin_do:
             try:
                 termin_od_dt = datetime.fromisoformat(str(s.termin_od))
@@ -68,8 +73,32 @@ def kreiraj_narudzbu(
             if termin_do_dt <= termin_od_dt:
                 raise HTTPException(status_code=400, detail="Završetak termina mora biti nakon početka")
     
+        if s.tip == "usluga":
+            if not s.usluga_id:
+                raise HTTPException(status_code=400, detail="Nedostaje usluga_id")
+            u = db.query(Usluga).get(s.usluga_id)
+            if not u:
+                raise HTTPException(status_code=400, detail="Usluga ne postoji")
+            opg_id_stavka = u.opg_id
+            usluga_id = s.usluga_id
+
+        elif s.tip == "proizvod":
+            if not s.proizvod_id:
+                raise HTTPException(status_code=400, detail="Nedostaje proizvod_id")
+            p = db.query(Proizvod).get(s.proizvod_id)
+            if not p:
+                raise HTTPException(status_code=400, detail="Proizvod ne postoji")
+            opg_id_stavka = p.opg_id
+            proizvod_id = s.proizvod_id
+
+        if not opg_id_stavka:
+            raise HTTPException(status_code=400, detail="Nije moguće odrediti OPG za stavku")
+
+        opg_idevi.add(opg_id_stavka)
+
         stavka = NarudzbaStavka(
             tip=s.tip,
+            proizvod_id = proizvod_id,
             usluga_id=s.usluga_id,
             naziv=s.naziv,
             kolicina=s.kolicina,
@@ -78,8 +107,17 @@ def kreiraj_narudzbu(
             slika=s.slika,
             termin_od=termin_od_dt,
             termin_do=termin_do_dt,
+            opg_id = opg_id_stavka,
+            status = "u_tijeku",
         )
         narudzba.stavke.append(stavka)
+
+        dostava = 0
+        if payload.nacin_dostave == "dostava":
+            dostava = 5 * len(opg_idevi)
+
+        narudzba.dostava = dostava
+        narudzba.ukupno = iznos_bez_pdva + pdv + dostava
     
     db.add(narudzba)
     db.flush()

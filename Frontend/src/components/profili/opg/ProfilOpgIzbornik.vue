@@ -72,7 +72,8 @@
               :class="{
                 'bg-[#223c2f] text-white':
                   $route.name === 'profilOpgPrimljeneNarudzbe' ||
-                  $route.name === 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe',
+                  $route.name === 'profilOpgPrimljeneNarudzbeDetaljiNarudzbe' ||
+                  $route.name === 'profilOpgDetaljiKupca',
               }"
             >
               <div class="justify-between">
