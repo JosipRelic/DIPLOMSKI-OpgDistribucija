@@ -1,7 +1,7 @@
 <template>
   <section>
     <div
-      class="mx-auto w-full bg-white rounded-xl max-w-7xl px-5 py-12 md:px-10 md:py-20"
+      class="mx-auto w-full bg-white rounded-xl max-w-7xl px-5 py-12 md:px-10 md:py-20 shadow-lg"
       v-if="kupac"
     >
       <h2 class="text-center text-3xl font-bold md:text-5xl">
@@ -16,7 +16,7 @@
       </span>
 
       <div
-        class="mx-auto rounded-xl flex w-full max-w-3xl flex-col flex-wrap justify-between gap-5 bg-gray-100 px-16 py-8 sm:flex-row md:gap-6"
+        class="mx-auto rounded-xl flex w-full max-w-3xl flex-col flex-wrap justify-between gap-5 shadow-md px-16 py-8 sm:flex-row md:gap-6"
       >
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div class="flex flex-col items-start">
