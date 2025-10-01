@@ -95,9 +95,9 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700 pt-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700 pt-6">
         <div>
-          <p class="font-medium">Podaci dostave</p>
+          <p class="font-medium">Podaci o naručitelju</p>
           <p>
             {{ detalji.narucitelj }}<br />
             {{ detalji.kupac_email }}<br />
@@ -106,17 +106,19 @@
             {{ detalji.zupanija }}, Hrvatska
           </p>
         </div>
-        <div>
-          <p class="font-medium">Način plaćanja</p>
-          <p class="inline">
-            {{ detalji.nacin_placanja === "pouzece" ? "Pouzećem" : detalji.nacin_placanja }}
-          </p>
-        </div>
-        <div>
-          <p class="font-medium">Način dostave</p>
-          <p class="inline">
-            {{ detalji.nacin_dostave === "osobno" ? "Osobno preuzimanje" : "Dostava na adresu" }}
-          </p>
+        <div class="space-y-4">
+          <div>
+            <p class="font-medium">Način plaćanja</p>
+            <p class="inline">
+              {{ detalji.nacin_placanja === "pouzece" ? "Pouzećem" : detalji.nacin_placanja }}
+            </p>
+          </div>
+          <div>
+            <p class="font-medium">Način dostave</p>
+            <p class="inline">
+              {{ detalji.nacin_dostave === "osobno" ? "Osobno preuzimanje" : "Dostava na adresu" }}
+            </p>
+          </div>
         </div>
       </div>
 

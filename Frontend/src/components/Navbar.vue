@@ -10,7 +10,7 @@
               class="w-10 h-auto transition duration-500 group-hover:scale-105"
             />
 
-            <p class="block text-gray-100">OPG Distribucija</p>
+            <p class="block text-lg text-gray-100">OPG Distribucija</p>
           </div>
         </router-link>
 
@@ -20,7 +20,7 @@
               <li>
                 <router-link
                   :to="{ name: 'e-trznica' }"
-                  class="text-gray-100 transition hover:text-gray-500/75"
+                  class="text-gray-100 text-base transition hover:text-gray-500/75"
                   :class="{ 'text-orange-600': $route.path.includes('e-trznica') }"
                 >
                   E-Tržnica
@@ -29,7 +29,7 @@
               <li>
                 <router-link
                   :to="{ name: 'farmaPlus' }"
-                  class="text-gray-100 transition hover:text-gray-500/75"
+                  class="text-gray-100 text-base transition hover:text-gray-500/75"
                   :class="{ 'text-orange-600': $route.path.includes('farma-plus') }"
                 >
                   Farma+

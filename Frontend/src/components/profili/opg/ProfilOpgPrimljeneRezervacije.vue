@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-10 mt-6 mb-6">
-    <h1 class="text-3xl font-bold mb-6">Nadolazeće rezervacije usluga</h1>
+    <h1 class="text-3xl font-bold mb-6">Sve rezervacije usluga</h1>
 
     <ol class="relative border-s border-orange-500 ms-6" v-if="sve_rezervacije.length">
       <li v-for="(r, idx) in sve_rezervacije" :key="idx" class="mb-10 ms-8">
@@ -61,7 +61,7 @@
                 }}
               </div>
               <div class="inline-flex items-center text-sm font-normal">
-                <div class="text-gray-900 mr-2">
+                <div class="text-gray-900">
                   Narudžba br:
 
                   <router-link
@@ -75,9 +75,26 @@
                     ></router-link
                   >
                 </div>
-                <div class="text-gray-900 mr-2">
-                  | Kupac:
-                  <span class="text-orange-600 hover:underline font-semibold">{{ r.kupac }}</span>
+                <span class="mx-2">|</span>
+                <div class="text-gray-900 mr-2 flex">
+                  <div class="me-1">Naručitelj:</div>
+                  <router-link
+                    v-if="r.kupac_slug"
+                    :to="{ name: 'profilOpgDetaljiKupca', params: { kupacSlug: r.kupac_slug } }"
+                    class="text-orange-600 hover:underline font-semibold"
+                  >
+                    {{ r.kupac }} <span class="text-gray-400">- ({{ r.narucitelj_tip }})</span>
+                  </router-link>
+
+                  <router-link
+                    v-else-if="r.opg_slug"
+                    :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: r.opg_slug } }"
+                    class="text-orange-600 hover:underline font-semibold"
+                  >
+                    {{ r.kupac }} <span class="text-gray-400">- ({{ r.narucitelj_tip }})</span>
+                  </router-link>
+
+                  <span v-else class="text-orange-600 font-semibold">{{ r.kupac }}</span>
                 </div>
               </div>
             </div>

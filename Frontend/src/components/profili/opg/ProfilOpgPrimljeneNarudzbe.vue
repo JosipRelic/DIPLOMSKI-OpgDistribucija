@@ -3,8 +3,9 @@
     <div class="w-full max-w-7xl rounded-lg overflow-x-auto bg-white shadow-md">
       <div class="p-4 min-w-full">
         <div class="flex justify-between items-center">
-          <div>
-            <p class="text-3xl font-bold ps-4">Sve narudžbe</p>
+          <div class="ps-4">
+            <p class="text-3xl font-bold">Sve narudžbe</p>
+            <small class="text-gray-500">Sve što je naručeno od vas</small>
           </div>
         </div>
       </div>

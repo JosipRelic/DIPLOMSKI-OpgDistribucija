@@ -29,6 +29,8 @@ import ETrznicaDetaljiOPGaView from "@/views/etrznica/ETrznicaDetaljiOPGaView.vu
 import FarmaPlusDetaljiUslugeView from "@/views/farma_plus/FarmaPlusDetaljiUslugeView.vue"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import ProfilOpgPrimljeneRezervacijeView from "@/views/profili/opg/ProfilOpgPrimljeneRezervacijeView.vue"
+import ProfilOpgNapravljeneNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeView.vue"
+import ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView.vue"
 
 const routes = [
   {
@@ -128,6 +130,18 @@ const routes = [
         path: "primljene-narudzbe/detalji-kupca/:kupacSlug",
         name: "profilOpgDetaljiKupca",
         component: ProfilOpgDetaljiKupcaView,
+        meta: { requiresAuth: true, roles: ["Opg"] },
+      },
+      {
+        path: "napravljene-narudzbe",
+        name: "profilOpgNapravljeneNarudzbe",
+        component: ProfilOpgNapravljeneNarudzbeView,
+        meta: { requiresAuth: true, roles: ["Opg"] },
+      },
+      {
+        path: "napravljene-narudzbe/detalji-narudzbe",
+        name: "profilOpgNapravljeneNarudzbeDetaljiNarudzbe",
+        component: ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView,
         meta: { requiresAuth: true, roles: ["Opg"] },
       },
     ],

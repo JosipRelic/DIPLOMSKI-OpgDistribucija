@@ -6,11 +6,13 @@
           <div>
             <p class="text-2xl font-bold mb-2 ps-4">Posljednje narudžbe</p>
           </div>
-          <!-- <router-link :to="{ name: 'profilOpgPrimljeneNarudzbe' }"> -->
-          <button class="bg-orange-500 text-gray-100 px-8 py-3 rounded-md cursor-pointer">
-            Pogledaj sve narudžbe
-          </button>
-          <!-- </router-link> -->
+          <router-link :to="{ name: 'profilOpgPrimljeneNarudzbe' }">
+            <button
+              class="bg-orange-500 text-white px-8 py-3 shadow shadow-sm rounded-md cursor-pointer"
+            >
+              Pogledaj sve narudžbe
+            </button>
+          </router-link>
         </div>
       </div>
 
@@ -149,11 +151,10 @@
                     d="M82.01 39.28c0-.21 6.31-22.05 19.26-22.85c18.03-1.13 10.66 27.44 10.66 27.44"
                   />
                 </svg>
-                <ol class="text-xs text-orange-400 ms-2">
-                  <li>Čaj od kamilice</li>
-                  <li>Oranje</li>
-                  <li>Smokva</li>
-                  <li>Limun</li>
+                <ol class="text-base text-orange-400 ms-2">
+                  <li>2 Usluge - 40.00€</li>
+                  <li>4 Proizvoda - 20.00€</li>
+                  <li>Dostava - 5.00€</li>
                 </ol>
               </div>
             </div>
@@ -169,7 +170,7 @@
             <div>
               <dt class="text-sm font-medium text-gray-700">Ukupan iznos</dt>
 
-              <dd class="text-sm text-gray-700">108.29 €</dd>
+              <dd class="text-sm text-gray-700">65.00 €</dd>
             </div>
           </dl>
         </a>
@@ -307,11 +308,10 @@
                     d="M82.01 39.28c0-.21 6.31-22.05 19.26-22.85c18.03-1.13 10.66 27.44 10.66 27.44"
                   />
                 </svg>
-                <ol class="text-xs text-orange-400 ms-2">
-                  <li>Čaj od kamilice</li>
-                  <li>Oranje</li>
-                  <li>Smokva</li>
-                  <li>Limun</li>
+                <ol class="text-base text-orange-400 ms-2">
+                  <li>2 Usluge - 40.00€</li>
+                  <li>4 Proizvoda - 20.00€</li>
+                  <li>Dostava - 5.00€</li>
                 </ol>
               </div>
             </div>
@@ -327,7 +327,7 @@
             <div>
               <dt class="text-sm font-medium text-gray-700">Ukupan iznos</dt>
 
-              <dd class="text-sm text-gray-700">108.29 €</dd>
+              <dd class="text-sm text-gray-700">65.00 €</dd>
             </div>
           </dl>
         </a>
@@ -465,11 +465,10 @@
                     d="M82.01 39.28c0-.21 6.31-22.05 19.26-22.85c18.03-1.13 10.66 27.44 10.66 27.44"
                   />
                 </svg>
-                <ol class="text-xs text-orange-400 ms-2">
-                  <li>Čaj od kamilice</li>
-                  <li>Oranje</li>
-                  <li>Smokva</li>
-                  <li>Limun</li>
+                <ol class="text-base text-orange-400 ms-2">
+                  <li>2 Usluge - 40.00€</li>
+                  <li>4 Proizvoda - 20.00€</li>
+                  <li>Dostava - Besplatna</li>
                 </ol>
               </div>
             </div>
@@ -485,7 +484,7 @@
             <div>
               <dt class="text-sm font-medium text-gray-700">Ukupan iznos</dt>
 
-              <dd class="text-sm text-gray-700">108.29 €</dd>
+              <dd class="text-sm text-gray-700">60.00 €</dd>
             </div>
           </dl>
         </a>

@@ -506,10 +506,29 @@
                         params: { id: r.narudzba_id },
                       }"
                       ><span class="text-orange-600 font-semibold hover:underline"
-                        >#{{ r.broj_narudzbe }}</span
-                      ></router-link
+                        >#{{ r.broj_narudzbe }}
+                      </span></router-link
                     >
-                    | Kupac: <span class="text-orange-600 font-semibold">{{ r.kupac }}</span>
+                    <span class="mx-2">|</span>
+                    <router-link
+                      v-if="r.kupac_slug"
+                      :to="{ name: 'profilOpgDetaljiKupca', params: { kupacSlug: r.kupac_slug } }"
+                      class="text-orange-600 font-semibold hover:underline"
+                      ><span class="font-normal text-sm text-gray-500 me-1"
+                        >{{ r.narucitelj_tip }}:</span
+                      >{{ r.kupac }}
+                    </router-link>
+
+                    <router-link
+                      v-else-if="r.opg_slug"
+                      :to="{ name: 'ETrznicaDetaljiOPGa', params: { opgSlug: r.opg_slug } }"
+                      class="text-orange-600 font-semibold hover:underline"
+                      ><span class="font-normal text-sm text-gray-500 me-1"
+                        >{{ r.narucitelj_tip }}:</span
+                      >{{ r.kupac }}</router-link
+                    >
+
+                    <span v-else class="text-orange-600 font-semibold">{{ r.kupac }}</span>
                   </p>
                 </div>
               </div>

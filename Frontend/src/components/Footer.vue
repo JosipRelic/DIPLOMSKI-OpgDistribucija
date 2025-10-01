@@ -5,13 +5,13 @@
         <img :src="slikeLogo" alt="logo" class="w-24 h-auto" />
       </div>
 
-      <p class="mx-auto mt-6 max-w-md text-center leading-relaxed text-gray-100">
+      <p class="mx-auto mt-6 max-w-md text-lg text-center leading-relaxed text-gray-100">
         OPG Distribucija
       </p>
-      <small class="mt-5 flex justify-center gap-6 md:gap-8 text-gray-400"
+      <small class="mt-5 flex text-base justify-center gap-6 md:gap-8 text-gray-400"
         >Aplikacija je izrađena u svrhu izrade diplomskog rada.</small
       >
-      <small class="mt-2 flex justify-center gap-6 md:gap-8 text-gray-400"
+      <small class="mt-2 flex text-sm justify-center gap-6 md:gap-8 text-gray-400"
         >Izradio: Josip Relić</small
       >
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Date, cast, func
 from typing import List, Dict, Optional
 from datetime import date, datetime, timedelta
-from models import Korisnik, Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
+from models import Korisnik, Kupac, Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
 from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz, RasponKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
 from database import SessionLocal
@@ -345,10 +345,15 @@ def sve_rezervacije(
             Narudzba.ime,
             Narudzba.id.label("narudzba_id"),
             Narudzba.prezime,
-            
+            Korisnik.tip_korisnika.label("narucitelj_tip"),
+            Kupac.slug.label("kupac_slug"),
+            Opg.slug.label("opg_slug"),       
         )
         .join(Narudzba, NarudzbaStavka.narudzba_id == Narudzba.id)
         .join(Usluga, Usluga.id == NarudzbaStavka.usluga_id)
+        .join(Korisnik, Korisnik.id == Narudzba.korisnik_id)
+        .outerjoin(Kupac, Kupac.korisnik_id == Korisnik.id)
+        .outerjoin(Opg, Opg.korisnik_id == Korisnik.id)
         .filter(
             NarudzbaStavka.tip == "usluga",
             NarudzbaStavka.termin_od != None,
@@ -371,7 +376,10 @@ def sve_rezervacije(
             "termin_do": termin.termin_do.isoformat(),
             "broj_narudzbe": termin.broj_narudzbe,
             "narudzba_id": termin.narudzba_id,
-            "kupac": f"{termin.ime} {termin.prezime}"
+            "kupac": f"{termin.ime} {termin.prezime}",
+            "narucitelj_tip": termin.narucitelj_tip, 
+            "kupac_slug": termin.kupac_slug,          
+            "opg_slug": termin.opg_slug,
         } for termin in termini_stavke_narudzbe.all()
     ]
 
