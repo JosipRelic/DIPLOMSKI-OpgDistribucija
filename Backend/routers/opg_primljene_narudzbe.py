@@ -175,8 +175,8 @@ def detalji_narudzbe(
     pdv = round(iznos_bez_pdva * 0.25, 2)
     ukupno = round(sum(_bruto(s) for s in (proizvodi + usluge)), 2)
 
+    dostava_po_opgu = 5
     if n.dostava != 0: 
-        dostava_po_opgu = 5
         ukupno = ukupno + dostava_po_opgu
         
     

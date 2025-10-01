@@ -100,6 +100,20 @@ class Opg(Base):
     korisnik = relationship("Korisnik", back_populates="opg")
     proizvodi = relationship("Proizvod", back_populates="opg", cascade="all, delete-orphan", passive_deletes=True)
     usluge = relationship("Usluga", back_populates="opg", cascade="all, delete-orphan", passive_deletes=True)
+    
+    raspolozivost_po_datumu = relationship(
+        "OpgRaspolozivostPoDatumu",
+        back_populates="opg",
+        cascade="all, delete-orphan",
+        passive_deletes=True,   
+    )
+
+    recenzije = relationship(
+        "Recenzija",
+        back_populates="opg",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
 class KategorijaProizvoda(Base):
     __tablename__="kategorije_proizvoda"
@@ -216,7 +230,7 @@ class Recenzija(Base):
     opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), nullable=False, index=True)
     korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False)
 
-    opg = relationship("Opg", backref="recenzije")
+    opg = relationship("Opg", back_populates="recenzije")
     korisnik = relationship("Korisnik", back_populates="recenzije")
 
 
@@ -237,7 +251,7 @@ class OpgRaspolozivostPoDatumu(Base):
 
     opg_id = Column(Integer, ForeignKey("opgovi.id", ondelete="CASCADE"), index=True, nullable=False)
     
-    opg = relationship("Opg", backref="raspolozivost_po_datumu") 
+    opg = relationship("Opg", back_populates="raspolozivost_po_datumu")
 
     __table_args__ = (
         CheckConstraint("pocetno_vrijeme < zavrsno_vrijeme", name="ck_raspolozivost_ispravan_raspon"),

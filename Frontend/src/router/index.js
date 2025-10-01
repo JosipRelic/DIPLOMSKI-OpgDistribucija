@@ -139,7 +139,7 @@ const routes = [
         meta: { requiresAuth: true, roles: ["Opg"] },
       },
       {
-        path: "napravljene-narudzbe/detalji-narudzbe",
+        path: "napravljene-narudzbe/detalji-narudzbe/:narudzbaId",
         name: "profilOpgNapravljeneNarudzbeDetaljiNarudzbe",
         component: ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView,
         meta: { requiresAuth: true, roles: ["Opg"] },

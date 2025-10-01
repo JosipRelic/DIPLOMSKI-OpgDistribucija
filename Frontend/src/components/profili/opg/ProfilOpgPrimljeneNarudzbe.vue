@@ -93,7 +93,7 @@
                 <span class="text-gray-400">- ({{ n.narucitelj_tip }})</span>
               </router-link>
 
-              <span v-else>{{ n.narucitelj || "—" }}</span>
+              <span v-else>{{ n.narucitelj }} (Profil izbrisan)</span>
             </td>
             <td class="px-8 py-5 border-b border-gray-200 w-[20%]">
               <p class="text-gray-500">{{ n.broj_narudzbe }}</p>
