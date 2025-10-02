@@ -52,6 +52,11 @@ const defaultSlika = "https://placehold.co/600x400?text=OPG"
 const zaokruzeno = computed(() => Math.round(props.opg.prosjecna_ocjena ?? 0))
 const punaAdresa = computed(() => {
   const o = props.opg
+
+  if (!o.adresa || !o.postanski_broj || !o.grad) {
+    return "Opg nije dodao punu adresu"
+  }
+
   const parts = [o.adresa, o.postanski_broj + " " + o.grad].filter(Boolean)
   return parts.join(", ")
 })

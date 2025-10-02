@@ -2,34 +2,17 @@
   <div class="mt-10 flex items-center justify-center gap-x-6 mb-3">
     <div class="hidden sm:block -space-x-2 overflow-hidden">
       <img
-        class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-        src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-        alt=""
-      />
-      <img
-        class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-        src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-        alt=""
-      />
-      <img
-        class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2.25&amp;w=256&amp;h=256&amp;q=80"
-        alt=""
-      />
-      <img
-        class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-        alt=""
-      />
-      <img
-        class="inline-block h-12 w-12 rounded-full ring-2 ring-white"
-        src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"
-        alt=""
+        v-for="(r, i) in recenzirao"
+        :key="i"
+        class="inline-block h-12 w-12 rounded-full ring-2 ring-white object-cover"
+        :src="r.slika || 'https://placehold.co/600x400?text=Recenzent'"
+        :alt="`${r.ime} ${r.prezime}`"
+        :title="`${r.ime} ${r.prezime}`"
       />
     </div>
     <div class="boder-none sm:border-l-2 border-black sm:pl-8">
       <div class="flex justify-center sm:justify-start">
-        <h3 class="text-2xl font-semibold mr-2">4.6</h3>
+        <h3 class="text-2xl font-semibold mr-2">{{ Number(prosjek).toFixed(1) }}</h3>
 
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" class="w-5 fill-orange-500">
           <path
@@ -38,8 +21,22 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-sm">Ocijenjeni od strane <strong>132</strong> korisnika.</h3>
+        <h3 class="text-sm">
+          Ocijenjeni od strane <strong>{{ brojRec }}</strong> korisnika.
+        </h3>
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import { onMounted, computed } from "vue"
+import { useOpgNadzornaPlocaStore } from "@/stores/nadzornaPlocaOpg"
+
+const nadzorna_ploca = useOpgNadzornaPlocaStore()
+onMounted(() => nadzorna_ploca.ucitajNadzornuPlocu())
+
+const prosjek = computed(() => nadzorna_ploca.podaci?.ocjene?.prosjek ?? 0)
+const brojRec = computed(() => nadzorna_ploca.podaci?.ocjene?.broj_recenzija ?? 0)
+const recenzirao = computed(() => nadzorna_ploca.podaci?.ocjene?.recenzirao ?? [])
+</script>
