@@ -176,9 +176,13 @@ def detalji_narudzbe(
     ukupno = round(sum(_bruto(s) for s in (proizvodi + usluge)), 2)
 
     dostava_po_opgu = 5
+
     if n.dostava != 0: 
         ukupno = ukupno + dostava_po_opgu
         
+    if n.dostava == 0:
+        dostava_po_opgu = 0
+   
     
     return {
         "id": n.id,
@@ -335,9 +339,15 @@ def detalji_kupca(
     ukupna_vrijednost += broj_dostava * 5
 
     najcesce = (
-        db.query(NarudzbaStavka.naziv, func.count(NarudzbaStavka.id).label("zbroj"))
-        .join(narudzbe_idevi_subq, narudzbe_idevi_subq.c.id == NarudzbaStavka.narudzba_id)
-        .filter(NarudzbaStavka.tip == "proizvod")
+        db.query(
+            NarudzbaStavka.naziv,
+            func.coalesce(func.sum(NarudzbaStavka.kolicina), 0).label("zbroj")
+        )
+        .filter(
+            NarudzbaStavka.narudzba_id.in_(db.query(narudzbe_idevi_subq.c.id)),
+            NarudzbaStavka.opg_id == opg.id,          
+            NarudzbaStavka.tip == "proizvod"         
+        )
         .group_by(NarudzbaStavka.naziv)
         .order_by(desc("zbroj"))
         .first()
