@@ -60,7 +60,7 @@ const routes = [
         meta: { requiresAuth: true, roles: ["Kupac"] },
       },
       {
-        path: "moje-narudzbe/detalji-narudzbe",
+        path: "moje-narudzbe/detalji-narudzbe/:id",
         name: "profilKupacMojeNarudzbeDetaljiNarudzbe",
         component: ProfilKupacMojeNarudzbeDetaljiNarudzbeView,
         meta: { requiresAuth: true, roles: ["Kupac"] },

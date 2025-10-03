@@ -7,11 +7,11 @@
             <div>
               <p class="text-2xl font-bold mb-2 ps-4">Posljednje narudžbe</p>
             </div>
-            <router-link :to="{ name: 'profilKupacMojeNarudzbe' }">
+            <!--  <router-link :to="{ name: 'profilKupacMojeNarudzbe' }">
               <button class="bg-orange-500 text-gray-100 px-8 py-3 rounded-md cursor-pointer">
                 Pogledaj sve narudžbe
               </button>
-            </router-link>
+            </router-link> -->
           </div>
         </div>
 
@@ -65,9 +65,9 @@
               <td
                 class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
               >
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--  <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
             <tr>
@@ -106,9 +106,9 @@
               <td
                 class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
               >
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--   <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
             <tr>
@@ -149,9 +149,9 @@
               <td
                 class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
               >
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--  <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
             <tr>
@@ -192,9 +192,9 @@
               <td
                 class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
               >
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--  <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
 
@@ -236,9 +236,9 @@
               <td
                 class="px-8 py-5 border-b border-gray-200 text-orange-600 hover:text-orange-900 hover:underline w-[10%]"
               >
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--   <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
             <tr>
@@ -275,9 +275,9 @@
                 </span>
               </td>
               <td class="px-8 py-5 text-orange-600 hover:text-orange-900 hover:underline w-[10%]">
-                <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
+                <!--    <router-link :to="{ name: 'profilKupacMojeNarudzbeDetaljiNarudzbe' }"
                   >Detalji</router-link
-                >
+                > -->
               </td>
             </tr>
           </tbody>
