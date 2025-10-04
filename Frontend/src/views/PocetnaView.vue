@@ -1,5 +1,4 @@
 <template>
-  <!--Naslovna sekcija-->
   <section
     class="overflow-hidden bg-cover bg-center bg-no-repeat"
     :style="`background-image: url(${slikeCoverPocetna})`"
@@ -7,8 +6,7 @@
     <NaslovnaPocetna />
   </section>
 
-  <!--Najprodavaniji proizvodi-->
-  <section>
+  <section class="max-w-400 mx-auto mt-4">
     <span class="flex items-center py-8">
       <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300"></span>
 
@@ -17,15 +15,24 @@
       <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300"></span>
     </span>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-20 py-8">
-      <!--<KarticaProizvoda />-->
-      PROIZVODIIII
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 px-20 py-8">
+      <KarticaProizvoda
+        v-for="p in proizvodi"
+        :key="p.id"
+        :proizvod="p"
+        :katSlug="p.kategorija_slug"
+        :prikaziLinkPremaOpgu="true"
+      />
+      <div
+        v-if="!pocetna.loading && !proizvodi.length"
+        class="col-span-full text-center text-gray-500"
+      >
+        Trenutno nema istaknutih proizvoda.
+      </div>
     </div>
   </section>
 
-  <!--Najbolje ocijenjeni opg-ovi-->
-
-  <section>
+  <section class="max-w-400 mx-auto">
     <span class="flex items-center py-6">
       <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300"></span>
 
@@ -34,9 +41,14 @@
       <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300"></span>
     </span>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-20 py-8 mb-14">
-      <!-- <KarticaOPGa />-->
-      OPGOVII
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 px-20 py-8 mb-14">
+      <KarticaOPGa v-for="o in opgovi" :key="o.slug" :opg="o" />
+      <div
+        v-if="!pocetna.loading && !opgovi.length"
+        class="col-span-full text-center text-gray-500"
+      >
+        Nema ocijenjenih OPG-ova.
+      </div>
     </div>
   </section>
 
@@ -103,9 +115,17 @@
 </template>
 
 <script setup>
+import { onMounted, computed } from "vue"
 import slikeCoverPocetna from "@/assets/slike/cover-pocetna.jpg"
 import NaslovnaPocetna from "@/components/pocetna/NaslovnaPocetna.vue"
 import KarticaProizvoda from "@/components/dijeljeno/KarticaProizvoda.vue"
 import KarticaOPGa from "@/components/dijeljeno/KarticaOPGa.vue"
 import FarmaPlusSekcija from "@/components/pocetna/FarmaPlusSekcija.vue"
+import { usePocetnaStore } from "@/stores/pocetna"
+
+const pocetna = usePocetnaStore()
+onMounted(() => pocetna.ucitaj())
+
+const proizvodi = computed(() => pocetna.proizvodi)
+const opgovi = computed(() => pocetna.opgovi)
 </script>
