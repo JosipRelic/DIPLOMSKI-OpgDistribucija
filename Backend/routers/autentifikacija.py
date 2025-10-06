@@ -7,6 +7,10 @@ from utils import slugify
 from models import TipKorisnika, Korisnik, Kupac, Opg, KorisnickiProfil
 from typing import Annotated
 from security import verifikacija_lozinke
+from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
+from mail import posalji_email_za_oporavak
+from security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])
 
@@ -116,3 +120,41 @@ def prijava(body: schemas.Prijava, db: db_dependency):
     tip_korisnika = korisnik.tip_korisnika.value
     token = kreiranje_tokena_za_pristup(korisnik.id, tip_korisnika=tip_korisnika)
     return {"access_token": token, "token_type": "bearer", "tip_korisnika": tip_korisnika}
+
+
+@router.post("/zaboravljena-lozinka")
+def zaboravljena_lozinka(email: str, db: Session = Depends(get_db)):
+    korisnik = db.query(Korisnik).filter(Korisnik.email == email).first()
+    if korisnik:
+        exp_dt = datetime.now(timezone.utc) + timedelta(minutes=30)
+        payload = {
+            "sub": str(korisnik.id),
+            "iat": int(datetime.now(timezone.utc).timestamp()),
+            "exp": int(exp_dt.timestamp()),
+            "typ": "password_reset",
+        }
+        reset_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+        posalji_email_za_oporavak(email, reset_token)
+
+    return {"detail": "Ako adresa postoji, poslan je link za oporavak."}
+
+@router.post("/promjena-lozinke")
+def promjena_lozinke(body: schemas.PromjenaLozinkeToken, db: Session = Depends(get_db)):
+    if body.nova_lozinka != body.potvrda_lozinke:
+        raise HTTPException(status_code=400, detail="Lozinke se ne podudaraju.")
+
+    try:
+        payload = jwt.decode(body.token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("typ") != "password_reset":
+            raise HTTPException(status_code=400, detail="Neispravan token.")
+        korisnik_id = int(payload.get("sub"))
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Neispravan ili istekao token.")
+
+    korisnik = db.query(Korisnik).filter(Korisnik.id == korisnik_id).first()
+    if not korisnik:
+        raise HTTPException(status_code=404, detail="Korisnik ne postoji.")
+
+    korisnik.lozinka = hashiranje_lozinke(body.nova_lozinka)
+    db.commit()
+    return {"detail": "Lozinka uspješno promijenjena."}

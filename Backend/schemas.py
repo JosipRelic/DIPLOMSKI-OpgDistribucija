@@ -27,6 +27,10 @@ class Prijava(BaseModel):
     email_ili_korisnicko_ime: str
     lozinka: str
 
+class PromjenaLozinkeToken(BaseModel):
+    token: str
+    nova_lozinka: str
+    potvrda_lozinke: str
 
 class PrikazKorisnickogProfila(BaseModel):
     id: int

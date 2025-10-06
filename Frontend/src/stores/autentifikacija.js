@@ -286,6 +286,34 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
       }
     },
 
+    async zatraziLinkZaOporavak(email) {
+      try {
+        await api.post("/autentifikacija/zaboravljena-lozinka", null, { params: { email } })
+        return { ok: true }
+      } catch (e) {
+        return {
+          ok: false,
+          error: e?.response?.data?.detail || e?.message || "Greška pri slanju zahtjeva",
+        }
+      }
+    },
+
+    async promijeniLozinkuToken({ token, nova_lozinka, potvrda_lozinke }) {
+      try {
+        await api.post("/autentifikacija/promjena-lozinke", {
+          token,
+          nova_lozinka,
+          potvrda_lozinke,
+        })
+        return { ok: true }
+      } catch (e) {
+        return {
+          ok: false,
+          error: e?.response?.data?.detail || e?.message || "Neuspješna promjena lozinke",
+        }
+      }
+    },
+
     async obrisiProfil() {
       try {
         await api.delete("/profil")

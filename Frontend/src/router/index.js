@@ -31,6 +31,7 @@ import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import ProfilOpgPrimljeneRezervacijeView from "@/views/profili/opg/ProfilOpgPrimljeneRezervacijeView.vue"
 import ProfilOpgNapravljeneNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeView.vue"
 import ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView.vue"
+import PromjenaLozinkeView from "@/views/autentifikacija/PromjenaLozinkeView.vue"
 
 const routes = [
   {
@@ -223,6 +224,11 @@ const routes = [
     name: "zaboravljenaLozinka",
     path: "/zaboravljena-lozinka",
     component: ZaboravljenaLozinkaView,
+  },
+  {
+    name: "promjenaLozinke",
+    path: "/promjena-lozinke",
+    component: PromjenaLozinkeView,
   },
   {
     path: "/:catchAll(.*)",
