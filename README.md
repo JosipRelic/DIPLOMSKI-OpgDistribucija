@@ -41,6 +41,11 @@ Pokretanje backenda:
                 SECRET_KEY=dodati secret key -> generirati s komandom u gitbash terminalu python -c "import secrets; print(secrets.token_hex(32))"
                 ALGORITHM=HS256
                 ACCESS_TOKEN_EXPIRE_MINUTES=dodativrijemeuminutamainteger
+                SMTP_SERVER=server
+                SMTP_PORT=port
+                SMTP_USERNAME=korisnickoime
+                SMTP_PASSWORD=lozinka
+                FRONTEND_URL=frontendurl
 
 6.  kreiranje svih tablica s alembicom s komandom alembic upgrade head
 7.  pokretanje backenda s uvicorn app:main --reload

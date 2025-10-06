@@ -60,14 +60,14 @@
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
-                placeholder="Lozinka"
+                placeholder="Lozinka (min. 8 znamenki)"
                 v-model="lozinka"
                 required
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
-                placeholder="Potvrdite lozinku"
+                placeholder="Potvrdite lozinku (min. 8 znamenki)"
                 v-model="potvrda_lozinke"
                 required
               />
