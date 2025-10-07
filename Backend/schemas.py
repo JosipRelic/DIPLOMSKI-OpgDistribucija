@@ -7,16 +7,20 @@ from datetime import datetime, date
 class RegistracijaKupac(BaseModel):
     email: EmailStr
     korisnicko_ime: str = Field(min_length=3, max_length=50)
-    lozinka: str = Field(min_length=8, max_length=255)
-    potvrda_lozinke: str = Field(min_length=8, max_length=255)
+    lozinka: str = Field(min_length=8, max_length=255, description="Lozinka mora imati najmanje 8 znakova.",
+        json_schema_extra={"error_msg": "Lozinka mora imati najmanje 8 znakova."})
+    potvrda_lozinke: str = Field(min_length=8, max_length=255, description="Potvrda lozinke mora imati najmanje 8 znakova.",
+        json_schema_extra={"error_msg": "Potvrda lozinke mora imati najmanje 8 znakova."})
     ime: str = Field(min_length=1, max_length=100)
     prezime: str = Field(min_length=1, max_length=100)
 
 class RegistracijaOpg(BaseModel):
     email: EmailStr
     korisnicko_ime: str = Field(min_length=3, max_length=50)
-    lozinka: str = Field(min_length=8, max_length=255)
-    potvrda_lozinke: str = Field(min_length=8, max_length=255)
+    lozinka: str = Field(min_length=8, max_length=255, description="Lozinka mora imati najmanje 8 znakova.",
+        json_schema_extra={"error_msg": "Lozinka mora imati najmanje 8 znakova."})
+    potvrda_lozinke: str = Field(min_length=8, max_length=255, description="Lozinka mora imati najmanje 8 znakova.",
+        json_schema_extra={"error_msg": "Lozinka mora imati najmanje 8 znakova."})
     ime: str = Field(min_length=1, max_length=100)
     prezime: str = Field(min_length=1, max_length=100)
     naziv: str = Field(min_length=2, max_length=150)

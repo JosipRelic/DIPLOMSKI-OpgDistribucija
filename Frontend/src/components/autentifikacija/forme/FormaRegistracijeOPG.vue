@@ -49,6 +49,8 @@
                 placeholder="Email"
                 v-model="email"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite email adresu')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
@@ -56,20 +58,32 @@
                 placeholder="Korisničko Ime"
                 v-model="korisnicko_ime"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite korisničko ime')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
-                placeholder="Lozinka (min. 8 znamenki)"
+                placeholder="Lozinka"
                 v-model="lozinka"
                 required
+                minlength="8"
+                @invalid="
+                  (e) => e.target.setCustomValidity('Lozinka mora imati najmanje 8 znakova')
+                "
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
-                placeholder="Potvrdite lozinku (min. 8 znamenki)"
+                placeholder="Potvrdite lozinku"
                 v-model="potvrda_lozinke"
                 required
+                minlength="8"
+                @invalid="
+                  (e) => e.target.setCustomValidity('Lozinka mora imati najmanje 8 znakova')
+                "
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
@@ -77,6 +91,8 @@
                 placeholder="Naziv OPG-a"
                 v-model="naziv"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite naziv vašeg OPG-a')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
@@ -84,6 +100,8 @@
                 placeholder="Ime vlasnika"
                 v-model="ime"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite ime vlasnika OPG-a')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
@@ -91,6 +109,8 @@
                 placeholder="Prezime vlasnika"
                 v-model="prezime"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite email adresu')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
 
               <input
@@ -99,6 +119,8 @@
                 placeholder="Identifikacijski broj PG-a (MIBPG)"
                 v-model="identifikacijski_broj_mibpg"
                 required
+                @invalid="(e) => e.target.setCustomValidity('Molimo unesite MIBPG')"
+                @input="(e) => e.target.setCustomValidity('')"
               />
 
               <button
