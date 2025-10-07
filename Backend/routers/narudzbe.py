@@ -5,8 +5,9 @@ from security import SessionLocal, dohvati_id_trenutnog_korisnika
 from datetime import datetime, date
 import time
 from uuid import uuid4
-from models import Narudzba, NarudzbaStavka, KosaricaStavka, OpgRaspolozivostPoDatumu, Proizvod, Usluga
+from models import Narudzba, NarudzbaStavka, KosaricaStavka, Opg, OpgRaspolozivostPoDatumu, Proizvod, Usluga
 from schemas import NarudzbaKreiranje, NarudzbaPrikaz
+from mail import posalji_email_narudzbe_narucitelju, posalji_email_narudzbe_opg_primatelju
 
 from routers.opg_raspolozivost import _oduzmi_rezervaciju_od_raspolozivosti
 
@@ -166,5 +167,37 @@ def kreiraj_narudzbu(
 
     db.commit()
     db.refresh(narudzba)
+
+    try:
+        posalji_email_narudzbe_narucitelju(narudzba.email, narudzba)
+    except Exception as e:
+        print("Greška pri slanju emaila kupcu:", e)
+
+   
+    try:
+        opg_stavke = {}
+        for s in narudzba.stavke:
+            if not s.opg_id:
+                continue
+            if s.opg_id not in opg_stavke:
+                opg_stavke[s.opg_id] = []
+            opg_stavke[s.opg_id].append(s)
+
+        kupac = {
+            "ime": narudzba.ime,
+            "prezime": narudzba.prezime,
+            "email": narudzba.email,
+            "telefon": narudzba.telefon,
+            "adresa": f"{narudzba.adresa}, {narudzba.grad} {narudzba.postanski_broj}",
+            "zupanija": narudzba.zupanija,
+            "drzava": narudzba.drzava,
+        }
+
+        for opg_id, stavke in opg_stavke.items():
+            opg = db.query(Opg).get(opg_id)
+            if opg and opg.korisnik and opg.korisnik.email:
+                posalji_email_narudzbe_opg_primatelju(opg.korisnik.email, opg.naziv, stavke, narudzba.broj_narudzbe, kupac, narudzba)
+    except Exception as e:
+        print("Greška pri slanju emaila OPG-ovima:", e)
 
     return narudzba

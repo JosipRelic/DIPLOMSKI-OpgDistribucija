@@ -545,7 +545,7 @@ async function dodajUslugu() {
   novaSlika.value = null
   lokalniPretpregled.value = null
   trajanje_s.value = 0
-  trajanje_m = 0
+  trajanje_m.value = 0
   formaZaDodavanjeUslugeOtvorena.value = false
   ui.obavijest({ tekst: "Usluga je dodana.", tip_obavijesti: "uspjeh" })
 }

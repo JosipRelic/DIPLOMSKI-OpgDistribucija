@@ -150,7 +150,7 @@
             'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
           "
           :alt="usluga?.naziv || 'Usluga'"
-          class="rounded-md object-cover aspect-video"
+          class="rounded-md object-cover aspect-video max-w-2xl"
         />
       </div>
     </div>
