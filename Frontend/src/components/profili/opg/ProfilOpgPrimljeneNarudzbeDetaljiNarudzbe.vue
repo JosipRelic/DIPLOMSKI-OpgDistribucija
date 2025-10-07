@@ -192,6 +192,7 @@
               type="text"
               class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
               placeholder="Upiši predmet..."
+              v-model="predmet"
             />
           </div>
           <div>
@@ -200,14 +201,17 @@
               rows="5"
               class="mt-1 w-full rounded-md bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
               placeholder="Upiši poruku..."
+              v-model="poruka"
             ></textarea>
           </div>
 
           <button
             type="submit"
-            class="bg-teal-600 text-gray-100 px-4 py-2 rounded-xl hover:bg-teal-900 transition"
+            class="bg-teal-600 text-gray-100 px-4 py-2 rounded-xl hover:bg-teal-900 transition disabled:bg-gray-500"
+            :disabled="slanjeMaila"
+            @click.prevent="posaljiMail"
           >
-            Pošalji
+            {{ slanjeMaila ? "Slanje u tijeku..." : "Pošalji" }}
           </button>
         </form>
       </div>
@@ -220,10 +224,16 @@
 import { ref, onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
 import { usePrimljeneNarudzbeOpgStore } from "@/stores/primljeneNarudzbeOpg"
+import { useUiStore } from "@/stores/ui"
 
 const route = useRoute()
 const primljene_narudzbe = usePrimljeneNarudzbeOpgStore()
 const detalji = computed(() => primljene_narudzbe.detalji)
+
+const slanjeMaila = ref(false)
+const predmet = ref("")
+const poruka = ref("")
+const ui = useUiStore()
 
 const defaultProizvod = "https://placehold.co/160x160?text=Proizvod"
 const defaultUsluga = "https://placehold.co/160x160?text=Usluga"
@@ -255,6 +265,33 @@ function klasaOznaka(s) {
 async function promijeniStatus() {
   if (!detalji.value) return
   await primljene_narudzbe.promijeniStatusNarudzbe(detalji.value.id, status.value)
+}
+
+async function posaljiMail() {
+  if (!detalji.value?.id) return
+  if (!predmet.value.trim() || !poruka.value.trim()) {
+    ui.obavijest({ tekst: "Unesite predmet i poruku.", tip_obavijesti: "upozorenje" })
+    return
+  }
+
+  slanjeMaila.value = true
+  try {
+    const r = await primljene_narudzbe.posaljiMailKupcu(
+      detalji.value.id,
+      predmet.value.trim(),
+      poruka.value.trim(),
+    )
+    if (r.ok) {
+      ui.obavijest({ tekst: "E-mail poslan kupcu.", tip_obavijesti: "uspjeh" })
+      formaOtvorena.value = false
+      predmet.value = ""
+      poruka.value = ""
+    } else {
+      ui.obavijest({ tekst: r.error || "Greška pri slanju e-maila.", tip_obavijesti: "greska" })
+    }
+  } finally {
+    slanjeMaila.value = false
+  }
 }
 
 onMounted(async () => {

@@ -5,7 +5,8 @@ from database import SessionLocal
 from sqlalchemy import desc, func, or_
 from security import dohvati_id_trenutnog_korisnika
 from models import Korisnik, Kupac, Opg, Narudzba, NarudzbaStavka, Proizvod, TipKorisnika, Usluga
-from schemas import PromjenaStatusaNarudzbe
+from schemas import EmailKupcuVezanUzNarudzbu, PromjenaStatusaNarudzbe
+from mail import opg_posalji_email_vezan_uz_narudzbu
 
 router = APIRouter(prefix="/opg/primljene-narudzbe", tags=["OPG profil - Primljene narudžbe"])
 
@@ -424,3 +425,47 @@ def detalji_kupca(
             "stavke": narudzbe_izlaz,
         }
     }
+
+
+@router.post("/{narudzba_id}/posalji-mail")
+def posalji_mail_kupcu(
+    narudzba_id: int,
+    body: EmailKupcuVezanUzNarudzbu,
+    db: Session = Depends(get_db),
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
+):
+    moj_opg_id = _moj_opg_id(db, id_trenutnog_korisnika)  
+
+    n = db.get(Narudzba, narudzba_id)
+    if not n:
+        raise HTTPException(404, "Narudžba nije pronađena.")
+
+    
+    ima_moje_stavke = db.query(NarudzbaStavka.id).filter(
+        NarudzbaStavka.narudzba_id == narudzba_id,
+        NarudzbaStavka.opg_id == moj_opg_id,
+    ).first()
+    if not ima_moje_stavke:
+        raise HTTPException(403, "Nemate ovlasti za ovu narudžbu.")
+
+  
+    opg = db.get(Opg, moj_opg_id)
+    if not opg:
+        raise HTTPException(404, "OPG nije pronađen.")
+
+    kupac_ime_prezime = f"{(n.ime or '').strip()} {(n.prezime or '').strip()}".strip() or "kupac"
+
+    try:
+        opg_posalji_email_vezan_uz_narudzbu(
+            kupac_email=n.email,
+            kupac_ime_prezime=kupac_ime_prezime,
+            opg_naziv=opg.naziv or "OPG",          
+            broj_narudzbe=n.broj_narudzbe,
+            predmet=body.predmet,
+            poruka_plain=body.poruka,
+        )
+    except Exception as e:
+        print("Greška slanja e-maila kupcu:", e)
+        raise HTTPException(500, "Slanje e-maila nije uspjelo.")
+
+    return {"detail": "E-mail poslan kupcu."}

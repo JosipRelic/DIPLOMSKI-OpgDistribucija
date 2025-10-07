@@ -270,6 +270,10 @@ class NarudzbaPrikaz(BaseModel):
 class PromjenaStatusaNarudzbe(BaseModel):
     status: Literal["u_tijeku","isporuceno","otkazano"]
 
+class EmailKupcuVezanUzNarudzbu(BaseModel):
+    predmet: str
+    poruka: str
+
 class Token(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"

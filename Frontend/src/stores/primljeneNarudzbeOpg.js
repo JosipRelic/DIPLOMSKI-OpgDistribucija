@@ -53,6 +53,18 @@ export const usePrimljeneNarudzbeOpgStore = defineStore("PrimljeneNarudzbeOpg", 
       this.narudzbe = this.narudzbe.map((n) => (n.id === id ? { ...n, status } : n))
     },
 
+    async posaljiMailKupcu(narudzba_id, predmet, poruka) {
+      try {
+        await api.post(`/opg/primljene-narudzbe/${narudzba_id}/posalji-mail`, {
+          predmet,
+          poruka,
+        })
+        return { ok: true }
+      } catch (e) {
+        return { ok: false, error: e?.response?.data?.detail || "Neuspješno slanje e-maila" }
+      }
+    },
+
     idiNa(str) {
       this.stranica = str
       return this.ucitajNarudzbe()

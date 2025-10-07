@@ -1,5 +1,6 @@
 from email.mime.image import MIMEImage
 from email.utils import formataddr
+import html
 import imghdr
 import smtplib
 from email.mime.text import MIMEText
@@ -270,3 +271,67 @@ def posalji_email_narudzbe_opg_primatelju(opg_email: str, opg_naziv: str, stavke
         server.starttls()
         server.login(SMTP_USERNAME, SMTP_PASSWORD)
         server.sendmail(SMTP_USERNAME, [opg_email], msg.as_string())
+
+
+def opg_posalji_email_vezan_uz_narudzbu(
+    kupac_email: str,
+    kupac_ime_prezime: str,
+    opg_naziv: str,
+    broj_narudzbe: str,
+    predmet: str,
+    poruka_plain: str,
+):
+   
+    body_html = html.escape(poruka_plain or "").replace("\n", "<br>")
+
+    full_subject = f"[{opg_naziv}] {predmet} - Narudžba #{broj_narudzbe}"
+
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+        <div style="max-width:640px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden;background:white;">
+          <div style="background:#223c2f;padding:16px 20px;display:flex;align-items:center;gap:12px;color:#fff;">
+            <img src="cid:logo_opg" alt="OPG Distribucija" height="36" style="display:block;border-radius:6px;margin-right:2px;" />
+            <div>
+              <div style="font-weight:700;">OPG Distribucija</div>
+              <div style="opacity:.9;font-size:13px;">Poruka od: {html.escape(opg_naziv)}</div>
+            </div>
+          </div>
+          <div style="padding:22px;">
+            <h2 style="margin:0 0 8px 0;">Vezano uz narudžbu: #{broj_narudzbe}</h2>
+            <p style="margin:0 0 18px 0;">Poštovani/na {html.escape(kupac_ime_prezime)},</p>
+            <div style="border:1px solid #eee;border-radius:10px;padding:14px 16px;background:#fafafa;">
+              {body_html}
+            </div>
+            <p style="margin:18px 0 0 0;font-size:13px;color:#555;">
+              Ovu poruku Vam šalje <b>{html.escape(opg_naziv)}</b> putem platforme OPG Distribucija.
+            </p>
+          </div>
+          <div style="background:#f8f8f8;color:#666;text-align:center;padding:10px;font-size:12px;">
+            OPG Distribucija - Hvala što podržavate domaće proizvođače 🌿
+          </div>
+        </div>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("related")
+    msg["Subject"] = full_subject
+    msg["From"] = formataddr((f"{opg_naziv} putem OPG Distribucije", SMTP_USERNAME))
+    msg["To"] = kupac_email
+
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText("Poruka vezano uz vašu narudžbu na OPG Distribucija.", "plain", "utf-8"))
+    alt.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(alt)
+
+    
+    try:
+      _attach_logo(msg, cid="logo_opg")
+    except Exception as e:
+      print("Logo se nije mogao pridružiti:", e)
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(SMTP_USERNAME, [kupac_email], msg.as_string())
