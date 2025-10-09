@@ -79,7 +79,11 @@
                   {{ autentifikacija.loading ? "Prijavljujem..." : "Prijava" }}
                 </span>
               </button>
-              <p v-if="autentifikacija.error" class="text-red-600">{{ autentifikacija.error }}</p>
+
+              <p v-if="autentifikacija.error" class="text-red-600 mt-1">
+                {{ autentifikacija.error }}
+              </p>
+
               <p class="mt-6 text-sm text-gray-800 text-center">
                 <router-link
                   :to="{ name: 'zaboravljenaLozinka' }"

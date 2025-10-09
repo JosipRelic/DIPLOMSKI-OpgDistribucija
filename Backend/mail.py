@@ -15,6 +15,7 @@ SMTP_PORT=os.getenv("SMTP_PORT")
 SMTP_USERNAME=os.getenv("SMTP_USERNAME")
 SMTP_PASSWORD=os.getenv("SMTP_PASSWORD")
 FRONTEND_URL=os.getenv("FRONTEND_URL")
+BACKEND_URL=os.getenv("BACKEND_URL")
 
 def _attach_logo(msg, cid="logo_opg"):
    
@@ -412,3 +413,140 @@ def posalji_email_o_promjeni_statusa_kupcu(
         server.starttls()
         server.login(SMTP_USERNAME, SMTP_PASSWORD)
         server.sendmail(SMTP_USERNAME, [kupac_email], msg.as_string())
+
+
+
+def posalji_email_zahvale_za_registraciju_opgu(email: str, ime: str, prezime: str, naziv_opg: str):
+    subject = "🎉 Hvala na registraciji - OPG Distribucija"
+
+    header_logo = """
+    <div style="text-align:center;padding:16px 0;">
+        <img src="cid:logo_opg" alt="OPG Distribucija" style="max-height:56px;display:block;margin:0 auto 8px auto;">
+        <div style="font-size:14px;color:#666;">OPG Distribucija</div>
+    </div>
+    """
+
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+        <div style="max-width:640px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden;background:white;">
+          {header_logo}
+          <div style="background:#223c2f;color:#fff;padding:20px;text-align:center;">
+            <h2 style="margin:0;">Hvala na registraciji!</h2>
+            <p style="margin:6px 0 0 0;">Vaš OPG čeka verifikaciju</p>
+          </div>
+          <div style="padding:22px;">
+            <p>Pozdrav {(ime or '').strip()} {(prezime or '').strip()},</p>
+            <p>Zaprimili smo vašu registraciju za <b>{html.escape(naziv_opg or 'OPG')}</b>.</p>
+            <p>Kako biste pristupili vašem računu i svim funkcionalnostima platforme, potrebno je pričekati verifikaciju od strane administratora. Nakon uspješne verifikacije poslat ćemo vam obavijest e-poštom.</p>
+            <p>Hvala na strpljenju i dobro došli na <b>OPG Distribuciju</b>! 🌿</p>
+            <hr style="margin:24px 0;border:none;border-top:1px solid #eee;">
+            <p style="font-size:12px;color:#666;text-align:center;">
+              OPG Distribucija • Podržite domaće proizvođače
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("related")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(alt)
+    _attach_logo(msg, cid="logo_opg")
+
+    msg["Subject"] = subject
+    msg["From"] = formataddr(("OPG Distribucija", SMTP_USERNAME))
+    msg["To"] = email
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(SMTP_USERNAME, [email], msg.as_string())
+
+
+
+def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: str, prezime: str, email_opg: str, mibpg: str):
+    
+    verify_link = f"{BACKEND_URL}/autentifikacija/verificiraj-opg/{opg_id}"
+    subject = f"Novi OPG za verifikaciju: {naziv_opg}"
+
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+        <div style="max-width:640px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden;background:white;">
+          <div style="text-align:center;padding:16px 0;background:#223c2f;color:#fff;">
+            <img src="cid:logo_opg" alt="OPG Distribucija" style="max-height:56px;display:block;margin:0 auto 8px auto;">
+            <h2 style="margin:0;">Novi OPG čeka verifikaciju</h2>
+          </div>
+          <div style="padding:22px;">
+            <p><b>Naziv:</b> {html.escape(naziv_opg or '—')}</p>
+            <p><b>MIBPG:</b> {html.escape(mibpg or '—')}</p>
+            <p><b>Vlasnik:</b> {html.escape(ime or '')} {html.escape(prezime or '')}</p>
+            <p><b>Email:</b> {html.escape(email_opg or '')}</p>
+            <p style="margin-top:20px;">Za verifikaciju kliknite:</p>
+            <p><a href="{verify_link}" style="background:#008080;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Verificiraj OPG</a></p>
+          </div>
+          <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+          <p style="font-size:12px;color:#666;text-align:center;">OPG Distribucija - Administratorska obavijest</p>
+        </div>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("related")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(alt)
+    _attach_logo(msg, cid="logo_opg")
+
+    msg["Subject"] = subject
+    msg["From"] = formataddr(("OPG Distribucija", SMTP_USERNAME))
+    msg["To"] = SMTP_USERNAME  
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(SMTP_USERNAME, [SMTP_USERNAME], msg.as_string())
+
+
+
+def posalji_email_opg_verificiran(email_opg: str, naziv_opg: str):
+    subject = "✅ Vaš OPG je verificiran!"
+
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+        <div style="max-width:640px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden;background:white;">
+          <div style="text-align:center;padding:16px 0;background:#223c2f;color:#fff;">
+            <img src="cid:logo_opg" alt="OPG Distribucija" style="max-height:56px;display:block;margin:0 auto 8px auto;">
+            <h2 style="margin:0;">Vaš OPG je verificiran!</h2>
+          </div>
+          <div style="padding:22px;">
+            <p>Pozdrav,</p>
+            <p>Vaš <b>{html.escape(naziv_opg or '')}</b> uspješno je verificiran i sada možete pristupiti svom računu na platformi <b>OPG Distribucija</b>.</p>
+            <p><a href="{FRONTEND_URL}/prijava" style="background:#008080;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:4px;margin-bottom:4px;">Prijavite se</a></p>
+            <p>Hvala što ste dio naše zajednice!</p>
+          </div>
+          <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+          <p style="font-size:12px;color:#666;text-align:center;">OPG Distribucija - Podržite domaće proizvođače</p>
+        </div>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("related")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(alt)
+    _attach_logo(msg, cid="logo_opg")
+
+    msg["Subject"] = subject
+    msg["From"] = formataddr(("OPG Distribucija", SMTP_USERNAME))
+    msg["To"] = email_opg
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(SMTP_USERNAME, [email_opg], msg.as_string())

@@ -25,7 +25,8 @@ class RegistracijaOpg(BaseModel):
     prezime: str = Field(min_length=1, max_length=100)
     naziv: str = Field(min_length=2, max_length=150)
     opis: Optional[str] = Field(None, max_length=500)
-    identifikacijski_broj_mibpg: str = Field(min_length=3, max_length=50)
+    identifikacijski_broj_mibpg: str = Field(min_length=3, max_length=50, description="MIBPG mora imati najmanje 3 broja.", json_schema_extra={"error_msg": "MIBPG mora imati najmanje 3 broja."}),
+       
 
 class Prijava(BaseModel):
     email_ili_korisnicko_ime: str

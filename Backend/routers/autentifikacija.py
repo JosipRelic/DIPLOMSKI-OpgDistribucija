@@ -9,7 +9,7 @@ from typing import Annotated
 from security import verifikacija_lozinke
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
-from mail import posalji_email_za_oporavak
+from mail import posalji_email_adminu_novi_opg_registriran, posalji_email_opg_verificiran, posalji_email_za_oporavak, posalji_email_zahvale_za_registraciju_opgu
 from security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])
@@ -57,7 +57,7 @@ def registracija_kupca(body: schemas.RegistracijaKupac, db: db_dependency):
     token = kreiranje_tokena_za_pristup(korisnik_kupac.id, tip_korisnika="Kupac")
     return {"access_token": token, "token_type": "bearer", "tip_korisnika": "Kupac"}
     
-@router.post("/registracija/opg", response_model=schemas.Token, status_code=201)
+@router.post("/registracija/opg", status_code=201)
 def registracija_opga(body: schemas.RegistracijaOpg, db:db_dependency):
     if body.lozinka != body.potvrda_lozinke:
         raise HTTPException(400, "Lozinke se ne podudaraju.")
@@ -96,12 +96,35 @@ def registracija_opga(body: schemas.RegistracijaOpg, db:db_dependency):
         opis = body.opis or "",
         identifikacijski_broj_mibpg = body.identifikacijski_broj_mibpg,
         slug = slug,
+        verificiran = False,
     )
 
     db.add(opg)
     db.commit()
-    token = kreiranje_tokena_za_pristup(korisnik_opg.id, tip_korisnika="Opg")
-    return {"access_token": token, "token_type": "bearer", "tip_korisnika": "Opg"}
+
+    try:
+        posalji_email_adminu_novi_opg_registriran(
+            opg_id=opg.id,
+            naziv_opg=opg.naziv,
+            ime=korisnik_opg.ime,
+            prezime=korisnik_opg.prezime,
+            email_opg=korisnik_opg.email,
+            mibpg=opg.identifikacijski_broj_mibpg,
+        )
+    except Exception as e:
+        print("Greška pri slanju maila adminu:", e)
+
+    try:
+        posalji_email_zahvale_za_registraciju_opgu(
+            email=korisnik_opg.email,
+            ime=korisnik_opg.ime or "",
+            prezime=korisnik_opg.prezime or "",
+            naziv_opg=opg.naziv or "OPG",
+        )
+    except Exception as e:
+        print("Slanje maila zahvale nije uspjelo:", e)
+
+    return {"detail": "Registracija zaprimljena. Pričekajte verifikaciju."}
 
 @router.post("/prijava", response_model=schemas.Token)
 def prijava(body: schemas.Prijava, db: db_dependency):
@@ -116,6 +139,11 @@ def prijava(body: schemas.Prijava, db: db_dependency):
     
     if not verifikacija_lozinke(body.lozinka, korisnik.lozinka):
         raise HTTPException(status_code=401, detail="Neispravni podaci za prijavu")
+    
+    if korisnik.tip_korisnika == TipKorisnika.opg:
+        opg = korisnik.opg
+        if opg and not opg.verificiran:
+            raise HTTPException(status_code=403, detail="Niste još verificirani, pričekajte obavijest i odobrenje administratora.")
     
     tip_korisnika = korisnik.tip_korisnika.value
     token = kreiranje_tokena_za_pristup(korisnik.id, tip_korisnika=tip_korisnika)
@@ -158,3 +186,25 @@ def promjena_lozinke(body: schemas.PromjenaLozinkeToken, db: Session = Depends(g
     korisnik.lozinka = hashiranje_lozinke(body.nova_lozinka)
     db.commit()
     return {"detail": "Lozinka uspješno promijenjena."}
+
+
+@router.get("/verificiraj-opg/{opg_id}")
+def verificiraj_opg(opg_id: int, db: Session = Depends(get_db)):
+    opg = db.query(Opg).filter(Opg.id == opg_id).first()
+    if not opg:
+        raise HTTPException(404, "OPG nije pronađen")
+
+    if opg.verificiran:
+        return {"detail": "OPG je već verificiran."}
+
+    opg.verificiran = True
+    db.commit()
+
+    try:
+        posalji_email_opg_verificiran(opg.korisnik.email, opg.naziv)
+    except Exception as e:
+        print("Slanje maila OPG-u nije uspjelo:", e)
+
+    return {
+        "detail": f"'{opg.naziv}' je uspješno verificiran.",
+    }

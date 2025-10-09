@@ -32,6 +32,7 @@ import ProfilOpgPrimljeneRezervacijeView from "@/views/profili/opg/ProfilOpgPrim
 import ProfilOpgNapravljeneNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeView.vue"
 import ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView from "@/views/profili/opg/ProfilOpgNapravljeneNarudzbeDetaljiNarudzbeView.vue"
 import PromjenaLozinkeView from "@/views/autentifikacija/PromjenaLozinkeView.vue"
+import RegistracijOPGPricekajteVerifikacijuView from "@/views/autentifikacija/RegistracijOPGPricekajteVerifikacijuView.vue"
 
 const routes = [
   {
@@ -213,6 +214,12 @@ const routes = [
     name: "registracijaOPG",
     path: "/registracija/opg",
     component: RegistracijaOPGView,
+  },
+
+  {
+    name: "pricekajteVerifikaciju",
+    path: "/registracija/opg/pricekajte-verifikaciju",
+    component: RegistracijOPGPricekajteVerifikacijuView,
   },
 
   {

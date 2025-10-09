@@ -46,6 +46,7 @@ Pokretanje backenda:
                 SMTP_USERNAME=korisnickoime
                 SMTP_PASSWORD=lozinka
                 FRONTEND_URL=frontendurl
+                BACKEND_URL=backendurl
 
 6.  kreiranje svih tablica s alembicom s komandom alembic upgrade head
 7.  pokretanje backenda s uvicorn app:main --reload

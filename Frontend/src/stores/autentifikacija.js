@@ -125,29 +125,21 @@ export const useAutentifikacijskiStore = defineStore("autentifikacija", {
       this.loading = true
       this.error = null
       try {
-        const { data } = await api.post("/autentifikacija/registracija/opg", payload)
-        this.token = data.access_token
-        this.tip_korisnika = data.tip_korisnika
-        localStorage.setItem("token", this.token)
-        localStorage.setItem("tip_korisnika", this.tip_korisnika)
-        postaviAutentifikacijskiHeader(this.token)
+        await api.post("/autentifikacija/registracija/opg", payload)
 
-        const expMs = decodeExpMs(this.token)
-        if (expMs) {
-          this.expires_at = expMs
-          localStorage.setItem("expires_at", String(expMs))
-          this._scheduleAutoLogout(expMs - Date.now())
-        }
-
-        await this.dohvatiProfil()
-        await useKosaricaStore().osvjezi()
-        useUiStore().obavijest({
-          tekst: "Registacija uspješna. Dobrodošli!",
-          tip_obavijesti: "uspjeh",
+        const ui = useUiStore()
+        ui.obavijest({
+          tekst:
+            "Hvala na registraciji! Pričekajte da vas verificiramo kako biste pristupili računu.",
+          tip_obavijesti: "info",
         })
+
+        const { default: router } = await import("@/router")
+        router.push({ name: "pricekajteVerifikaciju" })
+
         return true
       } catch (e) {
-        this.error = e?.response?.data?.detail || e?.message || "Greška pri registraciji"
+        this.error = e?.response?.data?.detail || e?.message || "Greška pri registraciji OPG-a"
         return false
       } finally {
         this.loading = false

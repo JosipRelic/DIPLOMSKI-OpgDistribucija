@@ -119,13 +119,14 @@
                 placeholder="Identifikacijski broj PG-a (MIBPG)"
                 v-model="identifikacijski_broj_mibpg"
                 required
-                @invalid="(e) => e.target.setCustomValidity('Molimo unesite MIBPG')"
+                minlength="3"
+                @invalid="(e) => e.target.setCustomValidity('MIBPG mora imati najmanje 3 znaka')"
                 @input="(e) => e.target.setCustomValidity('')"
               />
 
               <button
                 type="submit"
-                class="mt-5 tracking-wide font-semibold bg-teal-600 hover:bg-teal-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                class="mt-5 tracking-wide font-semibold bg-teal-600 hover:bg-teal-900 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none disabled:bg-gray-500"
                 :disabled="autentifikacija.loading"
               >
                 <svg
@@ -144,6 +145,7 @@
                   {{ autentifikacija.loading ? "Registriram..." : "Registracija" }}
                 </span>
               </button>
+
               <p v-if="autentifikacija.error" class="mt-3 text-red-600 text-sm text-center">
                 {{ autentifikacija.error }}
               </p>
@@ -197,6 +199,5 @@ const posaljiPodatkeZaRegistracijuOpga = async () => {
     prezime: prezime.value,
     identifikacijski_broj_mibpg: identifikacijski_broj_mibpg.value,
   })
-  if (ok) router.push({ name: "profilOpgNadzornaPloca" })
 }
 </script>
