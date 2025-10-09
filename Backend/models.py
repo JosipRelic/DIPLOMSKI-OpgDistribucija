@@ -50,6 +50,10 @@ class Korisnik(Base):
         passive_deletes=True
     )
 
+    def __str__(self) -> str:
+        puno_ime = f"{(self.ime or '').strip()} {(self.prezime or '').strip()}".strip()
+        return f"{puno_ime or self.korisnicko_ime} <{self.email}>"
+
 
 class KorisnickiProfil(Base):
     __tablename__="korisnicki_profili"
@@ -66,6 +70,11 @@ class KorisnickiProfil(Base):
 
     korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False, unique=True)   
     korisnik = relationship("Korisnik", back_populates="korisnicki_profil")
+
+    def __str__(self) -> str:
+        korisnik_info = str(self.korisnik) if getattr(self, "Korisnik", None) else f"ID korisnika={self.korisnik_id}"
+        adresa = ", ".join([p for p in [self.adresa, self.grad, self.zupanija] if p])
+        return f"Profil za {korisnik_info}" + (f" | {adresa}" if adresa else "")
     
 
 
@@ -79,6 +88,10 @@ class Kupac(Base):
 
     korisnik_id = Column(Integer, ForeignKey("korisnici.id", ondelete="CASCADE"), nullable=False, unique=True) 
     korisnik = relationship("Korisnik", back_populates="kupac")
+
+    def __str__(self) -> str:
+        korisnik_info = str(self.korisnik) if getattr(self, "Korisnik", None) else f"ID korisnika={self.korisnik_id}"
+        return f"Kupac: {korisnik_info} (slug={self.slug})"
     
 
 
@@ -115,6 +128,10 @@ class Opg(Base):
         passive_deletes=True
     )
 
+    def __str__(self) -> str:
+        status = "✅ verificiran" if self.verificiran else "❌ neverificiran"
+        return f"{self.naziv or 'OPG'} (ID={self.id}, {status})"
+
 class KategorijaProizvoda(Base):
     __tablename__="kategorije_proizvoda"
 
@@ -127,6 +144,9 @@ class KategorijaProizvoda(Base):
     datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     proizvodi = relationship("Proizvod", back_populates="kategorija", passive_deletes=True)
+
+    def __str__(self) -> str:
+        return f"Kategorija proizvoda: {self.naziv}"
 
 
 class Proizvod(Base):
@@ -166,6 +186,10 @@ class Proizvod(Base):
         UniqueConstraint("opg_id", "slug", name="uq_proizvod_opg_slug"),
     )
 
+    def __str__(self) -> str:
+        mj = f" [{self.mjerna_jedinica}]" if self.mjerna_jedinica else ""
+        return f"Proizvod: {self.naziv}{mj} (ID={self.id})"
+
 
 class KategorijaUsluge(Base):
     __tablename__ = "kategorije_usluga"
@@ -177,6 +201,9 @@ class KategorijaUsluge(Base):
     datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     usluge = relationship("Usluga", back_populates="kategorija", passive_deletes=True)
+
+    def __str__(self) -> str:
+        return f"Kategorija usluge: {self.naziv}"
 
 class Usluga(Base):
     __tablename__ = "usluge"
@@ -217,6 +244,10 @@ class Usluga(Base):
         UniqueConstraint("opg_id", "slug", name="uq_usluga_opg_slug"),
     )
 
+    def __str__(self) -> str:
+        mj = f" [{self.mjerna_jedinica}]" if self.mjerna_jedinica else ""
+        return f"Usluga: {self.naziv}{mj} (ID={self.id})"
+
 
 class Recenzija(Base):
     __tablename__ = "recenzije"
@@ -237,6 +268,15 @@ class Recenzija(Base):
     __table_args__=(
         UniqueConstraint("opg_id", "korisnik_id", name="uq_recenzija_opg_korisnik"),
     )
+
+    def __str__(self) -> str:
+        opg_info = f"OPG ID={self.opg_id}"
+        try:
+            if getattr(self, "opg", None) and self.opg and self.opg.naziv:
+                opg_info = f"OPG {self.opg.naziv}"
+        except Exception:
+            pass
+        return f"Recenzija {self.ocjena}/5 za {opg_info} (ID={self.id})"
 
 
 class OpgRaspolozivostPoDatumu(Base):
@@ -260,6 +300,11 @@ class OpgRaspolozivostPoDatumu(Base):
 
         Index("ix_raspolozivost_opg_datum", "opg_id", "datum"),
     )
+
+    def __str__(self) -> str:
+        vrijeme = f"{self.pocetno_vrijeme:02d}:00–{self.zavrsno_vrijeme:02d}:00" if isinstance(self.pocetno_vrijeme, int) else f"{self.pocetno_vrijeme}–{self.zavrsno_vrijeme}"
+        naslov = f" • {self.naslov}" if self.naslov else ""
+        return f"Raspoloživost {self.datum} {vrijeme}{naslov} (OPG ID={self.opg_id})"
 
 
 class KosaricaStavka(Base):
@@ -290,6 +335,13 @@ class KosaricaStavka(Base):
         UniqueConstraint("korisnik_id", "usluga_id", "termin_od", "termin_do", name="uq_kos_usluga_termin_po_korisniku"),
         Index("ix_kos_korisnik_tip", "korisnik_id", "proizvod_id", "usluga_id"),
     )
+
+    def __str__(self) -> str:
+        tip = "usluga" if self.usluga_id else "proizvod"
+        termin = ""
+        if self.termin_od and self.termin_do:
+            termin = f" @ {self.termin_od} → {self.termin_do}"
+        return f"Košarica: {tip} ID={self.usluga_id or self.proizvod_id} x{self.kolicina}{termin} (korisnik {self.korisnik_id})"
 
 
 class Narudzba(Base):
@@ -323,6 +375,11 @@ class Narudzba(Base):
 
     stavke = relationship("NarudzbaStavka", back_populates="narudzba", cascade="all, delete-orphan")
 
+    def __str__(self) -> str:
+        kupac = f"{self.ime} {self.prezime}".strip()
+        return f"Narudžba #{self.broj_narudzbe} • {kupac} • {float(self.ukupno or 0):.2f} €"
+
+
 
 class NarudzbaStavka(Base):
     __tablename__ = "narudzba_stavke"
@@ -344,3 +401,8 @@ class NarudzbaStavka(Base):
     narudzba_id = Column(Integer, ForeignKey("narudzbe.id"))
 
     narudzba = relationship("Narudzba", back_populates="stavke")
+    def __str__(self) -> str:
+        termin = ""
+        if self.termin_od and self.termin_do:
+            termin = f" [{self.termin_od} → {self.termin_do}]"
+        return f"Stavka: {self.tip} '{self.naziv}' x{self.kolicina} {self.mjerna_jedinica or ''} • {float(self.cijena or 0):.2f} € • {self.status}{termin}"
