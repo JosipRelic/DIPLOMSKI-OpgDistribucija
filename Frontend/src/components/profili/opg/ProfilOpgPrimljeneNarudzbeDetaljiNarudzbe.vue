@@ -13,7 +13,7 @@
             class="text-lg font-medium inline-flex items-center justify-center rounded-full px-2.5 py-0.5"
             :class="klasaOznaka(detalji.status)"
           >
-            {{ statusOznaka(detalji.status) }}
+            {{ prikazStatus() }}
           </h2>
           <button
             type="button"
@@ -29,6 +29,7 @@
             class="ms-2 text-sm border border-gray-300 shadow-sm text-gray-900 rounded px-2 py-1"
             v-model="status"
             @change="promijeniStatus"
+            :disabled="mijenjamStatus"
           >
             <option value="u_tijeku">U tijeku</option>
             <option value="isporuceno">Isporučeno</option>
@@ -233,6 +234,7 @@ const detalji = computed(() => primljene_narudzbe.detalji)
 const slanjeMaila = ref(false)
 const predmet = ref("")
 const poruka = ref("")
+const mijenjamStatus = ref(false)
 const ui = useUiStore()
 
 const defaultProizvod = "https://placehold.co/160x160?text=Proizvod"
@@ -256,7 +258,12 @@ function statusOznaka(s) {
   return s === "u_tijeku" ? "U tijeku" : s === "isporuceno" ? "Isporučeno" : "Otkazano"
 }
 
+function prikazStatus() {
+  return mijenjamStatus.value ? "Mijenjam..." : statusOznaka(detalji.value?.status)
+}
+
 function klasaOznaka(s) {
+  if (mijenjamStatus.value) return "bg-gray-500 text-white"
   if (s === "otkazano") return "bg-red-600 text-red-100"
   if (s === "isporuceno") return "bg-emerald-100 text-emerald-700"
   return "bg-amber-500 text-amber-100"
@@ -264,7 +271,21 @@ function klasaOznaka(s) {
 
 async function promijeniStatus() {
   if (!detalji.value) return
-  await primljene_narudzbe.promijeniStatusNarudzbe(detalji.value.id, status.value)
+  mijenjamStatus.value = true
+  try {
+    const r = await primljene_narudzbe.promijeniStatusNarudzbe(detalji.value.id, status.value)
+    if (r.ok) {
+      ui.obavijest({
+        tekst: `Status ažuriran na ${statusOznaka(status.value)}.`,
+        tip_obavijesti: "uspjeh",
+      })
+    } else {
+      ui.obavijest({ tekst: r.error || "Greška pri promjeni statusa.", tip_obavijesti: "greska" })
+      status.value = primljene_narudzbe.detalji?.status || status.value
+    }
+  } finally {
+    mijenjamStatus.value = false
+  }
 }
 
 async function posaljiMail() {

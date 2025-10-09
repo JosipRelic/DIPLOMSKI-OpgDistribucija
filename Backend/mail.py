@@ -335,3 +335,80 @@ def opg_posalji_email_vezan_uz_narudzbu(
         server.starttls()
         server.login(SMTP_USERNAME, SMTP_PASSWORD)
         server.sendmail(SMTP_USERNAME, [kupac_email], msg.as_string())
+
+
+def posalji_email_o_promjeni_statusa_kupcu(
+    kupac_email: str,
+    kupac_ime_prezime: str,
+    broj_narudzbe: str,
+    opg_naziv: str,
+    novi_status: str,
+):
+   
+    STATUS_LABEL = {
+        "u_tijeku": "U tijeku",
+        "isporuceno": "Isporučeno",
+        "otkazano": "Otkazano",
+    }
+    status_label = STATUS_LABEL.get((novi_status or "").strip().lower(), novi_status)
+
+    subject = f"📝 Ažuriranje statusa #{broj_narudzbe} - {opg_naziv}"
+
+    header_logo = """
+    <div style="text-align:center;padding:16px 0;">
+        <img src="cid:logo_opg" alt="OPG Distribucija" style="max-height:56px;display:block;margin:0 auto 8px auto;">
+        <div style="font-size:14px;color:#666;">OPG Distribucija</div>
+    </div>
+    """
+
+    aplikacija_link = FRONTEND_URL or "#"
+
+    html_content = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; color:#333; padding:20px;">
+        <div style="max-width:640px;margin:auto;border:1px solid #eee;border-radius:12px;overflow:hidden;background:white;">
+          {header_logo}
+          <div style="background:#223c2f;color:#fff;padding:20px;text-align:center;">
+            <h2>Obavijest o promjeni statusa</h2>
+            <p style="margin:6px 0 0 0;">Narudžba #{broj_narudzbe}</p>
+          </div>
+          <div style="padding:22px;">
+            <p style="margin:0 0 10px 0;">Poštovani/na {html.escape(kupac_ime_prezime)},</p>
+            <p style="margin:0 0 12px 0;">
+              <b>{html.escape(opg_naziv)}</b> je ažurirao status svojih stavki u vašoj narudžbi.
+            </p>
+            <div style="border:1px solid #eee;border-radius:10px;padding:14px 16px;background:#fafafa;margin:12px 0;">
+              <b>Novi status:</b> {html.escape(status_label)}
+            </div>
+
+            <div style="text-align:center;margin:24px 0;">
+              <a href="{aplikacija_link}" style="background:#008080;color:white;padding:12px 22px;text-decoration:none;border-radius:8px;font-weight:600;">
+                Otvori aplikaciju
+              </a>
+            </div>
+
+           
+          </div>
+          <div style="background:#f8f8f8;color:#666;text-align:center;padding:10px;font-size:12px;">
+            OPG Distribucija - Hvala što podržavate domaće proizvođače 🌿
+          </div>
+        </div>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("related")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText("Promjena statusa vaše narudžbe.", "plain", "utf-8"))
+    alt.attach(MIMEText(html_content, "html", "utf-8"))
+    msg.attach(alt)
+    _attach_logo(msg)
+
+    msg["Subject"] = subject
+    msg["From"] = formataddr(("OPG Distribucija", SMTP_USERNAME))
+    msg["To"] = kupac_email
+
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(SMTP_USERNAME, [kupac_email], msg.as_string())

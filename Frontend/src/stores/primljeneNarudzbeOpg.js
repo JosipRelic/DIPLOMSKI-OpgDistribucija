@@ -46,11 +46,17 @@ export const usePrimljeneNarudzbeOpgStore = defineStore("PrimljeneNarudzbeOpg", 
     },
 
     async promijeniStatusNarudzbe(id, status) {
-      await api.patch(`/opg/primljene-narudzbe/detalji-narudzbe/${id}/status`, { status })
+      try {
+        await api.patch(`/opg/primljene-narudzbe/detalji-narudzbe/${id}/status`, { status })
 
-      if (this.detalji?.id === id) this.detalji.status = status
+        if (this.detalji?.id === id) this.detalji.status = status
+        this.narudzbe = this.narudzbe.map((n) => (n.id === id ? { ...n, status } : n))
 
-      this.narudzbe = this.narudzbe.map((n) => (n.id === id ? { ...n, status } : n))
+        return { ok: true, error: null }
+      } catch (e) {
+        const msg = e?.response?.data?.detail || "Neuspješna promjena statusa"
+        return { ok: false, error: msg }
+      }
     },
 
     async posaljiMailKupcu(narudzba_id, predmet, poruka) {

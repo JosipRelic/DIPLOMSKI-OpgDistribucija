@@ -6,7 +6,7 @@ from sqlalchemy import desc, func, or_
 from security import dohvati_id_trenutnog_korisnika
 from models import Korisnik, Kupac, Opg, Narudzba, NarudzbaStavka, Proizvod, TipKorisnika, Usluga
 from schemas import EmailKupcuVezanUzNarudzbu, PromjenaStatusaNarudzbe
-from mail import opg_posalji_email_vezan_uz_narudzbu
+from mail import opg_posalji_email_vezan_uz_narudzbu, posalji_email_o_promjeni_statusa_kupcu
 
 router = APIRouter(prefix="/opg/primljene-narudzbe", tags=["OPG profil - Primljene narudžbe"])
 
@@ -225,6 +225,22 @@ def promijeni_status_narudzbe(
     
     narudzba.update({NarudzbaStavka.status: body.status}, synchronize_session=False)
     db.commit()
+
+    try:
+        n = db.get(Narudzba, narudzba_id)
+        if n and n.email:
+            opg = db.get(Opg, opg_id)
+            kupac_ime_prezime = f"{(n.ime or '').strip()} {(n.prezime or '').strip()}".strip() or "kupac"
+            posalji_email_o_promjeni_statusa_kupcu(
+                kupac_email=n.email,
+                kupac_ime_prezime=kupac_ime_prezime,
+                broj_narudzbe=n.broj_narudzbe,
+                opg_naziv=(opg.naziv if opg else "OPG"),
+                novi_status=body.status,
+            )
+    except Exception as e:
+        print("Greška pri slanju obavijesti o promjeni statusa:", e)
+
     return {"status": body.status}
 
 

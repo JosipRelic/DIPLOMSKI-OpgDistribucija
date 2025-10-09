@@ -107,16 +107,17 @@
             <td class="px-8 py-5 text-gray-500 border-b border-gray-200 w-[10%]">
               <div class="flex items-center gap-2">
                 <span
-                  :class="klasaOznaka(n.status)"
+                  :class="klasaOznaka(n)"
                   class="inline-flex items-center justify-center rounded-full px-2.5 py-0.5"
                 >
-                  <p class="text-sm whitespace-nowrap capitalize">{{ statusOznaka(n.status) }}</p>
+                  <p class="text-sm whitespace-nowrap capitalize">{{ prikazStatusa(n) }}</p>
                 </span>
                 <select
                   v-if="uredivanjeUTijeku"
                   class="text-sm border border-gray-300 shadow-sm text-gray-900 rounded px-1 py-0.5"
                   v-model="status[n.id]"
                   @change="promijeniStatus(n.id)"
+                  :disabled="mijenjam[n.id] === true"
                 >
                   <option value="u_tijeku">U tijeku</option>
                   <option value="isporuceno">Isporučeno</option>
@@ -175,10 +176,13 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue"
 import { usePrimljeneNarudzbeOpgStore } from "@/stores/primljeneNarudzbeOpg"
+import { useUiStore } from "@/stores/ui"
 
 const primljene_narudzbe = usePrimljeneNarudzbeOpgStore()
+const ui = useUiStore()
 const pretraga = ref(primljene_narudzbe.p)
 const status = ref({})
+const mijenjam = ref({})
 
 function formatCijena(v) {
   const n = Number(v || 0)
@@ -195,9 +199,16 @@ function formatHR(iso) {
 function statusOznaka(s) {
   return s === "u_tijeku" ? "U tijeku" : s === "isporuceno" ? "Isporučeno" : "Otkazano"
 }
-function klasaOznaka(s) {
-  if (s === "otkazano") return "bg-red-600 text-red-100"
-  if (s === "isporuceno") return "bg-emerald-100 text-emerald-700"
+
+function prikazStatusa(n) {
+  if (mijenjam.value[n.id]) return "Mijenjam..."
+  return statusOznaka(n.status)
+}
+
+function klasaOznaka(n) {
+  if (mijenjam.value[n.id]) return "bg-gray-500 text-white"
+  if (n.status === "otkazano") return "bg-red-600 text-red-100"
+  if (n.status === "isporuceno") return "bg-emerald-100 text-emerald-700"
   return "bg-amber-500 text-amber-100"
 }
 
@@ -218,7 +229,28 @@ function primijeniPretragu() {
 async function promijeniStatus(id) {
   const v = status.value[id]
   if (!v) return
-  await primljene_narudzbe.promijeniStatusNarudzbe(id, v)
+
+  mijenjam.value = { ...mijenjam.value, [id]: true }
+  try {
+    const r = await primljene_narudzbe.promijeniStatusNarudzbe(id, v)
+
+    if (r && r.ok) {
+      ui.obavijest({ tekst: `Status ažuriran na ${statusOznaka(v)}.`, tip_obavijesti: "uspjeh" })
+    } else {
+      const msg = (r && r.error) || "Greška pri promjeni statusa."
+      ui.obavijest({ tekst: msg, tip_obavijesti: "greska" })
+
+      const stara = primljene_narudzbe.narudzbe.find((n) => n.id === id)?.status
+      if (stara) status.value[id] = stara
+    }
+  } catch {
+    ui.obavijest({ tekst: "Greška pri promjeni statusa.", tip_obavijesti: "greska" })
+    const stara = primljene_narudzbe.narudzbe.find((n) => n.id === id)?.status
+    if (stara) status.value[id] = stara
+  } finally {
+    const { [id]: _, ...rest } = mijenjam.value
+    mijenjam.value = rest
+  }
 }
 
 watch(
