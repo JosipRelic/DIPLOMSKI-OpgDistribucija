@@ -1,30 +1,15 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, RedirectResponse
 from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica, uredi_ponudu_farmaplus, etrznica, farma_plus, opg_raspolozivost, kosarica, narudzbe, opg_primljene_narudzbe, opg_napravljene_narudzbe, opg_nadzorna_ploca, kupac_moje_narudzbe, kupac_nadzorna_ploca, pocetna
 from starlette.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
-from dotenv import load_dotenv
-import os, base64
+from starlette.middleware.sessions import SessionMiddleware
+from admin import mount_admin
+import os
 from seeds import seed_kategorije_proizvoda, seed_kategorije_usluga
 from database import SessionLocal
 from contextlib import asynccontextmanager
 
-load_dotenv()
-ADMIN_USER = os.getenv("ADMIN_USER")
-ADMIN_PASS = os.getenv("ADMIN_PASS")
-ADMIN_OCEKIVANA_AUTENTIFIKACIJA = "Basic " + base64.b64encode(f"{ADMIN_USER}:{ADMIN_PASS}".encode()).decode()
-
-class AdminAutentifikacijaMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request:Request, call_next):
-        if request.url.path.startswith("/admin"):
-            auth = request.headers.get("Authorization")
-            if auth != ADMIN_OCEKIVANA_AUTENTIFIKACIJA:
-                return Response(
-                    status_code=401,
-                    content="Unauthorized",
-                    headers={"WWW-Authenticate": "Basic realm=admin"}
-                )
-        return await call_next(request)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,7 +24,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="OPG Distribucija API", description="API je napravljen u svrhu diplomskog rada", lifespan=lifespan)
 
-app.add_middleware(AdminAutentifikacijaMiddleware)
+app.add_middleware(SessionMiddleware, session_cookie="admin_session", same_site="lax", secret_key=os.getenv("ADMIN_SESSION_SECRET"))
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,6 +52,10 @@ app.include_router(kupac_moje_narudzbe.router)
 app.include_router(kupac_nadzorna_ploca.router)
 app.include_router(pocetna.router)
 
+@app.get("/admin", include_in_schema=False)
+@app.get("/admin/", include_in_schema=False)
+async def admin_pocetna():
+    return RedirectResponse(url="/admin/korisnik/list")
 
 from admin import mount_admin
 mount_admin(app)

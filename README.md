@@ -60,6 +60,7 @@ Ovaj repozitorij je napravljen za diplomski rad na temu **Glasovno popunjavanje 
                 BACKEND_URL=backend_url
                 ADMIN_USER=adminuser
                 ADMIN_PASS=adminpass
+                ADMIN_SESSION_SECRET=admin_secret -> generirati s komandom u gitbash terminalu python -c "import secrets; print(secrets.token_hex(32))"
 
 6.  kreiranje svih tablica u bazi s alembicom komandom -> alembic upgrade head
 7.  pokretanje backenda s -> uvicorn app:main --reload
