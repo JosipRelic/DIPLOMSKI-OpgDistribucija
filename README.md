@@ -8,18 +8,18 @@ Verzije korištene u projektu (potrebno instalirati ukoliko nemate): - Node.js v
 
 Pokretanje frontenda:
 
-1. otvoriti projekt foldera u git bash terminalu (ili vs code)
+1. otvoriti root folder projekta u git bash terminalu (ili vs code)
 2. cd Frontend
 3. npm install
 4. u Frontend folderu napraviti .env fajl s
-   VITE_API_URL=dodatiurllocalhosta
+   VITE_API_URL=dodati_url_localhosta
 5. npm run dev
 6. otvoriti app u browseru (localhost+port link u terminalu)
 
 Pokretanje backenda:
 
 1.  Instalirati pgadmin4 i postgresql i kreirati bazu podataka
-2.  otvoriti folder projekta u git bash terminalu
+2.  otvoriti root folder projekta u git bash terminalu
 3.  cd Backend
 4.  Kreirati virtualno okruženje unutar kojeg ćemo izolirati i instalirati sve pakete o kojima projekt ovisi (OBAVEZNO RADITI UNUTAR VENV radi mogućih konflikta s vašim lokalno instaliranim paketima):
     ► pip install virtualenv (ukoliko nemate instaliran virtualenv na svom računalu... s pip list možete provjeriti sve lokalno instalirane pakete)
