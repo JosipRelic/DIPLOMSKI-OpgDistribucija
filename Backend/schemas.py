@@ -25,7 +25,7 @@ class RegistracijaOpg(BaseModel):
     prezime: str = Field(min_length=1, max_length=100)
     naziv: str = Field(min_length=2, max_length=150)
     opis: Optional[str] = Field(None, max_length=500)
-    identifikacijski_broj_mibpg: str = Field(min_length=3, max_length=50, description="MIBPG mora imati najmanje 3 broja.", json_schema_extra={"error_msg": "MIBPG mora imati najmanje 3 broja."}),
+    identifikacijski_broj_mibpg: int = Field(ge=1, description="MIBPG mora biti cijeli broj ≥ 1.")
        
 
 class Prijava(BaseModel):
@@ -56,7 +56,7 @@ class PrikazKorisnickogProfila(BaseModel):
     kupac_id: Optional[int] = None
     naziv: Optional[str] = Field(default=None)
     opis: Optional[str] = Field(default=None)
-    identifikacijski_broj_mibpg: Optional[str] = Field(default=None)
+    identifikacijski_broj_mibpg: Optional[int] = Field(default=None)
     
     model_config = {
         "from_attributes": True
@@ -77,7 +77,7 @@ class AzuriranjeKorisnickogProfila(BaseModel):
 
     naziv: Optional[str] = Field(default=None)
     opis: Optional[str] = Field(default=None)
-    identifikacijski_broj_mibpg: Optional[str] = Field(default=None)
+    identifikacijski_broj_mibpg: Optional[int] = Field(default=None, ge=1)
 
 
 class KategorijaProizvoda(BaseModel):

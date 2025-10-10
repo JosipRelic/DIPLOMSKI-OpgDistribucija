@@ -115,12 +115,12 @@
 
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
-                type="text"
+                type="number"
                 placeholder="Identifikacijski broj PG-a (MIBPG)"
                 v-model="identifikacijski_broj_mibpg"
                 required
-                minlength="3"
-                @invalid="(e) => e.target.setCustomValidity('MIBPG mora imati najmanje 3 znaka')"
+                minlength="1"
+                @invalid="(e) => e.target.setCustomValidity('MIBPG mora imati najmanje 1 znak')"
                 @input="(e) => e.target.setCustomValidity('')"
               />
 

@@ -102,7 +102,7 @@ class Opg(Base):
     naziv = Column(String(150))
     opis = Column(String(500))
     verificiran = Column(Boolean, default=False)
-    identifikacijski_broj_mibpg = Column(String(50), nullable=False, unique=True)
+    identifikacijski_broj_mibpg = Column(Integer, nullable=False, unique=True)
     datum_pridruzivanja = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     datum_zadnje_izmjene = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     slug = Column(String(255), unique=True, nullable=False)

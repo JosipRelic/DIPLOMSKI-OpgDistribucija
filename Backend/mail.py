@@ -467,10 +467,11 @@ def posalji_email_zahvale_za_registraciju_opgu(email: str, ime: str, prezime: st
 
 
 
-def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: str, prezime: str, email_opg: str, mibpg: str):
+def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: str, prezime: str, email_opg: str, mibpg: int):
     
     edit_link = f"{BACKEND_URL}/admin/opg/edit/{opg_id}"
     subject = f"Novi OPG za verifikaciju: {naziv_opg}"
+    mibpg_str = str(mibpg) if mibpg is not None else "-"
 
     html_content = f"""
     <html>
@@ -482,7 +483,7 @@ def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: 
           </div>
           <div style="padding:22px;">
             <p><b>Naziv:</b> {html.escape(naziv_opg or '—')}</p>
-            <p><b>MIBPG:</b> {html.escape(mibpg or '—')}</p>
+            <p><b>MIBPG:</b> {html.escape(mibpg_str or '—')}</p>
             <p><b>Vlasnik:</b> {html.escape(ime or '')} {html.escape(prezime or '')}</p>
             <p><b>Email:</b> {html.escape(email_opg or '')}</p>
             <p style="margin-top:20px;">Za verifikaciju kliknite:</p>
