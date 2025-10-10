@@ -469,7 +469,7 @@ def posalji_email_zahvale_za_registraciju_opgu(email: str, ime: str, prezime: st
 
 def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: str, prezime: str, email_opg: str, mibpg: str):
     
-    verify_link = f"{BACKEND_URL}/autentifikacija/verificiraj-opg/{opg_id}"
+    edit_link = f"{BACKEND_URL}/admin/opg/edit/{opg_id}"
     subject = f"Novi OPG za verifikaciju: {naziv_opg}"
 
     html_content = f"""
@@ -486,7 +486,7 @@ def posalji_email_adminu_novi_opg_registriran(opg_id: int, naziv_opg: str, ime: 
             <p><b>Vlasnik:</b> {html.escape(ime or '')} {html.escape(prezime or '')}</p>
             <p><b>Email:</b> {html.escape(email_opg or '')}</p>
             <p style="margin-top:20px;">Za verifikaciju kliknite:</p>
-            <p><a href="{verify_link}" style="background:#008080;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Verificiraj OPG</a></p>
+            <p><a href="{edit_link}" style="background:#008080;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Verificiraj OPG</a></p>
           </div>
           <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
           <p style="font-size:12px;color:#666;text-align:center;">OPG Distribucija - Administratorska obavijest</p>

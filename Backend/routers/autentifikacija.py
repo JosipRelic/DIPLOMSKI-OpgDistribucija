@@ -188,23 +188,3 @@ def promjena_lozinke(body: schemas.PromjenaLozinkeToken, db: Session = Depends(g
     return {"detail": "Lozinka uspješno promijenjena."}
 
 
-@router.get("/verificiraj-opg/{opg_id}")
-def verificiraj_opg(opg_id: int, db: Session = Depends(get_db)):
-    opg = db.query(Opg).filter(Opg.id == opg_id).first()
-    if not opg:
-        raise HTTPException(404, "OPG nije pronađen")
-
-    if opg.verificiran:
-        return {"detail": "OPG je već verificiran."}
-
-    opg.verificiran = True
-    db.commit()
-
-    try:
-        posalji_email_opg_verificiran(opg.korisnik.email, opg.naziv)
-    except Exception as e:
-        print("Slanje maila OPG-u nije uspjelo:", e)
-
-    return {
-        "detail": f"'{opg.naziv}' je uspješno verificiran.",
-    }

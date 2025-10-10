@@ -78,6 +78,7 @@ def pocetna_istaknuto(db: Session = Depends(get_db)):
         )
         .join(Korisnik, Korisnik.id == Opg.korisnik_id)
         .outerjoin(KorisnickiProfil, KorisnickiProfil.korisnik_id == Korisnik.id)
+        .filter(Opg.verificiran == True)
         .order_by(
             Opg.prosjecna_ocjena.desc().nulls_last(),
             Opg.broj_recenzija.desc(),

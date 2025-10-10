@@ -1,6 +1,7 @@
 # DIPLOMSKI-OpgDistribucija
 
-Ovaj repozitorij je napravljen za diplomski rad na temu Glasovno popunjavanje formi pomoću obrade prirodnog jezika i prepoznavanja imenovanih entiteta. Kreirat ću aplikaciju zvanu OPG Distribucija koja će služiti lokalnim OPG-ovima za prodaju vlastitih proizvoda. Unutar aplikacije ću implementirati glasovno popunjavanje formi što će ujedno biti i glavni dio ovog diplomskog rada.
+Ovaj repozitorij je napravljen za diplomski rad na temu Glasovno popunjavanje formi pomoću obrade prirodnog jezika i prepoznavanja imenovanih entiteta. Napravio sam aplikaciju zvanu OPG Distribucija koja će služiti lokalnim OPG-ovima za prodaju vlastitih proizvoda i ponude usluga. Unutar aplikacije sam implementirao glasovno popunjavanje formi što je ujedno i glavni dio ovog diplomskog rada.
+
 Tehnologije: VUE3+pinia, FastAPI, PostgreSQL, OpenAI Whisper za speech to text, OpenAI GPT 4o mini za strukturirane output-e.
 
 Verzije korištene u projektu (potrebno instalirati ukoliko nemate): - Node.js v22.15.0 - Python 3.11.2 - PostgreSQL Version 16, pgadmin4
@@ -20,8 +21,8 @@ Pokretanje backenda:
 1.  Instalirati pgadmin4 i postgresql i kreirati bazu podataka
 2.  otvoriti folder projekta u git bash terminalu
 3.  cd Backend
-4.  Kreirati virtualno okruženje unutar kojeg ćemo izolirati i instalirati sve librarye o kojima projekt ovisi (OBAVEZNO RADITI UNUTAR VENV radi mogućih konflikta s vašim lokalno instaliranim paketima):
-    ► pip install virtualenv (ukoliko nemate instaliran virtualenv na svom računalu, možete provjeriti s pip list sve lokalno instalirane pakete te instalirati s navedenom komandom)
+4.  Kreirati virtualno okruženje unutar kojeg ćemo izolirati i instalirati sve pakete o kojima projekt ovisi (OBAVEZNO RADITI UNUTAR VENV radi mogućih konflikta s vašim lokalno instaliranim paketima):
+    ► pip install virtualenv (ukoliko nemate instaliran virtualenv na svom računalu... s pip list možete provjeriti sve lokalno instalirane pakete)
 
     ► kreiranja venv i instalacija paketa:
 
@@ -33,23 +34,23 @@ Pokretanje backenda:
 
 5.  unutar Backend foldera kreiramo .env fajl s varijablama:
 
-                DB_USER=nazivuseraubazi
-                DB_PASSWORD=lozinkabaze
-                DB_HOST=dodatihost
-                DB_PORT=dodatiport
-                DB_NAME=nazivbazekojustekreirali
+                DB_USER=naziv_usera_u_bazi
+                DB_PASSWORD=lozinka_baze
+                DB_HOST=dodati_host
+                DB_PORT=dodati_port
+                DB_NAME=naziv_baze_koju_ste_kreirali
                 SECRET_KEY=dodati secret key -> generirati s komandom u gitbash terminalu python -c "import secrets; print(secrets.token_hex(32))"
                 ALGORITHM=HS256
-                ACCESS_TOKEN_EXPIRE_MINUTES=dodativrijemeuminutamainteger
+                ACCESS_TOKEN_EXPIRE_MINUTES=dodati_vrijeme_u_minutama_integer
                 SMTP_SERVER=server
                 SMTP_PORT=port
-                SMTP_USERNAME=korisnickoime
+                SMTP_USERNAME=korisnicko_ime
                 SMTP_PASSWORD=lozinka
-                FRONTEND_URL=frontendurl
-                BACKEND_URL=backendurl
+                FRONTEND_URL=frontend_url
+                BACKEND_URL=backend_url
                 ADMIN_USER=adminuser
                 ADMIN_PASS=adminpass
 
-6.  kreiranje svih tablica s alembicom s komandom alembic upgrade head
-7.  pokretanje backenda s uvicorn app:main --reload
+6.  kreiranje svih tablica u bazi s alembicom komandom -> alembic upgrade head
+7.  pokretanje backenda s -> uvicorn app:main --reload
 8.  otvoriti app u browseru (localhost + port u terminalu)

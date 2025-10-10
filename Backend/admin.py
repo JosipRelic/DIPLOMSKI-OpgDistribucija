@@ -1,10 +1,30 @@
 from sqladmin import Admin, ModelView
+from sqlalchemy import event, inspect
+from sqlalchemy.orm import Session as SASession
 from database import engine
 from models import (
     Korisnik, KorisnickiProfil, Kupac, Opg, KategorijaProizvoda, Proizvod,
     KategorijaUsluge, Usluga, Recenzija, OpgRaspolozivostPoDatumu,
     KosaricaStavka, Narudzba, NarudzbaStavka
 )
+from mail import posalji_email_opg_verificiran
+
+@event.listens_for(SASession, "after_flush")
+def _posalji_mail_kad_se_opg_verificira(session: SASession, ctx):
+    """Nakon flush-a provjeri je li neki OPG upravo postao verificiran i pošalji mail."""
+    for inst in session.dirty:
+        if isinstance(inst, Opg):
+            try:
+                hist = inspect(inst).attrs.verificiran.history  
+                if hist.has_changes() and bool(inst.verificiran) is True:   
+                    email = getattr(getattr(inst, "korisnik", None), "email", None)
+                    if email:
+                        try:
+                            posalji_email_opg_verificiran(email_opg=email, naziv_opg=inst.naziv or "OPG")
+                        except Exception as e:
+                            print("Greška pri slanju maila OPG-u nakon verifikacije:", e)
+            except Exception:
+                pass
 
 
 class KorisnikAdmin(ModelView, model=Korisnik):

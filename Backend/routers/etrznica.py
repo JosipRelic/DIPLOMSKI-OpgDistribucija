@@ -125,6 +125,7 @@ def opgovi(
         )
         .join(Korisnik, Korisnik.id == Opg.korisnik_id)
         .join(KorisnickiProfil, KorisnickiProfil.korisnik_id == Korisnik.id)
+        .filter(Opg.verificiran == True)
     )
 
     if kat_slug:
@@ -339,7 +340,7 @@ def detalji_proizvoda(
 def statistika(
     db: Session = Depends(get_db)
 ):
-    broj_registriranih_opgova = db.query(func.count(Opg.id)).scalar()
+    broj_registriranih_opgova = db.query(func.count(Opg.id)).filter(Opg.verificiran == True).scalar()
     broj_usluga = db.query(func.count(Usluga.id)).scalar()
     broj_proizvoda = db.query(func.count(Proizvod.id)).scalar()
 
