@@ -1,12 +1,22 @@
 # DIPLOMSKI-OpgDistribucija
 
-Ovaj repozitorij je napravljen za diplomski rad na temu Glasovno popunjavanje formi pomoću obrade prirodnog jezika i prepoznavanja imenovanih entiteta. Napravio sam aplikaciju zvanu OPG Distribucija koja će služiti lokalnim OPG-ovima za prodaju vlastitih proizvoda i ponude usluga. Unutar aplikacije sam implementirao glasovno popunjavanje formi što je ujedno i glavni dio ovog diplomskog rada.
+Ovaj repozitorij je napravljen za diplomski rad na temu **Glasovno popunjavanje formi pomoću obrade prirodnog jezika i prepoznavanja imenovanih entiteta**. Napravio sam aplikaciju zvanu **OPG Distribucija** koja će služiti lokalnim OPG-ovima za prodaju vlastitih proizvoda i ponude usluga. Unutar aplikacije sam implementirao glasovno popunjavanje formi što je ujedno i glavni dio ovog diplomskog rada.
 
-Tehnologije: VUE3+pinia, FastAPI, PostgreSQL, OpenAI Whisper za speech to text, OpenAI GPT 4o mini za strukturirane output-e.
+### Tehnologije:
 
-Verzije korištene u projektu (potrebno instalirati ukoliko nemate): - Node.js v22.15.0 - Python 3.11.2 - PostgreSQL Version 16, pgadmin4
+- VUE3+pinia,
+- FastAPI,
+- PostgreSQL,
+- OpenAI Whisper za speech to text,
+- OpenAI GPT 4o mini za strukturirane output-e.
 
-Pokretanje frontenda:
+### Verzije korištene u projektu (potrebno instalirati ukoliko nemate):
+
+- Node.js v22.15.0
+- Python 3.11.2
+- PostgreSQL Version 16, pgadmin4
+
+### Pokretanje frontenda:
 
 1. otvoriti root folder projekta u git bash terminalu (ili vs code)
 2. cd Frontend
@@ -16,7 +26,7 @@ Pokretanje frontenda:
 5. npm run dev
 6. otvoriti app u browseru (localhost+port link u terminalu)
 
-Pokretanje backenda:
+### Pokretanje backenda:
 
 1.  Instalirati pgadmin4 i postgresql i kreirati bazu podataka
 2.  otvoriti root folder projekta u git bash terminalu
