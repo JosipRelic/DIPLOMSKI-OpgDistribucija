@@ -92,6 +92,14 @@
                   Zaboravili ste lozinku?
                 </router-link>
               </p>
+              <p class="mt-2 text-sm text-gray-800 text-center">
+                <router-link
+                  :to="{ name: 'registracija' }"
+                  class="mt-6 text-center text-md border-b border-gray-500 border-dotted"
+                >
+                  Nemate račun? Registrirajte se ovdje.
+                </router-link>
+              </p>
             </div>
           </form>
         </div>

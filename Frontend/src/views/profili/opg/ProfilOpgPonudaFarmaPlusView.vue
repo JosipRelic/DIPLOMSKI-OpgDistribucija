@@ -148,7 +148,7 @@
               />
             </svg>
           </div>
-          <span class="ml-4"> Ispunite glasovno pomoću AI </span>
+          <span class="ml-4 max-sm:text-sm"> Ispunite glasovno pomoću AI </span>
         </button>
         <small class="pt-2 w-full max-w-xs text-xs"
           >Pritisnite gumb i popunite obrazac glasom npr. "Priprema tla pomoću oranja po cijeni od

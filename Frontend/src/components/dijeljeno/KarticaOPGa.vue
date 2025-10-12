@@ -9,7 +9,7 @@
       class="h-56 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-72 transition duration-500 group-hover:scale-105"
     />
 
-    <div class="mt-4 flex items-center justify-center gap-4 px-4">
+    <div class="mt-4 sm:flex items-center justify-center gap-4 px-4">
       <strong
         class="font-medium text-gray-900 group-hover:text-gray-500 transition duration-500 group-hover:scale-105"
       >

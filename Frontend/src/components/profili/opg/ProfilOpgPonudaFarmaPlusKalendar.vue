@@ -152,8 +152,10 @@
           v-if="rezim === 'tjedno'"
           class="rounded-2xl bg-white text-gray-600 shadow shadow-lg p-4"
         >
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Ovaj tjedan ({{ oznakaRasponaTjedna }})</h3>
+          <div class="sm:flex items-center justify-between mb-3">
+            <h3 class="text-lg font-semibold max-sm:mb-2">
+              Ovaj tjedan ({{ oznakaRasponaTjedna }})
+            </h3>
             <div class="flex gap-2">
               <button
                 class="px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-800 shadow-lg text-white"
@@ -192,7 +194,7 @@
             <div
               v-for="red in redoviTjedna"
               :key="red.kljuc"
-              class="flex items-center gap-4 py-3 max-sm:gap-2 lg:gap-2 xl:gap-4"
+              class="sm:flex items-center gap-4 py-3 max-sm:gap-2 lg:gap-2 xl:gap-4"
             >
               <label class="flex items-center gap-2 w-28 max-sm:w-12 lg:w-14 xl:w-28">
                 <input type="checkbox" v-model="red.ukljuceno" class="accent-sky-500 h-4 w-4" />
@@ -201,7 +203,7 @@
               <input
                 type="time"
                 v-model="red.od"
-                class="w-32 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow-lg"
+                class="w-32 max-sm:mb-2 max-sm:me-1 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow-lg"
               />
               <input
                 type="time"
@@ -220,8 +222,10 @@
             <p>Odaberite željeni datum u kalendaru.</p>
           </div>
           <div v-else>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-lg font-semibold">Datum: {{ formatirajPun(naCekanjuDatum) }}</h3>
+            <div class="sm:flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold max-sm:mb-2">
+                Datum: {{ formatirajPun(naCekanjuDatum) }}
+              </h3>
               <div class="flex gap-2">
                 <button
                   class="px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-800 shadow-lg text-white"
@@ -256,11 +260,11 @@
               </button>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="sm:flex max-sm:mt-2 items-center gap-4">
               <input
                 type="time"
                 v-model="jedan.od"
-                class="w-32 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow-lg"
+                class="w-32 px-3 max-sm:mb-2 max-sm:me-2 py-2 rounded-xl bg-white border border-gray-200 shadow-lg"
               />
               <input
                 type="time"
@@ -275,9 +279,11 @@
           <div
             v-for="stavka in paginiraniDogadjaji"
             :key="stavka.id"
-            class="flex gap-4 items-stretch"
+            class="sm:flex gap-4 items-stretch"
           >
-            <div class="w-20 shrink-0 rounded-2xl bg-white shadow-lg text-center py-3">
+            <div
+              class="w-20 max-sm:w-full max-sm:mb-2 shrink-0 rounded-2xl bg-white shadow-lg text-center py-3"
+            >
               <div class="text-3xl font-bold text-[#223c2f] leading-none">
                 {{ brojDana(stavka.datum) }}
               </div>
@@ -285,12 +291,12 @@
             </div>
 
             <div class="flex-1 rounded-2xl shadow-lg bg-white px-5 py-4">
-              <div class="flex items-center gap-2 mb-1">
+              <div class="sm:flex items-center gap-2 mb-1">
                 <span
                   class="inline-block h-3 w-3 rounded-full"
                   :style="{ background: stavka.tockaBoja }"
                 />
-                <h3 class="text-lg font-medium text-gray-600 flex-1">
+                <h3 class="text-lg max-sm:mb-3 font-medium text-gray-600 flex-1">
                   <template v-if="urediStanje.id !== stavka.id">
                     {{ stavka.naslov || "Termin" }}
                   </template>
@@ -335,7 +341,7 @@
                 <template v-else>
                   <button
                     @click="spremiUredivanje"
-                    class="px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-800 shadow-lg text-white"
+                    class="px-3 py-1.5 max-sm:me-2 rounded-xl bg-teal-500 hover:bg-teal-800 shadow-lg text-white"
                   >
                     Spremi
                   </button>
@@ -353,13 +359,13 @@
                 {{ formatirajDatum(stavka.datum) }}
               </div>
 
-              <div v-else class="flex flex-wrap items-center gap-3 text-gray-600">
-                <div class="flex items-center gap-2 mt-2">
-                  <span class="text-gray-400">Vrijeme:</span>
+              <div v-else class="sm:flex flex-wrap items-center gap-3 text-gray-600">
+                <div class="sm:flex items-center gap-2 mt-2">
+                  <span class="text-gray-400 max-sm:flex max-sm:mb-1">Vrijeme:</span>
                   <input
                     type="time"
                     v-model="urediStanje.od"
-                    class="w-28 px-3 py-2 rounded-xl bg-white border border-gray-200 shadow"
+                    class="w-28 px-3 max-sm:mb-2 py-2 rounded-xl bg-white border border-gray-200 shadow"
                   />
                   <span>-</span>
                   <input
@@ -369,8 +375,8 @@
                   />
                 </div>
 
-                <div class="flex items-center gap-2">
-                  <span class="text-gray-400">Datum:</span>
+                <div class="sm:flex items-center gap-2">
+                  <span class="text-gray-400 max-sm:flex">Datum:</span>
                   <input
                     type="date"
                     :value="isoDatum(stavka.datum)"
@@ -421,11 +427,11 @@
       class="mx-auto max-w-6xl grid grid-cols-1gap-8 mt-5 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-white/5"
     >
       <div>
-        <div class="flex mb-6">
+        <div class="sm:flex mb-6">
           <h2 class="text-3xl text-orange-600 font-semibold">Nadolazeće rezervacije</h2>
           <router-link
             :to="{ name: 'profilOpgPrimljeneRezervacije' }"
-            class="text-white flex items-center bg-orange-600 px-3 py-2 ms-4 rounded-xl hover:bg-orange-900 shadow-md"
+            class="text-white flex items-center max-sm:mt-2 max-sm:w-40 max-sm:ms-0 bg-orange-600 px-3 py-2 ms-4 rounded-xl hover:bg-orange-900 shadow-md"
           >
             <span>Pogledaj sve</span>
             <span>
@@ -466,7 +472,7 @@
               <div class="hidden sm:flex w-full bg-orange-500 h-0.5"></div>
             </div>
             <div class="mt-3 sm:pe-8 h-full">
-              <div class="flex items-start gap-3">
+              <div class="sm:flex items-start gap-3">
                 <img
                   class="w-20 h-20 rounded-xl shrink-0"
                   :src="r.slika || defaultSlikaUsluge"

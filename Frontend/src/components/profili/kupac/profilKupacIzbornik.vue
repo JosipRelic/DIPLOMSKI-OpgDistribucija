@@ -1,5 +1,7 @@
 <template>
-  <aside class="w-full h-full min-h-screen bg-white p-10 flex flex-col justify-between">
+  <aside
+    class="w-full h-full min-h-screen bg-white p-10 flex flex-col justify-between max-lg:min-h-60"
+  >
     <div>
       <div
         class="group flex items-center pr-3 py-2 text-sm text-gray-600 rounded-lg justify-between cursor-pointer"
@@ -14,6 +16,7 @@
           </p>
         </span>
       </div>
+
       <nav class="md:mt-10 mt-5">
         <ul class="space-y-3 border-b border-gray-200 pb-3">
           <li>

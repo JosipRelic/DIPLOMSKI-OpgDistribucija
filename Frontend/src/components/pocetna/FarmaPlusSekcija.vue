@@ -49,7 +49,9 @@
       <span class="flex items-center pb-8">
         <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300"></span>
 
-        <span class="shrink-0 px-4 text-gray-900 text-3xl">Najtraženije usluge</span>
+        <span class="shrink-0 px-4 text-gray-900 text-3xl max-sm:text-2xl"
+          >Najtraženije usluge</span
+        >
 
         <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300"></span>
       </span>

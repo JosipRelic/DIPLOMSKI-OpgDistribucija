@@ -1,5 +1,7 @@
 <template>
-  <div class="mx-auto max-w-6xl space-y-6">
+  <div
+    class="mx-auto max-w-6xl max-sm:max-w-xs max-md:max-w-xl max-lg:max-w-3xl max-xl:max-w-4xl space-y-6"
+  >
     <div class="rounded-2xl bg-white p-6 shadow-xl mt-10" :class="{ 'mb-15': !imaTerminaGlobal }">
       <div class="flex flex-wrap gap-4 justify-between">
         <div class="p-4 max-w-sm">
@@ -54,6 +56,15 @@
               </div>
             </div>
           </div>
+
+          <img
+            :src="
+              usluga?.slika_usluge ||
+              'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
+            "
+            :alt="usluga?.naziv || 'Usluga'"
+            class="rounded-md object-cover aspect-video max-sm:max-w-60 max-md:max-w-md max-lg:max-w-3xl max-xl:max-w-4xl mt-2 xl:hidden"
+          />
 
           <p class="text-gray-600 font-normal text-base mt-2 mb-4 max-w-md">
             {{ usluga?.opis || "Opis usluge nije dostupan." }}
@@ -150,7 +161,7 @@
             'https://images.unsplash.com/photo-1483871788521-4f224a86e166?w=600&auto=format&fit=crop&q=60'
           "
           :alt="usluga?.naziv || 'Usluga'"
-          class="rounded-md object-cover aspect-video max-w-2xl"
+          class="rounded-md object-cover aspect-video max-w-2xl max-xl:hidden"
         />
       </div>
     </div>

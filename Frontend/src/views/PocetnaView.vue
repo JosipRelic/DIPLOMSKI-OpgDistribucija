@@ -10,7 +10,9 @@
     <span class="flex items-center py-8">
       <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300"></span>
 
-      <span class="shrink-0 px-4 text-gray-900 text-3xl">Najprodavaniji proizvodi</span>
+      <span class="shrink-0 px-4 text-gray-900 text-3xl max-sm:text-2xl"
+        >Najprodavaniji proizvodi</span
+      >
 
       <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300"></span>
     </span>
@@ -36,7 +38,9 @@
     <span class="flex items-center py-6">
       <span class="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300"></span>
 
-      <span class="shrink-0 px-4 text-gray-900 text-3xl">Najbolje ocijenjeni OPG-ovi</span>
+      <span class="shrink-0 px-4 text-gray-900 text-3xl max-sm:text-2xl"
+        >Najbolje ocijenjeni OPG-ovi</span
+      >
 
       <span class="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300"></span>
     </span>

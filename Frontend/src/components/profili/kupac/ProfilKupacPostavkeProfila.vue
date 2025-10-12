@@ -53,7 +53,7 @@
         <div class="border-b border-gray-900/10 pb-12">
           <div class="flex flex-col items-center">
             <button
-              class="w-full max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-2 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+              class="w-full max-sm:p-2 max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-2 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
             >
               <div class="bg-white p-2 rounded-full">
                 <svg
@@ -67,7 +67,7 @@
                   />
                 </svg>
               </div>
-              <span class="ml-4"> Ispunite glasovno pomoću AI </span>
+              <span class="ml-4 max-sm:text-sm"> Ispunite glasovno pomoću AI </span>
             </button>
             <small class="pt-2 w-full max-w-xs text-xs"
               >Pritisnite gumb i izmijenite podatke u obrascu glasom npr. "Moja adresa više nije

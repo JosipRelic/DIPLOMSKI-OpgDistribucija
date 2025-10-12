@@ -70,6 +70,13 @@
             </div>
           </div>
         </div>
+        <div class="h-40 md:hidden flex justify-center items-start" v-if="!loading && proizvod">
+          <img
+            :src="proizvod.slika_proizvoda || defaultSlika"
+            :alt="proizvod.naziv"
+            class="w-full rounded-lg shadow object-cover h-40"
+          />
+        </div>
 
         <p class="text-gray-600 text-base">
           {{ proizvod.opis }}
@@ -114,7 +121,7 @@
         </button>
       </div>
 
-      <div class="h-130 max-md:hidden flex justify-center items-start" v-if="!loading && proizvod">
+      <div class="h-130 max-sm:hidden flex justify-center items-start" v-if="!loading && proizvod">
         <img
           :src="proizvod.slika_proizvoda || defaultSlika"
           :alt="proizvod.naziv"

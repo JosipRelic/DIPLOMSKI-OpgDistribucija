@@ -3,14 +3,14 @@
     <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <router-link :to="{ name: 'pocetna' }" class="block text-teal-600 group">
-          <div class="flex items-center gap-2">
+          <div class="sm:flex items-center gap-2">
             <img
               :src="slikeLogo"
               alt="logo"
-              class="w-10 h-auto transition duration-500 group-hover:scale-105"
+              class="w-10 max-sm:ms-5 h-auto transition duration-500 group-hover:scale-105"
             />
 
-            <p class="block text-lg text-gray-100 transition hover:text-gray-500/75">
+            <p class="block text-lg text-gray-100 max-sm:text-xs transition hover:text-gray-500/75">
               OPG Distribucija
             </p>
           </div>
@@ -40,7 +40,7 @@
             </ul>
           </nav>
 
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 max-sm:gap-3">
             <template v-if="!autentifikacija.korisnikAutentificiran">
               <div class="sm:flex sm:gap-4">
                 <router-link
