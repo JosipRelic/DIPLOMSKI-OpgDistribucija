@@ -7,7 +7,7 @@ Ovaj repozitorij je napravljen za diplomski rad na temu **Glasovno popunjavanje 
 - VUE3+pinia,
 - FastAPI,
 - PostgreSQL,
-- OpenAI Whisper za speech to text,
+- OpenAI GPT 4o mini transcribe (baziran na whisperu) za speech to text,
 - OpenAI GPT 4o mini za strukturirane output-e.
 
 ### Verzije korištene u projektu (potrebno instalirati ukoliko nemate):

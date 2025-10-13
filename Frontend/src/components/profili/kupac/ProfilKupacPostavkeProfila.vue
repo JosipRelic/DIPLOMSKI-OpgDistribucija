@@ -52,23 +52,10 @@
 
         <div class="border-b border-gray-900/10 pb-12">
           <div class="flex flex-col items-center">
-            <button
-              class="w-full max-sm:p-2 max-w-xs font-bold shadow-sm hover:bg-red-400 rounded-lg py-2 bg-red-300 text-gray-900 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
-            >
-              <div class="bg-white p-2 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  class="w-6 text-red-600"
-                >
-                  <path
-                    fill="currentColor"
-                    d="m20.713 7.128l-.246.566a.506.506 0 0 1-.934 0l-.246-.566a4.36 4.36 0 0 0-2.22-2.25l-.759-.339a.53.53 0 0 1 0-.963l.717-.319A4.37 4.37 0 0 0 19.276.931L19.53.32a.506.506 0 0 1 .942 0l.253.61a4.37 4.37 0 0 0 2.25 2.327l.718.32a.53.53 0 0 1 0 .962l-.76.338a4.36 4.36 0 0 0-2.219 2.251M8.5 6h-2v12h2zM4 10H2v4h2zm9-8h-2v20h2zm4.5 6h-2v10h2zm4.5 2h-2v4h2z"
-                  />
-                </svg>
-              </div>
-              <span class="ml-4 max-sm:text-sm"> Ispunite glasovno pomoću AI </span>
-            </button>
+            <GumbZaGlasovnoPopunjavanje
+              strukturaUpita="postavke_kupca"
+              @popuni="glasovnoPopuniFormuPostavkiProfilaKupca"
+            />
             <small class="pt-2 w-full max-w-xs text-xs"
               >Pritisnite gumb i izmijenite podatke u obrascu glasom npr. "Moja adresa više nije
               Preradovićeva 99, nego Zagrebačka 23..."</small
@@ -250,6 +237,7 @@ import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { useRouter } from "vue-router"
 import { useUiStore } from "@/stores/ui"
 import { hr_zupanije } from "@/constants/zupanije"
+import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
@@ -403,5 +391,17 @@ const obrisiProfil = async () => {
   } else {
     ui.obavijest({ tekst: "Greška pri brisanju profila.", tip_obavijesti: "greska" })
   }
+}
+
+function glasovnoPopuniFormuPostavkiProfilaKupca(e) {
+  const sp = e.podaci || {}
+  forma.ime = sp.ime ?? forma.ime
+  forma.prezime = sp.prezime ?? forma.prezime
+  forma.broj_telefona = sp.broj_telefona ?? forma.broj_telefona
+  forma.drzava = sp.drzava ?? forma.drzava
+  forma.zupanija = sp.zupanija ?? forma.zupanija
+  forma.grad = sp.grad ?? forma.grad
+  forma.postanski_broj = sp.postanski_broj ?? forma.postanski_broj
+  forma.adresa = sp.adresa ?? forma.adresa
 }
 </script>
