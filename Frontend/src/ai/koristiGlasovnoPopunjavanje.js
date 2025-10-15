@@ -25,13 +25,14 @@ export function koristiGlasovnoPopunjavanje() {
     snimam.value = false
     tekstGumba.value = "Ispunite glasovno pomoću AI"
     klasaGumba.value = ""
-    zadnjiTranskript.value = ""
   }
 
   async function zapocniSnimanje() {
     try {
       greska.value = null
+      zadnjiTranskript.value = ""
       const pristupMikrofonuKorisnika = await navigator.mediaDevices.getUserMedia({ audio: true })
+      tokMikrofona = pristupMikrofonuKorisnika
       dijeloviSnimke = []
       snimacGlasa = new MediaRecorder(pristupMikrofonuKorisnika, { mimeType: "audio/webm" })
       snimacGlasa.ondataavailable = (e) => e.data?.size > 0 && dijeloviSnimke.push(e.data)

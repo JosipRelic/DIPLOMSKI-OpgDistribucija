@@ -14,10 +14,7 @@
           </div>
           <form class="w-full flex-1 mt-8" @submit.prevent="posaljiPodatkeZaPrijavu">
             <div class="flex flex-col items-center">
-              <GumbZaGlasovnoPopunjavanje
-                strukturaUpita="prijava"
-                @popuni="glasovnoPopuniFormuPrijave"
-              />
+              <GumbZaGlasovnoPopunjavanje strukturaUpita="prijava" @popuni="popuniFormuPomocuAI" />
               <small class="ps-2 pt-2 w-full max-w-xs"
                 >Pritisnite gumb i popunite obrazac glasom npr. "Moja email adresa je
                 ihorvat@gmail.com"</small
@@ -37,14 +34,14 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white"
                 type="text"
                 placeholder="Email ili korisničko ime"
-                v-model="email_ili_korisnicko_ime"
+                v-model="formaPrijave.email_ili_korisnicko_ime"
               />
 
               <input
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
                 placeholder="Lozinka"
-                v-model="lozinka"
+                v-model="formaPrijave.lozinka"
               />
 
               <button
@@ -101,16 +98,20 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaPrijave from "@/assets/slike/forma-prijave.png"
-import { ref, watch, onUnmounted } from "vue"
+import { ref, watch, reactive, onUnmounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
-const email_ili_korisnicko_ime = ref("")
-const lozinka = ref("")
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
 const route = useRoute()
+
+const formaPrijave = reactive({
+  email_ili_korisnicko_ime: "",
+  lozinka: "",
+})
 
 const showExpired = ref(false)
 let hideTimer = null
@@ -148,8 +149,8 @@ const posaljiPodatkeZaPrijavu = async () => {
   autentifikacija.error = null
 
   const ok = await autentifikacija.prijava({
-    email_ili_korisnicko_ime: email_ili_korisnicko_ime.value,
-    lozinka: lozinka.value,
+    email_ili_korisnicko_ime: formaPrijave.email_ili_korisnicko_ime,
+    lozinka: formaPrijave.lozinka,
   })
 
   if (ok) {
@@ -163,9 +164,7 @@ const posaljiPodatkeZaPrijavu = async () => {
   }
 }
 
-function glasovnoPopuniFormuPrijave(e) {
-  const sp = e.podaci || {}
-  email_ili_korisnicko_ime.value = sp.email_ili_korisnicko_ime ?? email_ili_korisnicko_ime.value
-  lozinka.value = sp.lozinka ?? lozinka.value
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(formaPrijave, podaci)
 }
 </script>

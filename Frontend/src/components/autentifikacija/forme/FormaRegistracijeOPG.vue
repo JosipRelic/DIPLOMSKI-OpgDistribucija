@@ -13,7 +13,7 @@
             <div class="flex flex-col items-center">
               <GumbZaGlasovnoPopunjavanje
                 strukturaUpita="registracija_opg"
-                @popuni="glasovnoPopuniFormuRegistracijeOpga"
+                @popuni="popuniFormuPomocuAI"
               />
               <small class="pt-2 w-full max-w-xs"
                 >Pritisnite gumb i popunite obrazac glasom npr. "Zovem se Ivan Horvat. Moja email
@@ -34,7 +34,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white"
                 type="email"
                 placeholder="Email"
-                v-model="email"
+                v-model="formaRegistracijeOPGa.email"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite email adresu')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -43,7 +43,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Korisničko Ime"
-                v-model="korisnicko_ime"
+                v-model="formaRegistracijeOPGa.korisnicko_ime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite korisničko ime')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -52,7 +52,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
                 placeholder="Lozinka"
-                v-model="lozinka"
+                v-model="formaRegistracijeOPGa.lozinka"
                 required
                 minlength="8"
                 @invalid="
@@ -64,7 +64,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
                 placeholder="Potvrdite lozinku"
-                v-model="potvrda_lozinke"
+                v-model="formaRegistracijeOPGa.potvrda_lozinke"
                 required
                 minlength="8"
                 @invalid="
@@ -76,7 +76,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Naziv OPG-a"
-                v-model="naziv"
+                v-model="formaRegistracijeOPGa.naziv"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite naziv vašeg OPG-a')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -85,7 +85,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Ime vlasnika"
-                v-model="ime"
+                v-model="formaRegistracijeOPGa.ime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite ime vlasnika OPG-a')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -94,7 +94,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Prezime vlasnika"
-                v-model="prezime"
+                v-model="formaRegistracijeOPGa.prezime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite email adresu')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -104,7 +104,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="number"
                 placeholder="Identifikacijski broj PG-a (MIBPG)"
-                v-model="identifikacijski_broj_mibpg"
+                v-model="formaRegistracijeOPGa.identifikacijski_broj_mibpg"
                 required
                 minlength="1"
                 @invalid="(e) => e.target.setCustomValidity('MIBPG mora imati najmanje 1 znak')"
@@ -159,46 +159,40 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaRegistracijeOpg from "@/assets/slike/forma-registracije-opg.png"
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
-const email = ref("")
-const korisnicko_ime = ref("")
-const lozinka = ref("")
-const potvrda_lozinke = ref("")
-const naziv = ref("")
-const ime = ref("")
-const prezime = ref("")
-const identifikacijski_broj_mibpg = ref("")
+const formaRegistracijeOPGa = reactive({
+  email: "",
+  korisnicko_ime: "",
+  lozinka: "",
+  potvrda_lozinke: "",
+  naziv: "",
+  ime: "",
+  prezime: "",
+  identifikacijski_broj_mibpg: "",
+})
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
 
 const posaljiPodatkeZaRegistracijuOpga = async () => {
   const ok = await autentifikacija.registrirajOpg({
-    email: email.value,
-    korisnicko_ime: korisnicko_ime.value,
-    lozinka: lozinka.value,
-    potvrda_lozinke: potvrda_lozinke.value,
-    naziv: naziv.value,
-    ime: ime.value,
-    prezime: prezime.value,
-    identifikacijski_broj_mibpg: identifikacijski_broj_mibpg.value,
+    email: formaRegistracijeOPGa.email,
+    korisnicko_ime: formaRegistracijeOPGa.korisnicko_ime,
+    lozinka: formaRegistracijeOPGa.lozinka,
+    potvrda_lozinke: formaRegistracijeOPGa.potvrda_lozinke,
+    naziv: formaRegistracijeOPGa.naziv,
+    ime: formaRegistracijeOPGa.ime,
+    prezime: formaRegistracijeOPGa.prezime,
+    identifikacijski_broj_mibpg: formaRegistracijeOPGa.identifikacijski_broj_mibpg,
   })
 }
 
-function glasovnoPopuniFormuRegistracijeOpga(e) {
-  const sp = e.podaci || {}
-  email.value = sp.email ?? email.value
-  korisnicko_ime.value = sp.korisnicko_ime ?? korisnicko_ime.value
-  lozinka.value = sp.lozinka ?? lozinka.value
-  potvrda_lozinke.value = sp.potvrda_lozinke ?? potvrda_lozinke.value
-  naziv.value = sp.naziv ?? naziv.value
-  ime.value = sp.ime ?? ime.value
-  prezime.value = sp.prezime ?? prezime.value
-  identifikacijski_broj_mibpg.value =
-    sp.identifikacijski_broj_mibpg ?? identifikacijski_broj_mibpg.value
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(formaRegistracijeOPGa, podaci)
 }
 </script>

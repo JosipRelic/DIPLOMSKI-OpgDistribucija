@@ -140,10 +140,7 @@
       </div>
 
       <div class="flex flex-col items-center mt-2">
-        <GumbZaGlasovnoPopunjavanje
-          strukturaUpita="novi_proizvod"
-          @popuni="glasovnoPopuniFormuZaDodavanjeProizvoda"
-        />
+        <GumbZaGlasovnoPopunjavanje strukturaUpita="novi_proizvod" @popuni="popuniFormuPomocuAI" />
         <small class="pt-2 w-full max-w-xs text-xs"
           >Pritisnite gumb i popunite obrazac glasom npr. "Svježi krastavci s naših polja po cijeni
           od 2 eura po kg..."</small
@@ -407,6 +404,7 @@ import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import { usePonudaEtrznicaStore } from "@/stores/ponudaEtrznica"
 import { useUiStore } from "@/stores/ui"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const autentifikacija = useAutentifikacijskiStore()
 const ponudaEtrznica = usePonudaEtrznicaStore()
@@ -554,26 +552,30 @@ async function obrisiProizvod(p) {
   ui.obavijest({ tekst: "Proizvod je obrisan.", tip_obavijesti: "uspjeh" })
 }
 
-function glasovnoPopuniFormuZaDodavanjeProizvoda(e) {
-  const sp = e.podaci || {}
+function normalizirajMjernuJedinicuProizvoda(mj) {
+  const s = String(mj || "").toLowerCase()
+  if (["kom", "komad", "komada"].includes(s)) return "kom"
+  if (["kg", "kilogram", "kilograma"].includes(s)) return "kg"
+  if (["g", "gram", "grama"].includes(s)) return "g"
+  if (["l", "litar", "litra", "litara"].includes(s)) return "l"
+  if (["ml", "mililitar", "mililitra", "mililitara"].includes(s)) return "ml"
+  return forma.mjerna_jedinica
+}
 
-  forma.naziv = sp.naziv ?? forma.naziv
-  forma.opis = sp.opis ?? forma.opis
+function popuniFormuPomocuAI({ podaci }) {
+  const sp = { ...(podaci || {}) }
 
-  if (sp.cijena != null) {
-    const broj =
-      typeof sp.cijena === "string" ? Number(sp.cijena.replace(",", ".")) : Number(sp.cijena)
-    if (!Number.isNaN(broj)) forma.cijena = broj
+  if (sp.kategorija && !sp.kategorija_id) {
+    const kat = (ponudaEtrznica.kategorije || []).find(
+      (k) => k.naziv?.toLowerCase() === String(sp.kategorija).toLowerCase(),
+    )
+    if (kat) sp.kategorija_id = kat.id
   }
+  if (sp.mjerna_jedinica)
+    sp.mjerna_jedinica = normalizirajMjernuJedinicuProizvoda(sp.mjerna_jedinica)
 
-  if (sp.mjerna_jedinica) {
-    const mj = String(sp.mjerna_jedinica).toLowerCase()
-    const dozvoljeno = ["kom", "kg", "g", "ml", "l"]
-    if (dozvoljeno.includes(mj)) forma.mjerna_jedinica = mj
-  }
-
-  if (sp.proizvod_dostupan === "boolean") {
-    forma.proizvod_dostupan = sp.proizvod_dostupan
-  }
+  const formaAI = { ...forma }
+  primijeniPodatkeOdAIuFormu(formaAI, sp)
+  Object.assign(forma, formaAI)
 }
 </script>

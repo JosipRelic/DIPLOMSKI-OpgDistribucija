@@ -54,7 +54,7 @@
           <div class="flex flex-col items-center">
             <GumbZaGlasovnoPopunjavanje
               strukturaUpita="postavke_kupca"
-              @popuni="glasovnoPopuniFormuPostavkiProfilaKupca"
+              @popuni="popuniFormuPomocuAI"
             />
             <small class="pt-2 w-full max-w-xs text-xs"
               >Pritisnite gumb i izmijenite podatke u obrascu glasom npr. "Moja adresa više nije
@@ -238,6 +238,7 @@ import { useRouter } from "vue-router"
 import { useUiStore } from "@/stores/ui"
 import { hr_zupanije } from "@/constants/zupanije"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
@@ -393,15 +394,7 @@ const obrisiProfil = async () => {
   }
 }
 
-function glasovnoPopuniFormuPostavkiProfilaKupca(e) {
-  const sp = e.podaci || {}
-  forma.ime = sp.ime ?? forma.ime
-  forma.prezime = sp.prezime ?? forma.prezime
-  forma.broj_telefona = sp.broj_telefona ?? forma.broj_telefona
-  forma.drzava = sp.drzava ?? forma.drzava
-  forma.zupanija = sp.zupanija ?? forma.zupanija
-  forma.grad = sp.grad ?? forma.grad
-  forma.postanski_broj = sp.postanski_broj ?? forma.postanski_broj
-  forma.adresa = sp.adresa ?? forma.adresa
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(forma, podaci)
 }
 </script>

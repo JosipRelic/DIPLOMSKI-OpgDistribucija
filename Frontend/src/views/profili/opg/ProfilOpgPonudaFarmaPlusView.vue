@@ -137,10 +137,7 @@
       </div>
 
       <div class="flex flex-col items-center mt-2">
-        <GumbZaGlasovnoPopunjavanje
-          strukturaUpita="nova_usluga"
-          @popuni="glasovnoPopuniFormuZaDodavanjeUsluge"
-        />
+        <GumbZaGlasovnoPopunjavanje strukturaUpita="nova_usluga" @popuni="popuniFormuPomocuAI" />
         <small class="pt-2 w-full max-w-xs text-xs"
           >Pritisnite gumb i popunite obrazac glasom npr. "Priprema tla pomoću oranja po cijeni od
           70 eura po metru kvadratnom..."</small
@@ -620,34 +617,46 @@ async function obrisiUslugu(p) {
   ui.obavijest({ tekst: "Usluga je obrisana.", tip_obavijesti: "uspjeh" })
 }
 
-function glasovnoPopuniFormuZaDodavanjeUsluge(e) {
-  const sp = e.podaci || {}
+function normalizirajMjernuJedinicuUsluge(mj) {
+  const s = String(mj || "").toLowerCase()
+  if (["sat", "sati", "sata"].includes(s)) return "sat"
+  if (["hektar", "ha", "hektara", "hektri"].includes(s)) return "hektar"
+  if (
+    [
+      "m2",
+      "kvadrat",
+      "kvadrata",
+      "metara kvadratnih",
+      "metara na kvadrat",
+      "kvadratnih metara",
+    ].includes(s)
+  )
+    return "m2"
+  if (["m", "metar", "metra", "metara", "metri"].includes(s)) return "m"
+  if (["ral", "jutro"].includes(s)) return "ral (jutro)"
+  if (["kom", "komad", "komada"].includes(s)) return "kom"
+  return forma.mjerna_jedinica
+}
 
-  forma.naziv = sp.naziv ?? forma.naziv
-  forma.opis = sp.opis ?? forma.opis
+function popuniFormuPomocuAI({ podaci }) {
+  const sp = { ...(podaci || {}) }
 
-  if (sp.cijena != null) {
-    const broj =
-      typeof sp.cijena === "string" ? Number(sp.cijena.replace(",", ".")) : Number(sp.cijena)
-    if (!Number.isNaN(broj)) forma.cijena = broj
+  if (sp.kategorija && !sp.kategorija_id) {
+    const kat = (ponudaFarmaPlus.kategorije || []).find(
+      (k) => k.naziv?.toLowerCase() === String(sp.kategorija).toLowerCase(),
+    )
+    if (kat) sp.kategorija_id = kat.id
+  }
+  if (sp.mjerna_jedinica) sp.mjerna_jedinica = normalizirajMjernuJedinicuUsluge(sp.mjerna_jedinica)
+
+  if (typeof sp.trajanje_po_mjernoj_jedinici === "number") {
+    const minute = Math.max(0, Math.round(sp.trajanje_po_mjernoj_jedinici))
+    trajanje_s.value = Math.floor(minute / 60)
+    trajanje_m.value = minute % 60
   }
 
-  if (sp.mjerna_jedinica) {
-    const mj = String(sp.mjerna_jedinica).toLowerCase()
-    const dozvoljeno = ["sat", "hektar", "m", "m2", "ral (jutro)", "kom"]
-    if (dozvoljeno.includes(mj)) forma.mjerna_jedinica = mj
-  }
-
-  if (typeof sp.usluga_dostupna === "boolean") {
-    forma.usluga_dostupna = sp.usluga_dostupna
-  }
-
-  if (sp.trajanje_po_mjernoj_jedinici != null) {
-    const min = Number(sp.trajanje_po_mjernoj_jedinici)
-    if (!Number.isNaN(min)) {
-      trajanje_s.value = Math.floor(min / 60)
-      trajanje_m.value = min % 60
-    }
-  }
+  const formaAI = { ...forma }
+  primijeniPodatkeOdAIuFormu(formaAI, sp)
+  Object.assign(forma, formaAI)
 }
 </script>

@@ -47,7 +47,13 @@
       v-else-if="zadnjiTranskript"
       class="mt-2 text-sm text-teal-800 bg-teal-50 px-3 py-2 rounded-md shadow-md"
     >
-      AI je čuo: “{{ zadnjiTranskript }}”
+      AI je čuo: "<i>{{ zadnjiTranskript }}</i
+      >"
+      <br />
+      <span class="text-xs font-bold"
+        >* Ako nešto nije dobro popunjeno možete kliknuti ponovno na gumb i reći npr. 'Ispravi
+        prezime u Horvat' *</span
+      >
     </p>
     <p v-if="greska" class="mt-2 text-sm text-red-700 bg-red-50 px-3 py-2 rounded-md shadow-md">
       {{ greska }}

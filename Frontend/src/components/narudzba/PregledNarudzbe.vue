@@ -27,7 +27,7 @@
       <div class="flex flex-col items-center">
         <GumbZaGlasovnoPopunjavanje
           strukturaUpita="podaci_za_dostavu"
-          @popuni="glasovnoPopuniFormuPodatakaZaDostavu"
+          @popuni="popuniFormuPomocuAI"
         />
         <small class="pt-2 w-full max-w-xs text-xs">
           Pritisnite gumb i popunite obrazac glasom npr. "Zovem se Ivan Horvat. Moja email adresa je
@@ -356,6 +356,7 @@ import { useKosaricaStore } from "@/stores/kosarica"
 import { useNarudzbaStore } from "@/stores/narudzba"
 import { hr_zupanije } from "@/constants/zupanije"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const router = useRouter()
 const autentifikacija = useAutentifikacijskiStore()
@@ -561,16 +562,7 @@ async function naruci() {
   router.push({ name: "potvrdaNarudzbe" })
 }
 
-function glasovnoPopuniFormuPodatakaZaDostavu(e) {
-  const sp = e.podaci || {}
-  forma.ime = sp.ime ?? forma.ime
-  forma.prezime = sp.prezime ?? forma.prezime
-  forma.email = sp.email ?? forma.email
-  forma.telefon = sp.telefon ?? forma.telefon
-  forma.adresa = sp.adresa ?? forma.adresa
-  forma.drzava = sp.drzava ?? forma.drzava
-  forma.zupanija = sp.zupanija ?? forma.zupanija
-  forma.grad = sp.grad ?? forma.grad
-  forma.postanski_broj = sp.postanski_broj ?? forma.postanski_broj
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(forma, podaci)
 }
 </script>

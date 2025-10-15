@@ -13,7 +13,7 @@
             <div class="flex flex-col items-center">
               <GumbZaGlasovnoPopunjavanje
                 strukturaUpita="registracija_kupac"
-                @popuni="glasovnoPopuniFormuRegistracijeKupca"
+                @popuni="popuniFormuPomocuAI"
               />
               <small class="pt-2 w-full max-w-xs"
                 >Pritisnite gumb i popunite obrazac glasom npr. "Zovem se Ivan Horvat. Moja email
@@ -34,7 +34,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white"
                 type="email"
                 placeholder="Email"
-                v-model="email"
+                v-model="formaRegistracijeKupca.email"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite email adresu')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -43,7 +43,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Korisničko Ime"
-                v-model="korisnicko_ime"
+                v-model="formaRegistracijeKupca.korisnicko_ime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite korisničko ime')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -52,7 +52,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
                 placeholder="Lozinka"
-                v-model="lozinka"
+                v-model="formaRegistracijeKupca.lozinka"
                 required
                 minlength="8"
                 @invalid="
@@ -64,7 +64,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="password"
                 placeholder="Potvrdite lozinku"
-                v-model="potvrda_lozinke"
+                v-model="formaRegistracijeKupca.potvrda_lozinke"
                 required
                 minlength="8"
                 @invalid="
@@ -76,7 +76,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Ime"
-                v-model="ime"
+                v-model="formaRegistracijeKupca.ime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite ime')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -85,7 +85,7 @@
                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600 focus:bg-white mt-5"
                 type="text"
                 placeholder="Prezime"
-                v-model="prezime"
+                v-model="formaRegistracijeKupca.prezime"
                 required
                 @invalid="(e) => e.target.setCustomValidity('Molimo unesite prezime')"
                 @input="(e) => e.target.setCustomValidity('')"
@@ -138,40 +138,37 @@
 <script setup>
 import slikeLogo from "@/assets/slike/logo.png"
 import slikeFormaRegistracijeKupac from "@/assets/slike/forma-registracije-kupac.png"
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { useRouter } from "vue-router"
 import { useAutentifikacijskiStore } from "@/stores/autentifikacija"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
-const email = ref("")
-const korisnicko_ime = ref("")
-const lozinka = ref("")
-const potvrda_lozinke = ref("")
-const ime = ref("")
-const prezime = ref("")
+const formaRegistracijeKupca = reactive({
+  email: "",
+  korisnicko_ime: "",
+  lozinka: "",
+  potvrda_lozinke: "",
+  ime: "",
+  prezime: "",
+})
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
 
 const posaljiPodatkeZaRegistracijuKupca = async () => {
   const ok = await autentifikacija.registrirajKupca({
-    email: email.value,
-    korisnicko_ime: korisnicko_ime.value,
-    lozinka: lozinka.value,
-    potvrda_lozinke: potvrda_lozinke.value,
-    ime: ime.value,
-    prezime: prezime.value,
+    email: formaRegistracijeKupca.email,
+    korisnicko_ime: formaRegistracijeKupca.korisnicko_ime,
+    lozinka: formaRegistracijeKupca.lozinka,
+    potvrda_lozinke: formaRegistracijeKupca.potvrda_lozinke,
+    ime: formaRegistracijeKupca.ime,
+    prezime: formaRegistracijeKupca.prezime,
   })
   if (ok) router.push({ name: "profilKupacNadzornaPloca" })
 }
 
-function glasovnoPopuniFormuRegistracijeKupca(e) {
-  const sp = e.podaci || {}
-  email.value = sp.email ?? email.value
-  korisnicko_ime.value = sp.korisnicko_ime ?? korisnicko_ime.value
-  lozinka.value = sp.lozinka ?? lozinka.value
-  potvrda_lozinke.value = sp.potvrda_lozinke ?? potvrda_lozinke.value
-  ime.value = sp.ime ?? ime.value
-  prezime.value = sp.prezime ?? prezime.value
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(formaRegistracijeKupca, podaci)
 }
 </script>

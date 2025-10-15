@@ -54,7 +54,7 @@
           <div class="flex flex-col items-center">
             <GumbZaGlasovnoPopunjavanje
               strukturaUpita="postavke_opg"
-              @popuni="glasovnoPopuniFormuPostavkiProfilaOpga"
+              @popuni="popuniFormuPomocuAI"
             />
             <small class="pt-2 w-full max-w-xs text-xs"
               >Pritisnite gumb i izmijenite podatke u obrascu glasom npr. "Moja adresa više nije
@@ -279,6 +279,7 @@ import { useRouter } from "vue-router"
 import { useUiStore } from "@/stores/ui"
 import { hr_zupanije } from "@/constants/zupanije"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const autentifikacija = useAutentifikacijskiStore()
 const router = useRouter()
@@ -443,19 +444,7 @@ const obrisiProfil = async () => {
   }
 }
 
-function glasovnoPopuniFormuPostavkiProfilaOpga(e) {
-  const sp = e.podaci || {}
-  forma.ime = sp.ime ?? forma.ime
-  forma.prezime = sp.prezime ?? forma.prezime
-  forma.broj_telefona = sp.broj_telefona ?? forma.prezime
-  forma.drzava = sp.drzava ?? forma.prezime
-  forma.zupanija = sp.zupanija ?? forma.zupanija
-  forma.grad = sp.grad ?? forma.grad
-  forma.postanski_broj = sp.postanski_broj ?? forma.postanski_broj
-  forma.adresa = sp.adresa ?? forma.adresa
-  forma.naziv = sp.naziv ?? forma.naziv
-  forma.opis = sp.opis ?? forma.opis
-  forma.identifikacijski_broj_mibpg =
-    sp.identifikacijski_broj_mibpg ?? forma.identifikacijski_broj_mibpg
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(forma, podaci)
 }
 </script>

@@ -160,7 +160,7 @@
           <div class="flex flex-col items-center">
             <GumbZaGlasovnoPopunjavanje
               strukturaUpita="mail_narudzba"
-              @popuni="glasovnoPopuniFormuMailaNarudzbe"
+              @popuni="popuniFormuPomocuAI"
             />
             <small class="pt-2 w-full max-w-xs text-xs"
               >Pritisnite gumb i popunite obrazac glasom npr. "Nemamo proizvod na stanju. Nažalost
@@ -180,7 +180,7 @@
               type="text"
               class="mt-1 w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
               placeholder="Upiši predmet..."
-              v-model="predmet"
+              v-model="formaZaSlanjeMailaKupcu.predmet"
             />
           </div>
           <div>
@@ -189,7 +189,7 @@
               rows="5"
               class="mt-1 w-full rounded-md bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-teal-600"
               placeholder="Upiši poruku..."
-              v-model="poruka"
+              v-model="formaZaSlanjeMailaKupcu.poruka"
             ></textarea>
           </div>
 
@@ -209,21 +209,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, reactive, onMounted, computed } from "vue"
 import { useRoute } from "vue-router"
 import { usePrimljeneNarudzbeOpgStore } from "@/stores/primljeneNarudzbeOpg"
 import { useUiStore } from "@/stores/ui"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const route = useRoute()
 const primljene_narudzbe = usePrimljeneNarudzbeOpgStore()
 const detalji = computed(() => primljene_narudzbe.detalji)
 
 const slanjeMaila = ref(false)
-const predmet = ref("")
-const poruka = ref("")
 const mijenjamStatus = ref(false)
 const ui = useUiStore()
+
+const formaZaSlanjeMailaKupcu = reactive({
+  predmet: "",
+  poruka: "",
+})
 
 const defaultProizvod = "https://placehold.co/160x160?text=Proizvod"
 const defaultUsluga = "https://placehold.co/160x160?text=Usluga"
@@ -278,7 +282,7 @@ async function promijeniStatus() {
 
 async function posaljiMail() {
   if (!detalji.value?.id) return
-  if (!predmet.value.trim() || !poruka.value.trim()) {
+  if (!formaZaSlanjeMailaKupcu.predmet.trim() || !formaZaSlanjeMailaKupcu.poruka.trim()) {
     ui.obavijest({ tekst: "Unesite predmet i poruku.", tip_obavijesti: "upozorenje" })
     return
   }
@@ -287,14 +291,14 @@ async function posaljiMail() {
   try {
     const r = await primljene_narudzbe.posaljiMailKupcu(
       detalji.value.id,
-      predmet.value.trim(),
-      poruka.value.trim(),
+      formaZaSlanjeMailaKupcu.predmet.trim(),
+      formaZaSlanjeMailaKupcu.poruka.trim(),
     )
     if (r.ok) {
       ui.obavijest({ tekst: "E-mail poslan kupcu.", tip_obavijesti: "uspjeh" })
       formaOtvorena.value = false
-      predmet.value = ""
-      poruka.value = ""
+      formaZaSlanjeMailaKupcu.predmet = ""
+      formaZaSlanjeMailaKupcu.poruka = ""
     } else {
       ui.obavijest({ tekst: r.error || "Greška pri slanju e-maila.", tip_obavijesti: "greska" })
     }
@@ -319,9 +323,7 @@ const otvoriFormuNarudzbe = () => {
   formaOtvorena.value = !formaOtvorena.value
 }
 
-function glasovnoPopuniFormuMailaNarudzbe(e) {
-  const sp = e.podaci || {}
-  predmet.value = sp.predmet ?? predmet.value
-  poruka.value = sp.poruka ?? poruka.value
+function popuniFormuPomocuAI({ podaci }) {
+  primijeniPodatkeOdAIuFormu(formaZaSlanjeMailaKupcu, podaci)
 }
 </script>

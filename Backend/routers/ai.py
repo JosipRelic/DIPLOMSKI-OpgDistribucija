@@ -28,7 +28,11 @@ async def transkribiraj(audio: UploadFile = File(...)):
       kreiranje_transkripcije = klijent.audio.transcriptions.create(
           model="gpt-4o-mini-transcribe",
           file=buffer,
-          language="hr"
+          language="hr",
+          temperature=0.2,
+          prompt=(
+                "Transkribiraj isključivo na hrvatskom jeziku na latinici."             
+            ),
       )
       tekst = getattr(kreiranje_transkripcije, "text", "") or getattr(
           kreiranje_transkripcije, "output_text", ""
@@ -54,7 +58,7 @@ async def strukturiraj(sz: StrukturirajZahtjev):
     },
 
     "registracija_opg": {
-            "opis": "Popuni email, korisničko ime, lozinku, potvrdu lozinke, naziv se odnosi na naziv opga, ime, prezime, te identifikacijski broj mibpg",
+            "opis": "Popuni email, korisničko ime, lozinku, potvrdu lozinke, naziv se odnosi na naziv opga, ime, prezime, te identifikacijski broj mibpg također zvan identifikacijski broj pg-a ili samo identifikacijski broj",
             "polja": ["email", "korisnicko_ime", "lozinka", "potvrda_lozinke", "naziv", "ime", "prezime", "identifikacijski_broj_mibpg"],
         },
 
@@ -79,24 +83,29 @@ async def strukturiraj(sz: StrukturirajZahtjev):
     },
 
     "novi_proizvod": {
-        "opis": "Popuni naziv proizvoda, opis, cijenu, mjernu jedinicu, da li je proizvod dostupan (true/false), te kategoriju",
-        "polja": ["naziv", "opis", "cijena", "mjerna_jedinica", "proizvod_dostupan", "kategorija"],
+        "opis": "Popuni naziv proizvoda, opis, cijenu, mjernu jedinicu, da li je proizvod dostupan (true/false), kategoriju, kategorija_id ostavi prazno ili zanemari",
+        "polja": ["naziv", "opis", "cijena", "mjerna_jedinica", "proizvod_dostupan", "kategorija", "kategorija_id"],
     },
 
     "nova_usluga": {
-        "opis": "Popuni naziv usluge, opis, cijenu, mjernu jedinicu, da li je usluga dostupna (true/false), kategoriju, trajanje po mjernoj jedinici u minutama",
-        "polja": ["naziv","opis","cijena","mjerna_jedinica","usluga_dostupna","kategorija","trajanje_po_mjernoj_jedinici"],
+        "opis": "Popuni naziv usluge, opis, cijenu, mjernu jedinicu, da li je usluga dostupna (true/false), kategoriju, kategorija_id ostavi prazno ili zanemari, trajanje po mjernoj jedinici u minutama",
+        "polja": ["naziv","opis","cijena","mjerna_jedinica","usluga_dostupna","kategorija", "kategorija_id","trajanje_po_mjernoj_jedinici"],
     },
 
   }
 
   strukturirani_json = forme_za_strukturiranje.get(sz.struktura_upita, {"opis": "Vrati strukturirani json od govora.", "polja": []})
+
+  prazno = {k: None for k in strukturirani_json["polja"]}
+
   upute = f"""
     Pretvori korisnikov govor u strukturirani json za popunjavanje forme "{sz.struktura_upita}".
     Opis: {strukturirani_json["opis"]}
-    Vrati isključivo json objekt sa sljedećim ključevima ako ih možeš sa sigurnošću izvući:
+    Vrati isključivo json objekt sa sljedećim ključevima:
     {strukturirani_json["polja"]}
-    Ako nešto nije spomenuto, ostavi null ili izostavi.
+    Ako nešto nije spomenuto, postavi na null ne izostavljaj ključ.
+    Ako korisnik govori "promijeni, ispravi ili umjesto", vrati samo ona polja koja treba ažurirati.
+    Jezik izlaza mora biti hrvatski (latinica).
     Tekst:
     {sz.tekst}
     """
@@ -115,7 +124,10 @@ async def strukturiraj(sz: StrukturirajZahtjev):
   except Exception:
     podaci = {}
 
-  return {"podaci": podaci}
+  
+  rezultat = {**prazno, **podaci}
+ 
+  return {"podaci": rezultat}
 
 
   
