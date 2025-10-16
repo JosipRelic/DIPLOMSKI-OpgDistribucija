@@ -445,6 +445,7 @@ import { usePonudaFarmaPlusStore } from "@/stores/ponudaFarmaPlus"
 import { useUiStore } from "@/stores/ui"
 import ProfilOpgPonudaFarmaPlusKalendar from "@/components/profili/opg/ProfilOpgPonudaFarmaPlusKalendar.vue"
 import GumbZaGlasovnoPopunjavanje from "@/components/ai/GumbZaGlasovnoPopunjavanje.vue"
+import { primijeniPodatkeOdAIuFormu } from "@/ai/primijeniPodatkeOdAIuFormu"
 
 const autentifikacija = useAutentifikacijskiStore()
 const ponudaFarmaPlus = usePonudaFarmaPlusStore()
