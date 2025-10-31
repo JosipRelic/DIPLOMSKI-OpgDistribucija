@@ -1,8 +1,7 @@
-import calendar
-from datetime import date, datetime
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, and_
+from sqlalchemy import func, desc
 from database import SessionLocal
 from models import KategorijaProizvoda, Korisnik, Opg, Proizvod, Recenzija, KorisnickiProfil, Narudzba, NarudzbaStavka, Usluga
 from security import dohvati_id_trenutnog_korisnika

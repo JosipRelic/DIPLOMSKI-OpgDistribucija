@@ -10,12 +10,8 @@ from models import (
 import os
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
-from dotenv import load_dotenv
 from mail import posalji_email_opg_verificiran
-
-load_dotenv()
-ADMIN_USER = os.getenv("ADMIN_USER")
-ADMIN_PASS = os.getenv("ADMIN_PASS")
+from config import ADMIN_USER, ADMIN_PASS
 
 
 class AutentifikacijaAdmin(AuthenticationBackend):
@@ -40,7 +36,6 @@ class AutentifikacijaAdmin(AuthenticationBackend):
 
 @event.listens_for(SASession, "after_flush")
 def _posalji_mail_kad_se_opg_verificira(session: SASession, ctx):
-    """Nakon flush-a provjeri je li neki OPG upravo postao verificiran i pošalji mail."""
     for inst in session.dirty:
         if isinstance(inst, Opg):
             try:

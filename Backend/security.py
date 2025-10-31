@@ -3,12 +3,10 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from models import Korisnik
 from database import SessionLocal
-from typing import Annotated
-from sqlalchemy.orm import Session
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

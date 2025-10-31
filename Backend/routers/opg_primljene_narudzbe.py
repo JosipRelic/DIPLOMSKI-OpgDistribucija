@@ -2,7 +2,7 @@ import math
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from sqlalchemy import desc, func, or_
+from sqlalchemy import desc, func
 from security import dohvati_id_trenutnog_korisnika
 from models import Korisnik, Kupac, Opg, Narudzba, NarudzbaStavka, Proizvod, TipKorisnika, Usluga
 from schemas import EmailKupcuVezanUzNarudzbu, PromjenaStatusaNarudzbe

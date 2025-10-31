@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
-from sqlalchemy.exc import IntegrityError 
 from typing import List, Optional, Dict, Any
 from database import SessionLocal
 from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil, Usluga, KategorijaUsluge, Recenzija

@@ -1,8 +1,8 @@
 import os
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika, KosaricaStavka, Narudzba
+from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika, KosaricaStavka
 from security import dohvati_id_trenutnog_korisnika
 import schemas
 from typing import Annotated

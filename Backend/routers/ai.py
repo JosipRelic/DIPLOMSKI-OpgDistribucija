@@ -1,14 +1,12 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from openai import OpenAI
-import os, json, io
-from dotenv import load_dotenv
-
+import json, io
+from config import OPENAI_API
 
 router = APIRouter(prefix="/ai", tags=["AI - Glasovno popunjavanje formi"])
 
-load_dotenv()
-klijent = OpenAI(api_key=os.getenv("OPENAI_API"))
+klijent = OpenAI(api_key=OPENAI_API)
 
 class StrukturirajZahtjev(BaseModel):
   tekst: str

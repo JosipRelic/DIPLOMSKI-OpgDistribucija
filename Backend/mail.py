@@ -5,20 +5,11 @@ import imghdr
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from config import SMTP_SERVER, SMTP_USERNAME, SMTP_PORT, SMTP_PASSWORD, FRONTEND_URL, BACKEND_URL
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-SMTP_SERVER=os.getenv("SMTP_SERVER")
-SMTP_PORT=os.getenv("SMTP_PORT")
-SMTP_USERNAME=os.getenv("SMTP_USERNAME")
-SMTP_PASSWORD=os.getenv("SMTP_PASSWORD")
-FRONTEND_URL=os.getenv("FRONTEND_URL")
-BACKEND_URL=os.getenv("BACKEND_URL")
 
 def _attach_logo(msg, cid="logo_opg"):
-   
     candidates = [
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "assets", "logo_opgdistribucija.jpg"),
         os.path.join(os.getcwd(), "static", "assets", "logo_opgdistribucija.jpg"),

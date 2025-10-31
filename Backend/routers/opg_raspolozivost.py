@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import Date, cast, func
+from sqlalchemy import func
 from typing import List, Dict, Optional
 from datetime import date, datetime, timedelta
 from models import Korisnik, Kupac, Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga

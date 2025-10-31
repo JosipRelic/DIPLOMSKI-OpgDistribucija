@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from sqlalchemy import func, case
 from typing import List, Dict, Any
-from models import Proizvod, KategorijaProizvoda, Opg, Korisnik, TipKorisnika
+from models import Proizvod, KategorijaProizvoda, Opg
 from schemas import KreiranjeProizvoda, AzuriranjeProizvoda, PrikazProizvoda
 from security import dohvati_id_trenutnog_korisnika
 import os

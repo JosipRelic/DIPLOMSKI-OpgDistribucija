@@ -1,7 +1,7 @@
 import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy import desc
 from database import SessionLocal
 from models import Korisnik, TipKorisnika, Narudzba, NarudzbaStavka, Opg
 from security import dohvati_id_trenutnog_korisnika

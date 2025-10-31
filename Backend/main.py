@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from routers import autentifikacija, korisnicki_profil, uredi_ponudu_etrznica, uredi_ponudu_farmaplus, etrznica, farma_plus, opg_raspolozivost, kosarica, narudzbe, opg_primljene_narudzbe, opg_napravljene_narudzbe, opg_nadzorna_ploca, kupac_moje_narudzbe, kupac_nadzorna_ploca, pocetna, ai
 from starlette.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware

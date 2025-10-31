@@ -9,7 +9,7 @@ from typing import Annotated
 from security import verifikacija_lozinke
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
-from mail import posalji_email_adminu_novi_opg_registriran, posalji_email_opg_verificiran, posalji_email_za_oporavak, posalji_email_zahvale_za_registraciju_opgu
+from mail import posalji_email_adminu_novi_opg_registriran, posalji_email_za_oporavak, posalji_email_zahvale_za_registraciju_opgu
 from security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])

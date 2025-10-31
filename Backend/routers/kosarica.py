@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 from database import SessionLocal
-from models import Korisnik, KosaricaStavka, Proizvod, TipKorisnika, Usluga, Opg
+from models import Korisnik, KosaricaStavka, Proizvod, TipKorisnika, Usluga
 from schemas import KosaricaDodajProizvod, KosaricaDodajUslugu, KosaricaPromijeniKolicinu, KosaricaStavkaPrikaz, KosaricaPrikaz
 from security import dohvati_id_trenutnog_korisnika
 
