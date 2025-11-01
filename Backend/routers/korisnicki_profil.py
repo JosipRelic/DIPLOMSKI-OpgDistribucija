@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika, KosaricaStavka
 from security import dohvati_id_trenutnog_korisnika
-import schemas
+from schemas import PrikazKorisnickogProfila, AzuriranjeKorisnickogProfila
 from typing import Annotated
 from utils import obrisi_uploadanu_sliku
 from datetime import datetime
@@ -34,7 +34,7 @@ def _ponovno_izracunaj_prosjek_ocjene(db, opg_id: int):
 
 
 
-def _serialize_me(korisnik: Korisnik) -> schemas.PrikazKorisnickogProfila:
+def _serialize_me(korisnik: Korisnik) -> PrikazKorisnickogProfila:
     profil = korisnik.korisnicki_profil
     base = dict(
         id = korisnik.id,
@@ -75,9 +75,9 @@ def _serialize_me(korisnik: Korisnik) -> schemas.PrikazKorisnickogProfila:
                 slug = opg.slug
             )
 
-    return schemas.PrikazKorisnickogProfila(**base)
+    return PrikazKorisnickogProfila(**base)
 
-@router.get("/moj-profil", response_model=schemas.PrikazKorisnickogProfila)
+@router.get("/moj-profil", response_model=PrikazKorisnickogProfila)
 def dohvati_profil(
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
@@ -88,9 +88,9 @@ def dohvati_profil(
     return _serialize_me(korisnik)
     
 
-@router.put("", response_model=schemas.PrikazKorisnickogProfila)
+@router.put("", response_model=PrikazKorisnickogProfila)
 def azuriraj_profil(
-    body: schemas.AzuriranjeKorisnickogProfila,
+    body: AzuriranjeKorisnickogProfila,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     db: Session = Depends(get_db)
     
@@ -167,7 +167,7 @@ def azuriraj_profil(
     return _serialize_me(korisnik)
 
 
-@router.post("/slika-profila", response_model=schemas.PrikazKorisnickogProfila)
+@router.post("/slika-profila", response_model=PrikazKorisnickogProfila)
 def ucitaj_sliku_profila(
     request: Request,
     slika: UploadFile = File(...),

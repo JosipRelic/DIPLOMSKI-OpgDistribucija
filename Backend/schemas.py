@@ -80,14 +80,6 @@ class AzuriranjeKorisnickogProfila(BaseModel):
     identifikacijski_broj_mibpg: Optional[int] = Field(default=None, ge=1)
 
 
-class KategorijaProizvoda(BaseModel):
-    id: int
-    naziv: str = Field(min_length=1, max_length=150)
-    slug: str
-
-    model_config = {"from_attributes": True}
-
-
 class Proizvod(BaseModel):
     naziv: str = Field(min_length=1, max_length=200)
     opis: Optional[str] = Field(default=None)
@@ -114,14 +106,6 @@ class PrikazProizvoda(Proizvod):
     slug: str
     opg_id: int
     
-    model_config = {"from_attributes": True}
-
-
-class KategorijaUsluge(BaseModel):
-    id: int
-    naziv: str = Field(min_length=1, max_length=150)
-    slug: str
-
     model_config = {"from_attributes": True}
 
 
@@ -158,14 +142,6 @@ class PrikazUsluge(Usluga):
 class KreiranjeRecenzije(BaseModel):
     ocjena: int = Field(..., ge=1, le=5)
     komentar: str | None = None
-
-class PrikazRecenzije(BaseModel):
-    id: int
-    ocjena: int
-    komentar: str | None
-    korisnik_ime: str | None
-    datum_izrade: datetime
-
 
 class DatumRaspolozivosti(BaseModel):
     datum: date
@@ -265,8 +241,7 @@ class NarudzbaPrikaz(BaseModel):
     ukupno: float
     stavke: List[NarudzbaStavkaKreiranje]
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class PromjenaStatusaNarudzbe(BaseModel):
     status: Literal["u_tijeku","isporuceno","otkazano"]

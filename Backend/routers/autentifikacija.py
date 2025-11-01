@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal
-import schemas
 from security import hashiranje_lozinke, kreiranje_tokena_za_pristup
 from utils import slugify
 from models import TipKorisnika, Korisnik, Kupac, Opg, KorisnickiProfil
@@ -11,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from mail import posalji_email_adminu_novi_opg_registriran, posalji_email_za_oporavak, posalji_email_zahvale_za_registraciju_opgu
 from security import SECRET_KEY, ALGORITHM
+from schemas import RegistracijaKupac, RegistracijaOpg, Token, Prijava, PromjenaLozinkeToken
 
 router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])
 
@@ -23,8 +23,8 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-@router.post("/registracija/kupac", response_model=schemas.Token, status_code=201)
-def registracija_kupca(body: schemas.RegistracijaKupac, db: db_dependency):
+@router.post("/registracija/kupac", response_model=Token, status_code=201)
+def registracija_kupca(body: RegistracijaKupac, db: db_dependency):
     if body.lozinka != body.potvrda_lozinke:
         raise HTTPException(status_code=400, detail="Lozinke se ne podudaraju.")
     if db.query(Korisnik).filter(Korisnik.email == body.email).first():
@@ -58,7 +58,7 @@ def registracija_kupca(body: schemas.RegistracijaKupac, db: db_dependency):
     return {"access_token": token, "token_type": "bearer", "tip_korisnika": "Kupac"}
     
 @router.post("/registracija/opg", status_code=201)
-def registracija_opga(body: schemas.RegistracijaOpg, db:db_dependency):
+def registracija_opga(body: RegistracijaOpg, db:db_dependency):
     if body.lozinka != body.potvrda_lozinke:
         raise HTTPException(400, "Lozinke se ne podudaraju.")
     if db.query(Korisnik).filter(Korisnik.email == body.email).first():
@@ -126,8 +126,8 @@ def registracija_opga(body: schemas.RegistracijaOpg, db:db_dependency):
 
     return {"detail": "Registracija zaprimljena. Pričekajte verifikaciju."}
 
-@router.post("/prijava", response_model=schemas.Token)
-def prijava(body: schemas.Prijava, db: db_dependency):
+@router.post("/prijava", response_model=Token)
+def prijava(body: Prijava, db: db_dependency):
     korisnik = (
         db.query(Korisnik).filter(
             (Korisnik.email == body.email_ili_korisnicko_ime) | (Korisnik.korisnicko_ime == body.email_ili_korisnicko_ime)
@@ -167,7 +167,7 @@ def zaboravljena_lozinka(email: str, db: Session = Depends(get_db)):
     return {"detail": "Ako adresa postoji, poslan je link za oporavak."}
 
 @router.post("/promjena-lozinke")
-def promjena_lozinke(body: schemas.PromjenaLozinkeToken, db: Session = Depends(get_db)):
+def promjena_lozinke(body: PromjenaLozinkeToken, db: Session = Depends(get_db)):
     if body.nova_lozinka != body.potvrda_lozinke:
         raise HTTPException(status_code=400, detail="Lozinke se ne podudaraju.")
 
