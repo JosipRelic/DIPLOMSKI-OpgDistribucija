@@ -2,18 +2,11 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from database import SessionLocal
+from database import db_dependency
 from models import KategorijaProizvoda, Korisnik, Opg, Proizvod, Recenzija, KorisnickiProfil, Narudzba, NarudzbaStavka, Usluga
 from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/opg/nadzorna-ploca", tags=["OPG profil - Nadzorna ploča"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def _moj_opg(db: Session, korisnik_id: int) -> Opg:
@@ -24,7 +17,7 @@ def _moj_opg(db: Session, korisnik_id: int) -> Opg:
 
 @router.get("")
 def nadzorna_ploca(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = _moj_opg(db, id_trenutnog_korisnika)

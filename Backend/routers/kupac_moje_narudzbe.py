@@ -1,19 +1,11 @@
-import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from database import SessionLocal
+from database import db_dependency
 from models import Korisnik, TipKorisnika, Narudzba, NarudzbaStavka, Opg
 from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/kupac/moje-narudzbe", tags=["Kupac profil - Moje narudžbe"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def _kupac(db: Session, korisnik_id: int) -> Korisnik:
@@ -37,7 +29,7 @@ def _status_narudzbe_iz_stavki(db: Session, narudzba_id: int) -> str:
 
 @router.get("")
 def moje_narudzbe(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     stranica: int = Query(1, ge=1),
     velicina: int = Query(10, ge=1, le=50),
@@ -112,7 +104,7 @@ def moje_narudzbe(
 @router.get("/detalji-narudzbe/{narudzba_id}")
 def detalji_moje_narudzbe(
     narudzba_id: int,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     kupac = _kupac(db, id_trenutnog_korisnika)

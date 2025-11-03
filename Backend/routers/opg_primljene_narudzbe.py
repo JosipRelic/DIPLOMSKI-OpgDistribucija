@@ -1,7 +1,7 @@
 import math
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import db_dependency
 from sqlalchemy import desc, func
 from security import dohvati_id_trenutnog_korisnika
 from models import Korisnik, Kupac, Opg, Narudzba, NarudzbaStavka, Proizvod, TipKorisnika, Usluga
@@ -9,13 +9,6 @@ from schemas import EmailKupcuVezanUzNarudzbu, PromjenaStatusaNarudzbe
 from mail import opg_posalji_email_vezan_uz_narudzbu, posalji_email_o_promjeni_statusa_kupcu
 
 router = APIRouter(prefix="/opg/primljene-narudzbe", tags=["OPG profil - Primljene narudžbe"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def _moj_opg_id (db: Session, korisnik_id: int) -> int:
@@ -27,7 +20,7 @@ def _moj_opg_id (db: Session, korisnik_id: int) -> int:
 
 @router.get("")
 def primljene_narudzbe(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     stranica: int = Query(1, ge=1),
     velicina: int = Query(8, ge=1, le=100),
@@ -125,8 +118,8 @@ def primljene_narudzbe(
 
 @router.get("/detalji-narudzbe/{narudzba_id}")
 def detalji_narudzbe(
+    db: db_dependency,
     narudzba_id: int = Path(..., ge=1),
-    db: Session = Depends(get_db),
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     opg_id = _moj_opg_id(db, id_trenutnog_korisnika)
@@ -210,7 +203,7 @@ def detalji_narudzbe(
 def promijeni_status_narudzbe(
     narudzba_id: int,
     body: PromjenaStatusaNarudzbe,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg_id = _moj_opg_id(db, id_trenutnog_korisnika)
@@ -248,7 +241,7 @@ def promijeni_status_narudzbe(
 @router.get("/detalji-kupca/{kupac_slug}")
 def detalji_kupca(
     kupac_slug: str,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     stranica: int = Query(1, ge=1),
     velicina: int = Query(8, ge=1, le=50),
@@ -447,7 +440,7 @@ def detalji_kupca(
 def posalji_mail_kupcu(
     narudzba_id: int,
     body: EmailKupcuVezanUzNarudzbu,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     moj_opg_id = _moj_opg_id(db, id_trenutnog_korisnika)  

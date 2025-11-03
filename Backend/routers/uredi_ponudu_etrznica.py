@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import db_dependency
 from sqlalchemy import func, case
 from typing import List, Dict, Any
 from models import Proizvod, KategorijaProizvoda, Opg
@@ -9,13 +9,6 @@ from security import dohvati_id_trenutnog_korisnika
 import os
 from datetime import datetime
 from utils import obrisi_uploadanu_sliku
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 router = APIRouter(prefix="/opg/ponuda-etrznica", tags=["OPG profil - Uređivanje ponude E-Tržnica"])
 
@@ -27,8 +20,8 @@ def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
 
 @router.get("/kategorije", response_model=List[Dict[str, Any]])
 def kategorije_proizvoda(
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = opg_ili_404(db, id_korisnika)
 
@@ -58,9 +51,9 @@ def kategorije_proizvoda(
 
 @router.get("", response_model=List[PrikazProizvoda])
 def lista_proizvoda(
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    kategorija_id: int | None = None,
-    db: Session = Depends(get_db)
+    kategorija_id: int | None = None
 ):
     opg = opg_ili_404(db, id_korisnika)
     proizvod = db.query(Proizvod).filter(Proizvod.opg_id == opg.id)
@@ -72,8 +65,8 @@ def lista_proizvoda(
 @router.post("", response_model=PrikazProizvoda)
 def kreiraj_proizvod(
     body: KreiranjeProizvoda,
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
     if not db.get(KategorijaProizvoda, body.kategorija_id):
@@ -100,8 +93,8 @@ def kreiraj_proizvod(
 def uredi_proizvod(
     proizvod_id: int,
     body: AzuriranjeProizvoda,
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),   
 ):
     opg = opg_ili_404(db, id_korisnika)
     proizvod = db.get(Proizvod, proizvod_id)
@@ -120,8 +113,8 @@ def uredi_proizvod(
 @router.delete("/{proizvod_id}", status_code=204)
 def obrisi_proizvod(
     proizvod_id: int,
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = opg_ili_404(db, id_korisnika)
     proizvod = db.get(Proizvod, proizvod_id)
@@ -140,9 +133,9 @@ def obrisi_proizvod(
 def ucitaj_sliku_proizvoda(
     request: Request,
     proizvod_id: int,
+    db: db_dependency,
     slika_proizvoda: UploadFile = File(...),
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     trenutno_vrijeme = datetime.now().strftime("%H%M%S%f")
     opg = opg_ili_404(db, id_korisnika)

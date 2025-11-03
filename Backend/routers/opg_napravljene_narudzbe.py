@@ -2,18 +2,11 @@ import math
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from database import SessionLocal
+from database import db_dependency
 from models import Korisnik, Opg, Narudzba, NarudzbaStavka
 from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/opg/napravljene-narudzbe", tags=["OPG profil - Napravljene narudžbe"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def _moj_opg(db: Session, korisnik_id: int) -> Opg:
@@ -25,7 +18,7 @@ def _moj_opg(db: Session, korisnik_id: int) -> Opg:
 
 @router.get("")
 def napravljene_narudzbe(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     stranica: int = Query(1, ge=1),
     velicina: int = Query(8, ge=1, le=100),
@@ -130,8 +123,8 @@ def napravljene_narudzbe(
 
 @router.get("/detalji-narudzbe/{narudzba_id}")
 def detalji_narudzbe(
-    narudzba_id: int = Path(..., ge=1),
-    db: Session = Depends(get_db),
+    db: db_dependency,
+    narudzba_id: int = Path(..., ge=1), 
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     moj_opg = _moj_opg(db, id_trenutnog_korisnika)

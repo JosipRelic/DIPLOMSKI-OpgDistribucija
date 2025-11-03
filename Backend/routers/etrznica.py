@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, Response
-from sqlalchemy.orm import Session
 from sqlalchemy import func, or_, and_, distinct
 from typing import List, Optional, Dict, Any
-from database import SessionLocal
+from database import db_dependency
 from models import Opg, Proizvod, KategorijaProizvoda, Korisnik, KorisnickiProfil, Usluga, KategorijaUsluge, Recenzija
 import math
 from schemas import KreiranjeRecenzije
@@ -10,16 +9,9 @@ from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/e-trznica", tags=["E-tržnica"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.get("/kategorije", response_model=List[Dict[str, Any]])
-def sve_kategorije_proizvoda(db: Session = Depends(get_db)):
+def sve_kategorije_proizvoda(db: db_dependency):
     kategorije = (
         db.query(
             KategorijaProizvoda.id,
@@ -55,7 +47,7 @@ def sve_kategorije_proizvoda(db: Session = Depends(get_db)):
 
 
 @router.get("/kategorije/{slug}", response_model=Dict[str, Any])
-def pojedina_kategorija_proizvoda(slug:str, db: Session = Depends(get_db)):
+def pojedina_kategorija_proizvoda(slug:str, db: db_dependency):
     kategorija = db.query(KategorijaProizvoda).filter(KategorijaProizvoda.slug == slug).first()
     if not kategorija:
         raise HTTPException(status_code=404, detail="Kategorija nije pronađena")
@@ -70,9 +62,9 @@ def pojedina_kategorija_proizvoda(slug:str, db: Session = Depends(get_db)):
 
 @router.get("/filteri-lokacije", response_model=Dict[str, List[str]])
 def filteri_lokacije(
+    db: db_dependency,
     kat_slug: Optional[str] = Query(default=None, 
-                                    description="Ako je zadana kategorija, vrati samo OPG-ove koji imaju proizvode iz te kategorije"),
-    db: Session = Depends(get_db)
+                                    description="Ako je zadana kategorija, vrati samo OPG-ove koji imaju proizvode iz te kategorije")
     ):
 
     q = (
@@ -96,7 +88,7 @@ def filteri_lokacije(
 
 @router.get("/opgovi", response_model=Dict[str, Any])
 def opgovi(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     q: Optional[str] = Query(default=None),
     zupanije: Optional[str] = Query(default=None, description="odvojeno-zarezom"),
     mjesta: Optional[str] = Query(default=None, description="odvojeno-zarezom"),
@@ -209,7 +201,7 @@ def opgovi(
 
 @router.get("/proizvodi", response_model=Dict[str, Any])
 def proizvodi_po_kategoriji(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     kat_slug: str = Query(..., description="slug kategorije"),
     q: Optional[str] = Query(default=None),
     zupanije: Optional[str] = Query(default=None, description="odvojeno-zarezom"),
@@ -282,8 +274,9 @@ def proizvodi_po_kategoriji(
 
 @router.get("/proizvodi/{proizvod_id}", response_model=Dict[str, Any])
 def detalji_proizvoda(
-    proizvod_id: int = Path(..., ge=1),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    proizvod_id: int = Path(..., ge=1)
+    
 ):
     proizvod = (
         db.query(
@@ -337,7 +330,7 @@ def detalji_proizvoda(
 
 @router.get("/statistika", response_model=Dict[str,int])
 def statistika(
-    db: Session = Depends(get_db)
+    db: db_dependency
 ):
     broj_registriranih_opgova = db.query(func.count(Opg.id)).filter(Opg.verificiran == True).scalar()
     broj_usluga = db.query(func.count(Usluga.id)).scalar()
@@ -351,7 +344,7 @@ def statistika(
 
 
 @router.get("/opgovi/{slug}")
-def detalji_opga(slug: str, db:Session = Depends(get_db)):
+def detalji_opga(slug: str, db:db_dependency):
     opg = (
         db.query(
             Opg.id,
@@ -397,7 +390,7 @@ def detalji_opga(slug: str, db:Session = Depends(get_db)):
     }
 
 @router.get("/opgovi/{slug}/kategorije-proizvoda")
-def opg_kategorije_proizvoda(slug: str, db: Session = Depends(get_db)):
+def opg_kategorije_proizvoda(slug: str, db: db_dependency):
     opg = db.query(Opg.id).filter(Opg.slug == slug).first()
     if not opg:
         raise HTTPException(status_code=404, detail="OPG nije pronađen")
@@ -420,7 +413,7 @@ def opg_kategorije_proizvoda(slug: str, db: Session = Depends(get_db)):
 
 
 @router.get("/opgovi/{slug}/kategorije-usluga")
-def opg_kategorije_usluga(slug: str, db: Session = Depends(get_db)):
+def opg_kategorije_usluga(slug: str, db: db_dependency):
     opg = db.query(Opg.id).filter(Opg.slug == slug).first()
     if not opg:
         raise HTTPException(status_code=404, detail="OPG nije pronađen")
@@ -442,7 +435,7 @@ def opg_kategorije_usluga(slug: str, db: Session = Depends(get_db)):
     return [{"id": kategorija.id, "naziv": kategorija.naziv, "slug": kategorija.slug, "broj": kategorija.broj} for kategorija in kategorije]
 
 @router.get("/opgovi/{slug}/proizvodi")
-def opg_proizvodi(slug: str, db: Session = Depends(get_db), stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
+def opg_proizvodi(slug: str, db: db_dependency, stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
     opg = db.query(Opg).filter(Opg.slug == slug).first()
     if not opg:
         raise HTTPException(status_code=404, detail="OPG nije pronađen.")
@@ -488,7 +481,7 @@ def opg_proizvodi(slug: str, db: Session = Depends(get_db), stranica: int = 1, v
 
 
 @router.get("/opgovi/{slug}/usluge")
-def opg_usluge(slug:str, db: Session = Depends(get_db), stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
+def opg_usluge(slug:str, db: db_dependency, stranica: int = 1, velicina: int = 12, kat_slug: str | None = None):
     opg = db.query(Opg).filter(Opg.slug == slug).first()
     if not opg:
         raise HTTPException(status_code=404, detail="OPG nije pronađen")
@@ -522,7 +515,7 @@ def opg_usluge(slug:str, db: Session = Depends(get_db), stranica: int = 1, velic
 @router.get("/opgovi/{slug}/recenzije")
 def opg_recenzije(
     slug: str,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     stranica: int = 1,
     velicina: int = 10
 ):
@@ -568,7 +561,7 @@ def opg_recenzije(
 @router.get("/opgovi/{slug}/moja-recenzija")
 def moja_recenzija(
     slug: str,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = db.query(Opg).filter(Opg.slug == slug).first()
@@ -603,7 +596,7 @@ def moja_recenzija(
 def posalji_moju_recenziju(
     slug: str,
     body: KreiranjeRecenzije,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = db.query(Opg).filter(Opg.slug == slug).first()
@@ -657,7 +650,7 @@ def posalji_moju_recenziju(
 @router.delete("/opgovi/{slug}/moja-recenzija", status_code=204)
 def obrisi_moju_recenziju(
     slug: str,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = db.query(Opg).filter(Opg.slug == slug).first()

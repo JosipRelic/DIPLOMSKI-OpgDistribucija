@@ -1,22 +1,14 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 from sqlalchemy import func, desc
-from database import SessionLocal
+from database import db_dependency
 from models import Proizvod, KategorijaProizvoda, Opg, Korisnik, KorisnickiProfil, NarudzbaStavka, Usluga
 
 
 router = APIRouter(prefix="/pocetna", tags=["Početna"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.get("")
-def pocetna_istaknuto(db: Session = Depends(get_db)):
+def pocetna_istaknuto(db: db_dependency):
     najprodavaniji = (
         db.query(
             Proizvod.id.label("pid"),

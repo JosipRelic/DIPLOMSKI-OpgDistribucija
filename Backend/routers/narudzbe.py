@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
-from security import SessionLocal, dohvati_id_trenutnog_korisnika
-from datetime import datetime, date
+from security import dohvati_id_trenutnog_korisnika
+from datetime import datetime
 import time
 from uuid import uuid4
+from database import db_dependency
 from models import Narudzba, NarudzbaStavka, KosaricaStavka, Opg, OpgRaspolozivostPoDatumu, Proizvod, Usluga
 from schemas import NarudzbaKreiranje, NarudzbaPrikaz
 from mail import posalji_email_narudzbe_narucitelju, posalji_email_narudzbe_opg_primatelju
@@ -14,18 +13,11 @@ from routers.opg_raspolozivost import _oduzmi_rezervaciju_od_raspolozivosti
 
 router = APIRouter(prefix="/narudzbe", tags=["Narudžbe"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.post("", response_model=NarudzbaPrikaz)
 def kreiraj_narudzbu(
     payload: NarudzbaKreiranje,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     

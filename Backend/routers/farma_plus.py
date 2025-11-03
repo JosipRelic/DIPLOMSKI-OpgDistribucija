@@ -1,24 +1,16 @@
 import math
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, or_, case
-from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import db_dependency
 from models import Usluga, KategorijaUsluge, Opg, Korisnik, KorisnickiProfil
 from schemas import PrikazUsluge
 
 router = APIRouter(prefix="/farma-plus", tags=["Farma+"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @router.get("/kategorije", response_model=List[Dict[str,Any]])
-def kategorije_usluga(db: Session = Depends(get_db)):
+def kategorije_usluga(db: db_dependency):
     kategorije = (
         db.query(
             KategorijaUsluge.id,
@@ -47,8 +39,8 @@ def kategorije_usluga(db: Session = Depends(get_db)):
 
 @router.get("/filteri-lokacije", response_model=Dict[str, List[str]])
 def filteri_lokacije(
-    kat_slug: str = Query(..., description="Slug kategorije"),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    kat_slug: str = Query(..., description="Slug kategorije")   
 ):
     kategorija = db.query(KategorijaUsluge).filter(KategorijaUsluge.slug == kat_slug).first()
     if not kategorija:
@@ -84,6 +76,7 @@ def filteri_lokacije(
 
 @router.get("/usluge", response_model=Dict[str, Any])
 def usluge(
+    db: db_dependency,
     kat_slug: str = Query(...),
     q: Optional[str] = Query(None, description="pretraga po nazivu usluge ili OPG-a"),
     zupanije: List[str] = Query(default=[]),
@@ -91,8 +84,7 @@ def usluge(
     usluge: List[str] = Query(default=[]),
     sortiranje: str = Query("novo"),
     stranica: int = Query(1, ge=1),
-    velicina_stranice: int = Query(12, ge=1, le=100),
-    db: Session = Depends(get_db)
+    velicina_stranice: int = Query(12, ge=1, le=100), 
 ):
     kat = db.query(KategorijaUsluge).filter(KategorijaUsluge.slug == kat_slug).first()
     if not kat:
@@ -174,7 +166,7 @@ def usluge(
     }
 
 @router.get("/usluga/{usluga_id}", response_model=PrikazUsluge)
-def dohvati_uslugu(usluga_id: int, db:Session = Depends(get_db)):
+def dohvati_uslugu(usluga_id: int, db:db_dependency):
     usluga = db.get(Usluga, usluga_id)
     if not usluga:
         raise HTTPException(status_code=404, detail="Usluga nije pronađena")

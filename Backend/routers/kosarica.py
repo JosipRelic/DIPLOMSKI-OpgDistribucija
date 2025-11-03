@@ -1,18 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, joinedload
-from database import SessionLocal
+from sqlalchemy.orm import joinedload
+from database import db_dependency
 from models import Korisnik, KosaricaStavka, Proizvod, TipKorisnika, Usluga
 from schemas import KosaricaDodajProizvod, KosaricaDodajUslugu, KosaricaPromijeniKolicinu, KosaricaStavkaPrikaz, KosaricaPrikaz
 from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/kosarica", tags=["Košarica"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def _map_stavka(s: KosaricaStavka) -> KosaricaStavkaPrikaz:
@@ -43,7 +36,7 @@ def _map_stavka(s: KosaricaStavka) -> KosaricaStavkaPrikaz:
 
 
 @router.get("", response_model=KosaricaPrikaz)
-def dohvati_kosaricu(db: Session = Depends(get_db), korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika)):
+def dohvati_kosaricu(db: db_dependency, korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika)):
     kosarica = (
         db.query(KosaricaStavka)
         .options(joinedload(KosaricaStavka.proizvod).joinedload(Proizvod.opg))
@@ -59,7 +52,7 @@ def _moj_proizvod_ili_usluga(db, korisnik_id: int) -> Korisnik:
 @router.post("/proizvodi", response_model=KosaricaPrikaz)
 def dodaj_proizvod(
     body: KosaricaDodajProizvod,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
 ):   
     p = db.query(Proizvod).filter(Proizvod.id == body.proizvod_id).first()
@@ -103,7 +96,7 @@ def dodaj_proizvod(
 @router.post("/usluge", response_model=KosaricaPrikaz)
 def dodaj_uslugu(
     body: KosaricaDodajUslugu,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     u = db.query(Usluga).filter(Usluga.id == body.usluga_id).first()
@@ -171,7 +164,7 @@ def dodaj_uslugu(
 def promijeni_kolicinu(
     stavka_id:int,
     body: KosaricaPromijeniKolicinu,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     s = (
@@ -194,7 +187,7 @@ def promijeni_kolicinu(
 @router.delete("/stavke/{stavka_id}", response_model=KosaricaPrikaz)
 def ukloni_stavku(
     stavka_id: int,
-    db: Session = Depends(get_db),
+    db: db_dependency,
     korisnik_id: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     s = (

@@ -1,26 +1,15 @@
 import os
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
-from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import db_dependency
 from models import Korisnik, KorisnickiProfil, Opg, Kupac, TipKorisnika, KosaricaStavka
 from security import dohvati_id_trenutnog_korisnika
 from schemas import PrikazKorisnickogProfila, AzuriranjeKorisnickogProfila
-from typing import Annotated
 from utils import obrisi_uploadanu_sliku
 from datetime import datetime
 from models import Recenzija
 from sqlalchemy import func, distinct
 
 router = APIRouter(prefix="/profil", tags=["Korisnički profil"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 
 def _ponovno_izracunaj_prosjek_ocjene(db, opg_id: int):
@@ -79,8 +68,8 @@ def _serialize_me(korisnik: Korisnik) -> PrikazKorisnickogProfila:
 
 @router.get("/moj-profil", response_model=PrikazKorisnickogProfila)
 def dohvati_profil(
-    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
     ):
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
     if not korisnik:
@@ -91,8 +80,8 @@ def dohvati_profil(
 @router.put("", response_model=PrikazKorisnickogProfila)
 def azuriraj_profil(
     body: AzuriranjeKorisnickogProfila,
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
     
 ):
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
@@ -170,10 +159,9 @@ def azuriraj_profil(
 @router.post("/slika-profila", response_model=PrikazKorisnickogProfila)
 def ucitaj_sliku_profila(
     request: Request,
+    db: db_dependency,
     slika: UploadFile = File(...),
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db),
-
 ):
     trenutno_vrijeme = datetime.now().strftime("%H%M%S%f")
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
@@ -204,8 +192,8 @@ def ucitaj_sliku_profila(
 
 @router.delete("", status_code=204)
 def obrisi_profil(
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     korisnik = db.get(Korisnik, id_trenutnog_korisnika)
     if not korisnik:

@@ -6,16 +6,9 @@ from datetime import date, datetime, timedelta
 from models import Korisnik, Kupac, Opg, OpgRaspolozivostPoDatumu, NarudzbaStavka, Narudzba, Usluga
 from schemas import  DatumRaspolozivosti, DatumRapolozivostiPrikaz, MjeseciKalendaraPrikaz, RasponKalendaraPrikaz
 from security import dohvati_id_trenutnog_korisnika
-from database import SessionLocal
+from database import db_dependency
 
 router = APIRouter(prefix="/opg/raspolozivost", tags=["OPG - Raspoloživost"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def opg_ili_404(db:Session, korisnik_id: int) -> Opg:
@@ -32,13 +25,12 @@ def minute_u_hhmm(v: int) -> str:
     return f"{sati:02d}:{minute:02d}"
 
 
-
 @router.get("/dani", response_model=List[DatumRapolozivostiPrikaz])
 def dohvati_dane(
+    db: db_dependency,
     godina: int = Query(..., ge=2000, le=2100),
     mjesec: int = Query(..., ge=1, le=12),
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)   
 ):
     opg = opg_ili_404(db, id_korisnika)
     pocetak = date(godina, mjesec, 1)
@@ -68,8 +60,8 @@ def dohvati_dane(
 @router.post("/dani", response_model=DatumRapolozivostiPrikaz, status_code=201)
 def dodaj_dan(
         body: DatumRaspolozivosti,
-        id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-        db: Session = Depends(get_db)
+        db: db_dependency,
+        id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),       
 ):
     opg = opg_ili_404(db, id_korisnika)
     pocetno_vrijeme = hhmm_u_minute(body.pocetno_vrijeme)
@@ -106,8 +98,8 @@ def dodaj_dan(
 def uredi_dan(
     id: int,
     body: DatumRaspolozivosti,
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),   
 ):
     opg = opg_ili_404(db, id_korisnika)
     dan = db.query(OpgRaspolozivostPoDatumu).filter_by(id=id, opg_id=opg.id).first()
@@ -170,8 +162,8 @@ def uredi_dan(
 @router.delete("/dani/{id}", status_code=204)
 def obrisi_dan(
     id: int,
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    db: db_dependency,
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika)
 ):
     opg = opg_ili_404(db, id_korisnika)
     dan = db.query(OpgRaspolozivostPoDatumu).filter_by(id = id, opg_id = opg.id).first()
@@ -186,10 +178,10 @@ def obrisi_dan(
 
 @router.get("/kalendar", response_model=MjeseciKalendaraPrikaz)
 def kalendar_mjesec(
+    db: db_dependency,
     opg_id: int = Query(..., ge=1),
     godina: int = Query(..., ge=2000, le=2100),
-    mjesec: int = Query(..., ge=1, le=12),
-    db: Session = Depends(get_db),
+    mjesec: int = Query(..., ge=1, le=12)
 ):
     pocetak = date(godina, mjesec, 1)
     
@@ -291,10 +283,10 @@ def _opg_id_iz_korisnika(db: Session, korisnik_id: int) -> int:
 
 @router.get("/po-danu")
 def rezervacije_po_danu(
+    db: db_dependency,
     opg_id: int = Query(..., ge=1),
     godina: int = Query(..., ge=2000, le=2100),
-    mjesec: int = Query(..., ge=1, le=12),
-    db: Session = Depends(get_db),
+    mjesec: int = Query(..., ge=1, le=12)
 ):
    
     start = date(godina, mjesec, 1)
@@ -327,9 +319,9 @@ def rezervacije_po_danu(
 
 @router.get("")
 def sve_rezervacije(
+    db: db_dependency,
     limit: int = Query(0, ge=0, le=200),
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db),
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),  
 ):
     opg_id = _opg_id_iz_korisnika(db, id_korisnika)
 

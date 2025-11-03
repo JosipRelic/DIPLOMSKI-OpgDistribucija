@@ -1,10 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from database import SessionLocal
+from fastapi import APIRouter, HTTPException
+from database import db_dependency
 from security import hashiranje_lozinke, kreiranje_tokena_za_pristup
 from utils import slugify
 from models import TipKorisnika, Korisnik, Kupac, Opg, KorisnickiProfil
-from typing import Annotated
 from security import verifikacija_lozinke
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
@@ -12,16 +10,9 @@ from mail import posalji_email_adminu_novi_opg_registriran, posalji_email_za_opo
 from security import SECRET_KEY, ALGORITHM
 from schemas import RegistracijaKupac, RegistracijaOpg, Token, Prijava, PromjenaLozinkeToken
 
+
 router = APIRouter(prefix="/autentifikacija", tags=["Autentifikacija"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post("/registracija/kupac", response_model=Token, status_code=201)
 def registracija_kupca(body: RegistracijaKupac, db: db_dependency):
@@ -151,7 +142,7 @@ def prijava(body: Prijava, db: db_dependency):
 
 
 @router.post("/zaboravljena-lozinka")
-def zaboravljena_lozinka(email: str, db: Session = Depends(get_db)):
+def zaboravljena_lozinka(email: str, db: db_dependency):
     korisnik = db.query(Korisnik).filter(Korisnik.email == email).first()
     if korisnik:
         exp_dt = datetime.now(timezone.utc) + timedelta(minutes=30)
@@ -167,7 +158,7 @@ def zaboravljena_lozinka(email: str, db: Session = Depends(get_db)):
     return {"detail": "Ako adresa postoji, poslan je link za oporavak."}
 
 @router.post("/promjena-lozinke")
-def promjena_lozinke(body: PromjenaLozinkeToken, db: Session = Depends(get_db)):
+def promjena_lozinke(body: PromjenaLozinkeToken, db: db_dependency):
     if body.nova_lozinka != body.potvrda_lozinke:
         raise HTTPException(status_code=400, detail="Lozinke se ne podudaraju.")
 

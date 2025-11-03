@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import db_dependency
 from sqlalchemy import func, case
 from typing import List, Dict, Any
 from models import Usluga, KategorijaUsluge, Opg
@@ -10,12 +10,6 @@ import os
 from datetime import datetime
 from utils import obrisi_uploadanu_sliku
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 router = APIRouter(prefix="/opg/ponuda-farmaplus", tags=["OPG profil - Uređivanje ponude Farma+"])
 
@@ -27,8 +21,8 @@ def opg_ili_404(db: Session, korisnik_id: int) -> Opg:
 
 @router.get("/kategorije", response_model=List[Dict[str, Any]])
 def kategorije_usluga(
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
 
@@ -59,9 +53,9 @@ def kategorije_usluga(
 
 @router.get("", response_model=List[PrikazUsluge])
 def lista_usluga(
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
     kategorija_id: int | None = None,
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
     usluga = db.query(Usluga).filter(Usluga.opg_id == opg.id)
@@ -73,8 +67,8 @@ def lista_usluga(
 @router.post("", response_model=PrikazUsluge)
 def kreiraj_uslugu(
     body: KreiranjeUsluge,
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
     if not db.get(KategorijaUsluge, body.kategorija_id):
@@ -103,8 +97,8 @@ def kreiraj_uslugu(
 def uredi_uslugu(
     usluga_id: int,
     body: AzuriranjeUsluge,
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
     usluga = db.get(Usluga, usluga_id)
@@ -122,8 +116,8 @@ def uredi_uslugu(
 @router.delete("/{usluga_id}", status_code=204)
 def obrisi_uslugu(
     usluga_id: int,
+    db: db_dependency,
     id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
 ):
     opg = opg_ili_404(db, id_korisnika)
     usluga = db.get(Usluga, usluga_id)
@@ -141,9 +135,9 @@ def obrisi_uslugu(
 def ucitaj_sliku_usluge(
     request: Request,
     usluga_id: int,
+    db: db_dependency,
     slika_usluge: UploadFile = File(...),
-    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
-    db: Session = Depends(get_db)
+    id_korisnika: int = Depends(dohvati_id_trenutnog_korisnika), 
 ):
     trenutno_vrijeme = datetime.now().strftime("%H%M%S%f")
     opg = opg_ili_404(db, id_korisnika)

@@ -1,18 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from database import SessionLocal
+from database import db_dependency
 from models import KategorijaProizvoda, KategorijaUsluge, KorisnickiProfil, Korisnik, Proizvod, TipKorisnika, Narudzba, NarudzbaStavka, Opg, Usluga
 from security import dohvati_id_trenutnog_korisnika
 
 router = APIRouter(prefix="/kupac/nadzorna-ploca", tags=["Kupac profil - Nadzorna ploča"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def _kupac(db: Session, korisnik_id: int) -> Korisnik:
     k = db.get(Korisnik, korisnik_id)
@@ -22,7 +16,7 @@ def _kupac(db: Session, korisnik_id: int) -> Korisnik:
 
 @router.get("")
 def kupac_nadzorna_ploca(
-    db: Session = Depends(get_db),
+    db: db_dependency,
     id_trenutnog_korisnika: int = Depends(dohvati_id_trenutnog_korisnika),
 ):
     kupac = _kupac(db, id_trenutnog_korisnika)
