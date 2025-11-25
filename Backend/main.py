@@ -10,6 +10,8 @@ from seeds import seed_kategorije_proizvoda, seed_kategorije_usluga
 from database import SessionLocal
 from contextlib import asynccontextmanager
 
+API_PREFIX = "/api"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,27 +38,26 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(autentifikacija.router)
-app.include_router(korisnicki_profil.router)
-app.include_router(uredi_ponudu_etrznica.router)
-app.include_router(uredi_ponudu_farmaplus.router)
-app.include_router(etrznica.router)
-app.include_router(farma_plus.router)
-app.include_router(opg_raspolozivost.router)
-app.include_router(kosarica.router)
-app.include_router(narudzbe.router)
-app.include_router(opg_primljene_narudzbe.router)
-app.include_router(opg_napravljene_narudzbe.router)
-app.include_router(opg_nadzorna_ploca.router)
-app.include_router(kupac_moje_narudzbe.router)
-app.include_router(kupac_nadzorna_ploca.router)
-app.include_router(pocetna.router)
-app.include_router(ai.router)
+app.include_router(autentifikacija.router, prefix=API_PREFIX)
+app.include_router(korisnicki_profil.router, prefix=API_PREFIX)
+app.include_router(uredi_ponudu_etrznica.router, prefix=API_PREFIX)
+app.include_router(uredi_ponudu_farmaplus.router, prefix=API_PREFIX)
+app.include_router(etrznica.router, prefix=API_PREFIX)
+app.include_router(farma_plus.router, prefix=API_PREFIX)
+app.include_router(opg_raspolozivost.router, prefix=API_PREFIX)
+app.include_router(kosarica.router, prefix=API_PREFIX)
+app.include_router(narudzbe.router, prefix=API_PREFIX)
+app.include_router(opg_primljene_narudzbe.router, prefix=API_PREFIX)
+app.include_router(opg_napravljene_narudzbe.router, prefix=API_PREFIX)
+app.include_router(opg_nadzorna_ploca.router, prefix=API_PREFIX)
+app.include_router(kupac_moje_narudzbe.router, prefix=API_PREFIX)
+app.include_router(kupac_nadzorna_ploca.router, prefix=API_PREFIX)
+app.include_router(pocetna.router, prefix=API_PREFIX)
+app.include_router(ai.router, prefix=API_PREFIX)
 
 @app.get("/admin", include_in_schema=False)
 @app.get("/admin/", include_in_schema=False)
 async def admin_pocetna():
     return RedirectResponse(url="/admin/korisnik/list")
 
-from admin import mount_admin
 mount_admin(app)

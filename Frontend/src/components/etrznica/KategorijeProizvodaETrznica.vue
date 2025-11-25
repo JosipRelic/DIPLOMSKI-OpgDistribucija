@@ -40,9 +40,10 @@ import { useEtrznicaKategorijeStore } from "@/stores/eTrznicaKategorije"
 const kategorije_s = useEtrznicaKategorijeStore()
 onMounted(() => kategorije_s.ucitajSveKategorije())
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
+const BACKEND_URL = import.meta.env.VITE_API_URL || ""
 function resolveImg(src) {
   if (!src) return ""
-  return src.startsWith("/") ? `${BASE_URL}${src}` : src
+  if (src.startsWith("http")) return src
+  return `${BACKEND_URL}${src}`
 }
 </script>
